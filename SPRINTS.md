@@ -2,22 +2,42 @@
 -   Wizja, plan kolejnych sprintów
     
 **Sprint 1:  termin 25 III**
--   Transfer jakiejś informacji między komputerami (bez autoryzacji, korekcji błędów, weryfikacji itp.)
--   Dokumentacja sposobu transmisji
+-   Opracowanie wymagań dla protokołu transmisji
+
+-   Implementacja podstawowego transferu danych (bez autoryzacji, korekcji błędów, weryfikacji itp.)
+-   Dokumentacja sposobu transmisji danych (użytych algorytmów, dekodowania sygnałów itp)
+-   Przygotowanie testów części dekodującej i kodującej dane
+
+-   Przygotowanie prezentacji sprintu
 
 **Sprint 2: termin 15 IV**
--   Opracowanie i dokumentacja protokołu - korekcja błędów, weryfikacja poprawności
--   Implementacja protokołu
+-   Opracowanie wymagań dla modelu parowania urządzeń i autoryzacji
+
+-   Opracowanie protokołu - korekcja błędów, weryfikacja poprawności
+-   Implementacja i dokumentacja protokołu
+-   Przygotowanie testów protokołu
+
+-   Przygotowanie prezentacji sprintu
 
 **Sprint :3 termin  6 V**
 -   Opracowanie modelu parowania urządzeń i autoryzacji
--   Implementacja tego modelu
+-   Implementacja i dokumentacja tego modelu
+-   Przygotowanie testów nowej funkcjonalności i ewentualne uzupełnienie brakujących testów
+-   W razie potrzeby przygotowanie testów integracyjnych całej biblioteki
+
+-   Przygotowanie prezentacji sprintu
 
 **Sprint 4:  termin 20 V**
--   Interfejs tekstowy
--   Multiplatformowość
--   Próba przyspieszenia transmisji
+-   Opracowanie wymagań dla obu aplikacji
+
+-   Implementacja i dokumentacja interfejsu tekstowego
+-   Zapewnienie multiplatformowości biblioteki oraz CLI - od tego momentu będziemy tę multiplatformowość utrzymywać
+-   Próba przyspieszenia transmisji poprzez autonegocjację parametrów połączenia
+
+-   Przygotowanie prezentacji sprintu
 
 **Sprint 5:  termin 3 VI**
--   Interfejs graficzny
+-   Implementacja interfejsu graficznego
+
+-   Przygotowanie prezentacji końcowej
  

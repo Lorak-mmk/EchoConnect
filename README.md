@@ -21,6 +21,8 @@ Projekt ma docelowo umożliwiać łatwą komunikację pomiędzy komputerami nie 
 -   Obsługa dźwięku, GUI: QT
 -   Testy: GoogleTest
 -   Dokumentacja: Doxygen / QDoc
+-   Linter: clang-tidy
+-   Formatter: clang-format
     
 ### Narzędzia:
 -   Repozytorium: Github

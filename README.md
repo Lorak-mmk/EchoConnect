@@ -29,3 +29,15 @@ Projekt ma docelowo umożliwiać łatwą komunikację pomiędzy komputerami nie 
 -   Issue tracker: Github Issues
 -   Zarządzanie projektem: Github Projets
 -   Continuous Integration: Github Actions
+
+
+## Budowanie:
+```
+mkdir -p build
+cd build
+cmake ..
+make
+```
+### Wymagane bilbioteki:
+- QT
+- GoogleTest

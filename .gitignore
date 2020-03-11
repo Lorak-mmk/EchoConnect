@@ -50,3 +50,11 @@ compile_commands.json
 
 # QtCreator local machine specific files for imported projects
 *creator.user*
+
+
+build/
+.idea/workspace.xml
+.idea/usage.statistics.xml
+.idea/tasks.xml
+.idea/shelf
+

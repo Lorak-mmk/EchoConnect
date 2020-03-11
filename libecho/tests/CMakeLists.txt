@@ -6,9 +6,7 @@ set(TEST_FILES
         tmp_test.cpp
    )
 
-find_package(echo REQUIRED)
-
 add_executable(${EXEC_NAME} ${TEST_FILES})
 add_test(NAME ${EXEC_NAME} COMMAND ${EXEC_NAME})
 
-target_link_libraries(${BINARY} PUBLIC echo)
+target_link_libraries(${EXEC_NAME} echo gtest)

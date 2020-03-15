@@ -43,6 +43,12 @@ make test
 # alternatywnie
 ctest
 ```
+
+Pliki wyjściowe:
+Biblioteka: build/libecho/*.so*
+Testy: build/libecho/tests/libecho_tests
+Dokumentacja: build/libecho/docs/doc_doxygen
+
 ### Wymagane bilbioteki:
 - QT
 - GoogleTest

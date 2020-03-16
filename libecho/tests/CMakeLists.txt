@@ -1,5 +1,5 @@
 set(EXEC_NAME libecho_test)
-
+set(CMAKE_EXPORT_COMPILE_COMMANDS OFF)
 
 set(TEST_FILES
         main.cpp

@@ -1,20 +1,20 @@
 #include "echo.h"
 #include <iostream>
 
-void echo::send(uint8_t *buffer, size_t len) {
+
+void echo::send(const std::vector<uint8_t>& buffer) {
     std::cout << "Sending: ";
-    for (size_t i = 0; i < len; i++) {
-        std::cout << (char)buffer[i];
+    for (auto c : buffer) {
+        std::cout << c;
     }
     std::cout << std::endl;
 }
 
-uint8_t *echo::receive(size_t *len) {
+std::vector<uint8_t> echo::receive() {
+    std::vector<uint8_t> result;
     const size_t LENGTH = 40;
-    *len = LENGTH;
-    auto *ret = new uint8_t[LENGTH];
     for (size_t i = 0; i < LENGTH; i++) {
-        ret[i] = '0' + i;
+        result.push_back(static_cast<uint8_t>('0' + i));
     }
-    return ret;
+    return result;
 }

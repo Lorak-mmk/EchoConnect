@@ -10,16 +10,17 @@
 
 namespace echo {
 /**
- * @brief Sends given byte sequence. Currently there is no pairing or connection implemented, so anyone can receive it.
+ * @brief Sends given byte sequence.
+ * Currently there is no pairing or connection implemented, so anyone can receive it, and there is no guarantee
+ * that received transmission will be correct.
  * @param buffer    Bytes to send.
- * @param len   Length of the buffer param.
  */
 void send(const std::vector<uint8_t>& buffer);
 
 /**
  * @brief Waits for the signal, returns buffer with received bytes.
- * @param len   Will be set to the length of returned buffer.
- * @return  Newly allocated buffer for received transmission.
+ * There is no guarantee regarding correctness of transmission.
+ * @return  Received bytes.
  */
 std::vector<uint8_t> receive();
 }  // namespace echo

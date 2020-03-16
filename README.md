@@ -6,7 +6,7 @@ Projekt ma docelowo umożliwiać łatwą komunikację pomiędzy komputerami nie 
 ### Grupy użytkowników (use cases):
 -   Osoby z wadliwym / ubogim sprzętem komputerowym
 -   Hobbyści i ciekawscy
-    
+
 ### Funkcjonalność:
 -   Przesyłanie tekstu / plików
 -   Korekcja błędów, weryfikacja poprawności
@@ -15,7 +15,7 @@ Projekt ma docelowo umożliwiać łatwą komunikację pomiędzy komputerami nie 
 -   API
 -   Interfejs tekstowy (CLI)
 -   Interfejs graficzny (QT)
-    
+
 ### Używane technologie:
 -   Język: C++
 -   Obsługa dźwięku, GUI: QT
@@ -23,9 +23,32 @@ Projekt ma docelowo umożliwiać łatwą komunikację pomiędzy komputerami nie 
 -   Dokumentacja: Doxygen / QDoc
 -   Linter: clang-tidy
 -   Formatter: clang-format
-    
+
 ### Narzędzia:
 -   Repozytorium: Github
 -   Issue tracker: Github Issues
 -   Zarządzanie projektem: Github Projets
 -   Continuous Integration: Github Actions
+
+
+## Budowanie:
+```shell script
+mkdir -p build
+cd build
+cmake ..
+make
+
+# Testy
+make test
+# alternatywnie
+ctest
+```
+
+Pliki wyjściowe:
+Biblioteka: build/libecho/*.so*
+Testy: build/libecho/tests/libecho_tests
+Dokumentacja: build/libecho/docs/doc_doxygen
+
+### Wymagane bilbioteki:
+- QT
+- GoogleTest

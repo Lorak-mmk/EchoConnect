@@ -5,18 +5,13 @@
 
 AudioOutput::AudioOutput() : AudioOutput(AudioFormatFactory::getDefaultOutputFormat()){}
 
-AudioOutput::AudioOutput(const QAudioFormat& output) : output(output, this), workerThread() {
-    this->moveToThread(&workerThread);
+AudioOutput::AudioOutput(const QAudioFormat& output) : output(output, this) {
     connect(&this->output, SIGNAL(stateChanged(QAudio::State)), this, SLOT(handleStateChanged(QAudio::State)));
     connect(&this->output, SIGNAL(notify()), this, SLOT(handleNotify()));
-    workerThread.start();
 }
 
 AudioOutput::~AudioOutput() {
-    qWarning() << "Destroying AudioOutput";
-
-    workerThread.quit();
-    workerThread.wait();
+    qDebug() << "Destroying AudioOutput";
 }
 
 QAudioOutput *AudioOutput::getOutput() {
@@ -24,15 +19,14 @@ QAudioOutput *AudioOutput::getOutput() {
 }
 
 void AudioOutput::handleStateChanged(QAudio::State newState){
-    qWarning() << "New state: " << newState;
-    qWarning() << "Buffer free/size: " << output.bytesFree() << " " << output.bufferSize();
-    qWarning() << "periodSize(): " << output.periodSize();
+    qDebug() << "New state: " << newState;
+    qDebug() << "Buffer free/size: " << output.bytesFree() << " " << output.bufferSize();
+    qDebug() << "periodSize(): " << output.periodSize();
 }
 
 void AudioOutput::handleNotify() {
-    qWarning() << "Notify";
+    qDebug() << "Notify";
 }
 void AudioOutput::start(QIODevice * data) {
-
     output.start(data);
 }

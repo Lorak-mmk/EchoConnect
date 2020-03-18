@@ -6,7 +6,7 @@ TEST(test_send, tmp_test) {
     QFile sourceFile;
     sourceFile.setFileName("/dev/urandom");
     sourceFile.open(QIODevice::ReadOnly);
-    auto urandom = sourceFile.read(10000000);
+    auto urandom = sourceFile.read(100000);
 
     std::vector<char> vbuffer(urandom.begin(), urandom.end());
     echo::send(vbuffer);

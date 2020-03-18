@@ -18,7 +18,6 @@ public:
     void start(QIODevice* data);
 private:
     QAudioOutput output;
-    QThread workerThread;
 
 private slots:
     void handleStateChanged(QAudio::State newState);

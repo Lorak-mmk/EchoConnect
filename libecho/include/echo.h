@@ -10,7 +10,7 @@
 
 namespace echo {
 
-void initQT(int argc, char* argv[]);
+void initEcho(int a_argc, char* a_argv[]);
 
 /**
  * @brief Sends given byte sequence.

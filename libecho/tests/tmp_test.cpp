@@ -1,12 +1,14 @@
 #include <gtest/gtest.h>
+#include <QtCore/QFile>
 #include "echo.h"
 
 TEST(test_send, tmp_test) {
-    const char *buffer = "abcdefgh\0hgfedcba";
-    std::vector<char> vbuffer;
-    for(int i = 0; i < 10000; i++) {
-        vbuffer.insert(vbuffer.end(), buffer, buffer + 17);
-    }
+    QFile sourceFile;
+    sourceFile.setFileName("/dev/urandom");
+    sourceFile.open(QIODevice::ReadOnly);
+    auto urandom = sourceFile.read(10000000);
+
+    std::vector<char> vbuffer(urandom.begin(), urandom.end());
     echo::send(vbuffer);
 }
 

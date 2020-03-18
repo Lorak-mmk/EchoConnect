@@ -1,25 +1,28 @@
-#include <iostream>
+#include <chrono>
+#include <thread>
 #include <QCoreApplication>
+#include <QDebug>
+#include <QtCore/QBuffer>
 #include "echo.h"
 #include "AudioOutput.h"
-
-
 
 void echo::initQT(int argc, char* argv[]) {
     static auto *app = new QCoreApplication(argc, argv);
 }
 
 void echo::send(const std::vector<char>& buffer) {
-    static QThread eventThread;
-    eventThread.start();
+    QByteArray bufArray(buffer.data(), buffer.size());
+    auto *qbuf = new QBuffer(&bufArray);
 
-    AudioOutput output{&eventThread};
-    auto device = output.start();
+    AudioOutput output{};
+    output.start(qbuf);
 
-    QByteArray qbuffer(buffer.data(), buffer.size());
-    device->write(qbuffer);
-
-    eventThread.quit();
+    std::this_thread::sleep_for(std::chrono::seconds(1));
+    qWarning() << "Message size: " << bufArray.size();
+    qWarning() << "Buffer size" << qbuf->size();
+    qWarning() << "Error: " << output.getOutput()->error();
+    qWarning() << "Elapsed/processed" << output.getOutput()->elapsedUSecs() << " " << output.getOutput()->processedUSecs();
+    std::this_thread::sleep_for(std::chrono::seconds(50));
 }
 
 std::vector<uint8_t> echo::receive() {

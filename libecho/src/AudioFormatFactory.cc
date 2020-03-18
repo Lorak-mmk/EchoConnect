@@ -23,9 +23,9 @@ QAudioFormat AudioFormatFactory::getDefaultInputFormat() {
 QAudioFormat::Endian OUTPUT_BYTEORDER = QAudioFormat::LittleEndian;
 int OUTPUT_CHANNEL_COUNT = 1;
 const QString OUTPUT_CODEC = "audio/pcm";
-int OUTPUT_SAMPLERATE = 44100;
-int OUTPUT_SAMPLESIZE = 16;
-QAudioFormat::SampleType OUTPUT_SAMPLETYPE = QAudioFormat::SignedInt;
+int OUTPUT_SAMPLERATE = 8000;
+int OUTPUT_SAMPLESIZE = 8;
+QAudioFormat::SampleType OUTPUT_SAMPLETYPE = QAudioFormat::UnSignedInt;
 
 QAudioFormat AudioFormatFactory::getDefaultOutputFormat() {
     QAudioFormat result;

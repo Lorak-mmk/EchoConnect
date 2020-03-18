@@ -8,14 +8,21 @@
 class AudioOutput : QObject {
     Q_OBJECT
 public:
-    AudioOutput(QThread* eventThread);
-    AudioOutput(const QAudioFormat& format, QThread* eventThread);
+    AudioOutput();
+    AudioOutput(const QAudioFormat& format);
 
-    QIODevice* start();
+    ~AudioOutput();
 
+    QAudioOutput* getOutput();
+
+    void start(QIODevice* data);
 private:
     QAudioOutput output;
-    QThread eventThread;
+    QThread workerThread;
+
+private slots:
+    void handleStateChanged(QAudio::State newState);
+    void handleNotify();
 };
 
 #endif  // ECHOCONNECT_AUDIOOUTPUT_H

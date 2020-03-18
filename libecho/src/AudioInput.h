@@ -1,0 +1,6 @@
+#ifndef ECHOCONNECT_AUDIOINPUT_H
+#define ECHOCONNECT_AUDIOINPUT_H
+
+class AudioInput {};
+
+#endif  // ECHOCONNECT_AUDIOINPUT_H

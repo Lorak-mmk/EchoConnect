@@ -9,13 +9,16 @@
 #include <vector>
 
 namespace echo {
+
+void initQT(int argc, char* argv[]);
+
 /**
  * @brief Sends given byte sequence.
  * Currently there is no pairing or connection implemented, so anyone can receive it, and there is no guarantee
  * that received transmission will be correct.
  * @param buffer    Bytes to send.
  */
-void send(const std::vector<uint8_t>& buffer);
+void send(const std::vector<char>& buffer);
 
 /**
  * @brief Waits for the signal, returns buffer with received bytes.

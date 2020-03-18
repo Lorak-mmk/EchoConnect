@@ -1,13 +1,25 @@
-#include "echo.h"
 #include <iostream>
+#include <QCoreApplication>
+#include "echo.h"
+#include "AudioOutput.h"
 
 
-void echo::send(const std::vector<uint8_t>& buffer) {
-    std::cout << "Sending: ";
-    for (auto c : buffer) {
-        std::cout << c;
-    }
-    std::cout << std::endl;
+
+void echo::initQT(int argc, char* argv[]) {
+    static auto *app = new QCoreApplication(argc, argv);
+}
+
+void echo::send(const std::vector<char>& buffer) {
+    static QThread eventThread;
+    eventThread.start();
+
+    AudioOutput output{&eventThread};
+    auto device = output.start();
+
+    QByteArray qbuffer(buffer.data(), buffer.size());
+    device->write(qbuffer);
+
+    eventThread.quit();
 }
 
 std::vector<uint8_t> echo::receive() {

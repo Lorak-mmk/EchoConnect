@@ -9,6 +9,7 @@
 void echo::send(const std::vector<char>& buffer) {
     static AudioOutput audio;
 
+    // TODO: dont play all at once, pass smaller fragments of buffer in loop
     audio.enqueueData(buffer.data(), buffer.size());
     std::this_thread::sleep_for(std::chrono::seconds(20));
 }

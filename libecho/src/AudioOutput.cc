@@ -25,11 +25,12 @@ AudioOutput::~AudioOutput() {
     delete qOutput;
 }
 
-void AudioOutput::enqueueData(const char* data, size_t length) {
+std::pair<int, qint64> AudioOutput::enqueueData(const char* data, size_t length) {
     qDebug() << "Queueing" << length << "bytes to play";
     std::lock_guard<std::mutex> lock(writeMutex);
     buffer.append(data, length);
     tryWriteData();
+    return std::make_pair(qOutput->bytesFree(), qOutput->processedUSecs());
 }
 
 void AudioOutput::startAudio() {
@@ -44,9 +45,10 @@ void AudioOutput::stopAudio() {
     metaObject()->method(index).invoke(this);
 }
 
-void AudioOutput::waitForTick() {
+std::pair<int, qint64> AudioOutput::waitForTick() {
     std::unique_lock<std::mutex> lock(writeMutex);
     forTick.wait(lock);
+    return std::make_pair(qOutput->bytesFree(), qOutput->processedUSecs());
 }
 
 void AudioOutput::waitForState(QAudio::State waitFor) {
@@ -108,4 +110,13 @@ void AudioOutput::stopAudio_slot() {
     qDebug() << "Stop audio from thread" << thread();
     qOutput->stop();
     qDevice = nullptr;
+}
+
+AudioStreamInfo AudioOutput::getStreamInfo() {
+    return {
+        .bufferSize = qOutput->bufferSize(),
+        .notifyInterval = qOutput->notifyInterval(),
+        .periodSize = qOutput->periodSize(),
+        .volume = qOutput->volume()
+    };
 }

@@ -4,6 +4,7 @@
 #include <QtCore/QThread>
 #include <QtMultimedia/QAudioFormat>
 #include <QtMultimedia/QAudioOutput>
+#include "AudioFormatFactory.h"
 
 constexpr int NOTIFY_INTERVAL = 32;
 constexpr double VOLUME = 1.0;
@@ -19,15 +20,17 @@ public:
 
     void run() override;
 
-    void enqueueData(const char *data, size_t length);
+    std::pair<int, qint64> enqueueData(const char *data, size_t length);
 
     void startAudio();
 
     void stopAudio();
 
-    void waitForTick();
+    std::pair<int, qint64> waitForTick();
 
     void waitForState(QAudio::State waitFor);
+
+    AudioStreamInfo getStreamInfo();
 
 private:
     void tryWriteData();

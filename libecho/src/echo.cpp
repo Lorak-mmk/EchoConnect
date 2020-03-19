@@ -4,14 +4,18 @@
 #include <QCoreApplication>
 #include <QDebug>
 
-#include <chrono>
-#include <thread>
 
 void echo::send(const std::vector<char>& buffer) {
     static AudioOutput audio;
     audio.startAudio();
 
-    audio.enqueueData(buffer.data(), buffer.size());
+    const size_t atOnce = 260; // (bitrate / notify_interval) + eps;
+    audio.enqueueData(buffer.data(), std::min(buffer.size(), atOnce));
+
+    for(int i = atOnce; i <  buffer.size(); i += atOnce) {
+        audio.enqueueData(buffer.data() + i, std::min(atOnce, buffer.size() - i));
+        audio.waitForTick();
+    }
 
     audio.stopAudio();
 }

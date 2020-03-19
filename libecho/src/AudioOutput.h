@@ -5,6 +5,9 @@
 #include <QtMultimedia/QAudioFormat>
 #include <QtMultimedia/QAudioOutput>
 
+constexpr int NOTIFY_INTERVAL = 32;
+constexpr double VOLUME = 1.0;
+
 class AudioOutput : public QThread {
     Q_OBJECT
 public:

@@ -5,12 +5,14 @@
 #include <QMetaMethod>
 #include <QDebug>
 
+
 AudioOutput::AudioOutput() : AudioOutput(AudioFormatFactory::getDefaultOutputFormat()){}
 
 AudioOutput::AudioOutput(const QAudioFormat& format) : format(format) {
     qDebug() << "Constructing AudioOutput. Thread:" << thread();
 
     this->moveToThread(this);
+
 
     QThread::start();
     waitForTick();
@@ -61,17 +63,18 @@ void AudioOutput::tryWriteData() {
         return;
     }
 
+    qDebug() << "Pushing" << bytesToWrite << "bytes to output audio buffer";
     qDevice->write(buffer, bytesToWrite);
     buffer.remove(0, bytesToWrite);
 }
 
 void AudioOutput::handleStateChanged(QAudio::State newState){
-    qDebug() << "New state: " << newState;
+    qDebug() << "State changed signal received. New state: " << newState;
     forState.notify_all();
 }
 
 void AudioOutput::handleNotify() {
-    qDebug() << "Notify";
+    qDebug() << "Notify signal received";
     qDebug() << "Buffer free/size: " << qOutput->bytesFree() << " " << qOutput->bufferSize();
     {
         std::lock_guard<std::mutex> lock(writeMutex);
@@ -84,8 +87,8 @@ void AudioOutput::run() {
     qDebug() << "Running thread " << thread();
 
     qOutput = new QAudioOutput(format, this);
-    qOutput->setNotifyInterval(128);
-    qOutput->setVolume(0.1);
+    qOutput->setNotifyInterval(NOTIFY_INTERVAL);
+    qOutput->setVolume(VOLUME);
 
     connect(&*qOutput, &QAudioOutput::stateChanged, this, &AudioOutput::handleStateChanged);
     connect(&*qOutput, &QAudioOutput::notify, this, &AudioOutput::handleNotify);
@@ -97,6 +100,7 @@ void AudioOutput::run() {
 void AudioOutput::startAudio_slot() {
     qDebug() << "Start audio from thread" << thread();
     qDevice = qOutput->start();
+    qDebug("\tBuffer size: %d\n\tPeriod size: %d\n\tNotify interval: %d\n\tVolume: %lf\n\t", qOutput->bufferSize(), qOutput->periodSize(), qOutput->notifyInterval(), qOutput->volume());
     forTick.notify_all();
 }
 

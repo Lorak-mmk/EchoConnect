@@ -22,7 +22,7 @@ set(SRC_FILES
         ${SRC_DIR}/AudioInput.h
         ${SRC_DIR}/AudioFormatFactory.cc
         ${SRC_DIR}/AudioFormatFactory.h
-        ${SRC_DIR}/QTInitializer.cpp)
+        ${SRC_DIR}/QTInitializer.cc)
 
 set(API_FILES
         ${API_DIR}/echo.h)

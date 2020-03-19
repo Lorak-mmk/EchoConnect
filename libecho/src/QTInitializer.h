@@ -1,14 +1,13 @@
-#include <QtCore/QThread>
-#include <QtCore/QCoreApplication>
-
 #include "echo.h"
+
+#include <QtCore/QCoreApplication>
+#include <QtCore/QThread>
 
 class QTInitializer : public QObject {
     Q_OBJECT
 public:
-    QTInitializer(int argc, char* argv[]);
-    ~QTInitializer();
+    QTInitializer(int argc, char **argv);
 
 private:
-    static QCoreApplication *app;
+    QCoreApplication *app;
 };

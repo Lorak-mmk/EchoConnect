@@ -1,6 +1,7 @@
+#include "echo.h"
+
 #include <gtest/gtest.h>
 #include <QtCore/QFile>
-#include "echo.h"
 
 TEST(test_send, tmp_test) {
     QFile sourceFile;

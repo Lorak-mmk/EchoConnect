@@ -10,37 +10,43 @@ class AudioOutput : public QThread {
 public:
     AudioOutput();
 
-    explicit AudioOutput(const QAudioFormat& format);
+    explicit AudioOutput(const QAudioFormat &format);
 
     ~AudioOutput() override;
-
-    void start() ;
 
     void run() override;
 
     void enqueueData(const char *data, size_t length);
 
+    void startAudio();
+
+    void stopAudio();
+
     void waitForTick();
+
+    void waitForState(QAudio::State waitFor);
 
 private:
     void tryWriteData();
 
     QAudioOutput *qOutput{};
     QIODevice *qDevice{};
-    QAudioFormat format;
+    QAudioFormat format{};
 
-    QByteArray buffer;
+    QByteArray buffer{};
 
-    std::mutex writeMutex;
-    std::condition_variable forTick;
+    std::mutex writeMutex{};
+    std::condition_variable forTick{};
+    std::condition_variable forState{};
 
 private slots:
     void handleStateChanged(QAudio::State newState);
 
     void handleNotify();
 
-public slots:
-    void startAudio();
+    void startAudio_slot();
+
+    void stopAudio_slot();
 };
 
 #endif  // ECHOCONNECT_AUDIOOUTPUT_H

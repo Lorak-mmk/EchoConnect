@@ -1,17 +1,19 @@
-#include <chrono>
-#include <thread>
-#include <QCoreApplication>
-#include <QDebug>
-#include <QtCore/QBuffer>
 #include "echo.h"
 #include "AudioOutput.h"
 
+#include <QCoreApplication>
+#include <QDebug>
+
+#include <chrono>
+#include <thread>
+
 void echo::send(const std::vector<char>& buffer) {
     static AudioOutput audio;
+    audio.startAudio();
 
-    // TODO: dont play all at once, pass smaller fragments of buffer in loop
     audio.enqueueData(buffer.data(), buffer.size());
-    std::this_thread::sleep_for(std::chrono::seconds(20));
+
+    audio.stopAudio();
 }
 
 std::vector<uint8_t> echo::receive() {

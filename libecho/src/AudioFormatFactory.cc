@@ -1,11 +1,11 @@
 #include "AudioFormatFactory.h"
 
-QAudioFormat::Endian INPUT_BYTEORDER = QAudioFormat::LittleEndian;
-int INPUT_CHANNEL_COUNT = 1;
-const QString INPUT_CODEC = "audio/pcm";
-int INPUT_SAMPLERATE = 44100;
-int INPUT_SAMPLESIZE = 16;
-QAudioFormat::SampleType INPUT_SAMPLETYPE = QAudioFormat::SignedInt;
+const QAudioFormat::Endian INPUT_BYTEORDER = QAudioFormat::LittleEndian;
+const int INPUT_CHANNEL_COUNT = 1;
+const char *INPUT_CODEC = "audio/pcm";
+const int INPUT_SAMPLERATE = 44100;
+const int INPUT_SAMPLESIZE = 16;
+const QAudioFormat::SampleType INPUT_SAMPLETYPE = QAudioFormat::SignedInt;
 
 QAudioFormat AudioFormatFactory::getDefaultInputFormat() {
     QAudioFormat result;
@@ -20,12 +20,12 @@ QAudioFormat AudioFormatFactory::getDefaultInputFormat() {
     return result;
 }
 
-QAudioFormat::Endian OUTPUT_BYTEORDER = QAudioFormat::LittleEndian;
-int OUTPUT_CHANNEL_COUNT = 1;
-const QString OUTPUT_CODEC = "audio/pcm";
-int OUTPUT_SAMPLERATE = 8000;
-int OUTPUT_SAMPLESIZE = 8;
-QAudioFormat::SampleType OUTPUT_SAMPLETYPE = QAudioFormat::UnSignedInt;
+const QAudioFormat::Endian OUTPUT_BYTEORDER = QAudioFormat::LittleEndian;
+const int OUTPUT_CHANNEL_COUNT = 1;
+const char *OUTPUT_CODEC = "audio/pcm";
+const int OUTPUT_SAMPLERATE = 8000;
+const int OUTPUT_SAMPLESIZE = 8;
+const QAudioFormat::SampleType OUTPUT_SAMPLETYPE = QAudioFormat::UnSignedInt;
 
 QAudioFormat AudioFormatFactory::getDefaultOutputFormat() {
     QAudioFormat result;

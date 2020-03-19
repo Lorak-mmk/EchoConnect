@@ -4,55 +4,24 @@
 #include <QtCore/QThread>
 #include <QtMultimedia/QAudioFormat>
 #include <QtMultimedia/QAudioOutput>
-#include "AudioFormatFactory.h"
+#include "AudioStream.h"
 
-constexpr int NOTIFY_INTERVAL = 32;
-constexpr double VOLUME = 1.0;
 
-class AudioOutput : public QThread {
+class AudioOutput : public AudioStream<QAudioOutput> {
     Q_OBJECT
 public:
-    AudioOutput();
+    explicit AudioOutput(const QAudioFormat& format);
 
-    explicit AudioOutput(const QAudioFormat &format);
+    void enqueueData(const char* data, size_t length);
 
-    ~AudioOutput() override;
+    StatusType getStreamStatus() override;
 
-    void run() override;
-
-    std::pair<int, qint64> enqueueData(const char *data, size_t length);
-
-    void startAudio();
-
-    void stopAudio();
-
-    std::pair<int, qint64> waitForTick();
-
-    void waitForState(QAudio::State waitFor);
-
-    AudioStreamInfo getStreamInfo();
+    void handleNotify() override;
 
 private:
     void tryWriteData();
 
-    QAudioOutput *qOutput{};
-    QIODevice *qDevice{};
-    QAudioFormat format{};
-
     QByteArray buffer{};
-
-    std::mutex writeMutex{};
-    std::condition_variable forTick{};
-    std::condition_variable forState{};
-
-private slots:
-    void handleStateChanged(QAudio::State newState);
-
-    void handleNotify();
-
-    void startAudio_slot();
-
-    void stopAudio_slot();
 };
 
 #endif  // ECHOCONNECT_AUDIOOUTPUT_H

@@ -1,11 +1,12 @@
 #ifndef ECHOCONNECT_AUDIOINPUT_H
 #define ECHOCONNECT_AUDIOINPUT_H
 
-#include <QtMultimedia/QAudioOutput>
 #include "AudioStream.h"
 
+#include <QtMultimedia/QAudioInput>
+
+
 class AudioInput : public AudioStream<QAudioInput> {
-    Q_OBJECT
 public:
     explicit AudioInput(const QAudioFormat& format);
 
@@ -13,8 +14,7 @@ public:
 
     void handleNotify() override;
 
-    uint64_t readBytes(char *data, qint64 maxSize);
+    qint64 readBytes(char *data, qint64 maxSize);
 };
-
 
 #endif  // ECHOCONNECT_AUDIOINPUT_H

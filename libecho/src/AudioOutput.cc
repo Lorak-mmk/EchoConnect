@@ -1,11 +1,9 @@
 #include "AudioOutput.h"
 
-#include <QtCore/QEventLoop>
-
 
 AudioOutput::AudioOutput(const QAudioFormat &format) : AudioStream(format) {}
 
-void AudioOutput::enqueueData(const char* data, size_t length) {
+void AudioOutput::enqueueData(const char* data, int length) {
     qDebug() << "Queueing" << length << "bytes to play";
     std::lock_guard<std::mutex> lock(mutex);
     buffer.append(data, length);
@@ -21,7 +19,6 @@ void AudioOutput::tryWriteData() {
     qDevice->write(buffer, bytesToWrite);
     buffer.remove(0, bytesToWrite);
 }
-
 
 void AudioOutput::handleNotify() {
     std::lock_guard<std::mutex> lock(mutex);

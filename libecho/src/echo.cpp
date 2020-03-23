@@ -1,22 +1,21 @@
 #include "echo.h"
 #include "AudioOutput.h"
-#include "AudioFormatFactory.h"
 #include "AudioInput.h"
+#include "AudioFormatFactory.h"
+#include "QTInitializer.h"
 
-#include <QCoreApplication>
-#include <QDebug>
-
-
-void echo::send(const std::vector<char>& buffer) {
+void echo::send(const std::vector<uint8_t>& buffer) {
     static AudioOutput audio(AudioFormatFactory::getDefaultOutputFormat());
 
     /* Example transmission */
     const size_t atOnce = 260; // (bitrate / notify_interval) + eps;
-    audio.enqueueData(buffer.data(), std::min(buffer.size(), atOnce));
+    audio.enqueueData(reinterpret_cast<const char *>(buffer.data()), std::min(buffer.size(), atOnce));
 
     for(int i = atOnce; i <  buffer.size(); i += atOnce) {
         // Push some bytes to sound output
-        audio.enqueueData(buffer.data() + i, std::min(atOnce, buffer.size() - i));
+        audio.enqueueData(reinterpret_cast<const char *>(buffer.data() + i), std::min(atOnce, buffer.size() - i));
+        auto status = audio.getStreamStatus();
+        qDebug() << "Status: " << status.first << " " << status.second;
         audio.waitForTick();
     }
     /* End example */
@@ -41,5 +40,11 @@ std::vector<uint8_t> echo::receive() {
         audio.waitForTick();
     }
 
+    free(array);
+
     return std::vector<uint8_t>();
+}
+
+void echo::initEcho(int a_argc, char **a_argv) {
+    static QTInitializer init{a_argc, a_argv};
 }

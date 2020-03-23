@@ -2,11 +2,12 @@
 #define ECHOCONNECT_AUDIOSTREAM_H
 
 #include <QtCore/QThread>
-#include <QtMultimedia/QAudioFormat>
 #include <QtMultimedia/QAudio>
-#include <QtMultimedia/QAudioInput>
+#include <QtMultimedia/QAudioFormat>
 #include <QDebug>
-#include <QMetaMethod>
+
+#include <mutex>
+#include <condition_variable>
 
 constexpr int NOTIFY_INTERVAL = 32;
 constexpr double VOLUME = 1.0;
@@ -15,11 +16,12 @@ struct AudioStreamInfo {
     int bufferSize;
     int notifyInterval;
     int periodSize;
-    qreal volume;
+    double volume;
 };
 
 
 class AudioStreamSignalsAndSlots : public QThread {
+    Q_OBJECT
 protected slots:
     virtual void handleStateChanged_slot(QAudio::State newState) = 0;
 
@@ -30,32 +32,19 @@ template<typename StreamType>
 class AudioStream : public AudioStreamSignalsAndSlots {
 public:
     using StatusType = std::pair<int, qint64>;
+
     explicit AudioStream(const QAudioFormat& format) : format(format) {
-        qDebug() << "Constructing AudioStream. Thread:" << thread();
+        qDebug() << "Constructing AudioStream. Thread:" << QThread::thread();
         this->moveToThread(this);
         QThread::start();
         waitForTick();
     }
 
     ~AudioStream() override {
-        qDebug() << "Destroying AudioInput";
+        qDebug() << "Destroying AudioStream";
         this->quit();
         this->wait();
         delete qStream;
-    }
-
-    void run() override {
-        qDebug() << "Running thread " << thread();
-
-        qStream = new StreamType(format, this);
-        qStream->setNotifyInterval(NOTIFY_INTERVAL);
-        qStream->setVolume(VOLUME);
-
-        connect(qStream, &StreamType::stateChanged, this, &AudioStream<StreamType>::handleStateChanged_slot);
-        connect(qStream, &StreamType::notify, this, &AudioStream<StreamType>::handleNotify_slot);
-
-        startStream();
-        QThread::exec();
     }
 
     void waitForTick() {
@@ -85,14 +74,10 @@ public:
     virtual void handleNotify() = 0;
 
 protected:
-
     StreamType *qStream{};
     QIODevice *qDevice{};
-    QAudioFormat format{};
 
     std::mutex mutex{};
-    std::condition_variable forTick{};
-    std::condition_variable forState{};
 
     void startStream() {
         qDebug() << "Starting stream from thread" << thread();
@@ -108,19 +93,36 @@ protected:
         qDevice = nullptr;
     }
 
-protected slots:
+private:
+    QAudioFormat format{};
+
+    std::condition_variable forTick{};
+    std::condition_variable forState{};
+
+    void run() override {
+        qDebug() << "Running thread " << thread();
+
+        qStream = new StreamType(format, this);
+        qStream->setNotifyInterval(NOTIFY_INTERVAL);
+        qStream->setVolume(VOLUME);
+
+        connect(qStream, &StreamType::stateChanged, this, &AudioStream<StreamType>::handleStateChanged_slot);
+        connect(qStream, &StreamType::notify, this, &AudioStream<StreamType>::handleNotify_slot);
+
+        startStream();
+        QThread::exec();
+    }
+
+    void handleNotify_slot() override {
+        auto status = getStreamStatus();
+        handleNotify();
+        forTick.notify_all();
+    }
+
     void handleStateChanged_slot(QAudio::State newState) override {
         qDebug() << "State changed signal received. New state: " << newState;
         forState.notify_all();
     };
-
-    void handleNotify_slot() override {
-        //qDebug() << "Notify signal received";
-        auto status = getStreamStatus();
-        //qDebug() << "Stream status" << status.first << " " << status.second;
-        handleNotify();
-        forTick.notify_all();
-    }
 };
 
 

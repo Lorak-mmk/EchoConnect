@@ -1,14 +1,15 @@
-#include "echo.h"
+#ifndef ECHOCONNECT_QTINITIALIZER_H
+#define ECHOCONNECT_QTINITIALIZER_H
 
 #include <QtCore/QCoreApplication>
-#include <QtCore/QThread>
 
-class QTInitializer : public QObject {
-    Q_OBJECT
+class QTInitializer {
 public:
-    QTInitializer(int argc, char **argv);
+    QTInitializer(int a_argc, char **a_argv);
     ~QTInitializer();
 
 private:
     QCoreApplication *app;
 };
+
+#endif // ECHOCONNECT_QTINITIALIZER_H

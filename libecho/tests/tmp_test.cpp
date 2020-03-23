@@ -1,4 +1,4 @@
-#include "echo.h"
+#include "Echo.h"
 
 #include <gtest/gtest.h>
 #include <QtCore/QFile>
@@ -8,11 +8,12 @@ TEST(test_send, tmp_test) {
     sourceFile.setFileName("/dev/urandom");
     sourceFile.open(QIODevice::ReadOnly);
     auto urandom = sourceFile.read(10000);
-
-    std::vector<char> vbuffer(urandom.begin(), urandom.end());
-    echo::send(vbuffer);
+    std::vector<uint8_t> vbuffer(urandom.begin(), urandom.end());
+    Echo echo;
+    echo.send(vbuffer);
 }
 
 TEST(test_receive, tmp_test) {
-    // echo::receive();
+    Echo echo;
+    echo.receive();
 }

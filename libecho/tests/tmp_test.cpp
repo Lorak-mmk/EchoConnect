@@ -9,7 +9,7 @@ TEST(test_send, tmp_test) {
     sourceFile.open(QIODevice::ReadOnly);
     auto urandom = sourceFile.read(10000);
 
-    std::vector<uint8_t> vbuffer(urandom.begin(), urandom.end());
+    std::vector<char> vbuffer(urandom.begin(), urandom.end());
     echo::send(vbuffer);
 }
 

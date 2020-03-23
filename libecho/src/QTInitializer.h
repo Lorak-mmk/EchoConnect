@@ -12,4 +12,4 @@ private:
     QCoreApplication *app;
 };
 
-#endif // ECHOCONNECT_QTINITIALIZER_H
+#endif  // ECHOCONNECT_QTINITIALIZER_H

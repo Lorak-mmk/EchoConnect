@@ -1,13 +1,13 @@
 #ifndef ECHOCONNECT_AUDIOSTREAM_H
 #define ECHOCONNECT_AUDIOSTREAM_H
 
+#include <QDebug>
 #include <QtCore/QThread>
 #include <QtMultimedia/QAudio>
 #include <QtMultimedia/QAudioFormat>
-#include <QDebug>
 
-#include <mutex>
 #include <condition_variable>
+#include <mutex>
 
 constexpr int NOTIFY_INTERVAL = 32;
 constexpr double VOLUME = 1.0;
@@ -19,7 +19,6 @@ struct AudioStreamInfo {
     double volume;
 };
 
-
 class AudioStreamSignalsAndSlots : public QThread {
     Q_OBJECT
 protected slots:
@@ -28,12 +27,12 @@ protected slots:
     virtual void handleNotify_slot() = 0;
 };
 
-template<typename StreamType>
+template <typename StreamType>
 class AudioStream : public AudioStreamSignalsAndSlots {
 public:
     using StatusType = std::pair<int, qint64>;
 
-    explicit AudioStream(const QAudioFormat& format) : format(format) {
+    explicit AudioStream(const QAudioFormat &format) : format(format) {
         qDebug() << "Constructing AudioStream. Thread:" << QThread::thread();
         this->moveToThread(this);
         QThread::start();
@@ -53,20 +52,18 @@ public:
     }
 
     void waitForState(QAudio::State waitFor) {
-        if(qStream->state() == waitFor) {
+        if (qStream->state() == waitFor) {
             return;
         }
         std::unique_lock<std::mutex> lock(mutex);
-        forState.wait(lock, [=]{return qStream->state() == waitFor; });
+        forState.wait(lock, [=] { return qStream->state() == waitFor; });
     }
 
-    AudioStreamInfo getStreamInfo(){
-        return {
-            .bufferSize = qStream->bufferSize(),
-            .notifyInterval = qStream->notifyInterval(),
-            .periodSize = qStream->periodSize(),
-            .volume = qStream->volume()
-        };
+    AudioStreamInfo getStreamInfo() {
+        return {.bufferSize = qStream->bufferSize(),
+                .notifyInterval = qStream->notifyInterval(),
+                .periodSize = qStream->periodSize(),
+                .volume = qStream->volume()};
     }
 
     virtual StatusType getStreamStatus() = 0;
@@ -83,7 +80,8 @@ protected:
         qDebug() << "Starting stream from thread" << thread();
         qDevice = qStream->start();
         auto info = getStreamInfo();
-        qDebug("\tBuffer size: %d\n\tPeriod size: %d\n\tNotify interval: %d\n\tVolume: %lf\n\t", info.bufferSize, info.periodSize, info.notifyInterval, info.volume);
+        qDebug("\tBuffer size: %d\n\tPeriod size: %d\n\tNotify interval: %d\n\tVolume: %lf\n\t", info.bufferSize,
+               info.periodSize, info.notifyInterval, info.volume);
         forTick.notify_all();
     }
 
@@ -124,6 +122,5 @@ private:
         forState.notify_all();
     };
 };
-
 
 #endif  // ECHOCONNECT_AUDIOSTREAM_H

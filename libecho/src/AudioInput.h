@@ -5,10 +5,9 @@
 
 #include <QtMultimedia/QAudioInput>
 
-
 class AudioInput : public AudioStream<QAudioInput> {
 public:
-    explicit AudioInput(const QAudioFormat& format);
+    explicit AudioInput(const QAudioFormat &format);
 
     StatusType getStreamStatus() override;
 

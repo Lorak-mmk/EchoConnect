@@ -6,12 +6,11 @@
 #include <QtMultimedia/QAudioFormat>
 #include <QtMultimedia/QAudioOutput>
 
-
 class AudioOutput : public AudioStream<QAudioOutput> {
 public:
-    explicit AudioOutput(const QAudioFormat& format);
+    explicit AudioOutput(const QAudioFormat &format);
 
-    void enqueueData(const char* data, int length);
+    void enqueueData(const char *data, int length);
 
     StatusType getStreamStatus() override;
 

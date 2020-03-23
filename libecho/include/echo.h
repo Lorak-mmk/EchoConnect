@@ -10,7 +10,7 @@
 
 namespace echo {
 
-void initEcho(int a_argc, char* a_argv[]);
+void initEcho(int a_argc, char *a_argv[]);
 
 /**
  * @brief Sends given byte sequence.
@@ -18,7 +18,7 @@ void initEcho(int a_argc, char* a_argv[]);
  * that received transmission will be correct.
  * @param buffer    Bytes to send.
  */
-void send(const std::vector<uint8_t>& buffer);
+void send(const std::vector<uint8_t> &buffer);
 
 /**
  * @brief Waits for the signal, returns buffer with received bytes.

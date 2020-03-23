@@ -1,17 +1,17 @@
 #include "echo.h"
-#include "AudioOutput.h"
-#include "AudioInput.h"
 #include "AudioFormatFactory.h"
+#include "AudioInput.h"
+#include "AudioOutput.h"
 #include "QTInitializer.h"
 
-void echo::send(const std::vector<uint8_t>& buffer) {
+void echo::send(const std::vector<uint8_t> &buffer) {
     static AudioOutput audio(AudioFormatFactory::getDefaultOutputFormat());
 
     /* Example transmission */
-    const size_t atOnce = 260; // (bitrate / notify_interval) + eps;
+    const size_t atOnce = 260;  // (bitrate / notify_interval) + eps;
     audio.enqueueData(reinterpret_cast<const char *>(buffer.data()), std::min(buffer.size(), atOnce));
 
-    for(int i = atOnce; i <  buffer.size(); i += atOnce) {
+    for (int i = atOnce; i < buffer.size(); i += atOnce) {
         // Push some bytes to sound output
         audio.enqueueData(reinterpret_cast<const char *>(buffer.data() + i), std::min(atOnce, buffer.size() - i));
         auto status = audio.getStreamStatus();
@@ -30,10 +30,10 @@ std::vector<uint8_t> echo::receive() {
     const size_t atOnce = info.periodSize;
     char *array = new char[atOnce];
     int idx = 0;
-    while(audio.getStreamStatus().second < 2000000) {
+    while (audio.getStreamStatus().second < 2000000) {
         int read = audio.readBytes(array, atOnce - idx);
         idx = idx + read;
-        if(idx == atOnce) {
+        if (idx == atOnce) {
             idx = 0;
             qDebug() << "Process data here - or better: schedule it so this loop is not blocked";
         }

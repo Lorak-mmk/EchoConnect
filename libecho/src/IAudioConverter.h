@@ -10,21 +10,27 @@
 template <typename T>
 class IAudioConverter {
 public:
-    IAudioConverter(QAudioFormat inputFormat, QAudioFormat outputFormat, double windowLength)
-        : inputFormat(inputFormat), outputFormat(outputFormat), windowLength(windowLength){};
+    IAudioConverter(QAudioFormat inputFormat, QAudioFormat outputFormat, double windowLength, size_t soundsPerByte)
+        : inputFormat(inputFormat), outputFormat(outputFormat), windowLength(windowLength) {
+        encryptedByteSize = soundsPerByte * outputFormat.sampleRate() * windowLength;
+    }
 
-    std::vector<char> encode(std::vector<uint8_t> data) {
+    virtual std::vector<char> encode(std::vector<uint8_t> data) {
         std::vector<T> result;
+        result.reserve(data.size() * encryptedByteSize);
+
         for (auto byte : data) {
             auto encoded_byte = encode_byte(byte);
             result.insert(result.end(), encoded_byte.begin(), encoded_byte.end());
         }
+
         return std::vector<char>(result.data(), result.data() + result.size());
     }
 
-    std::vector<uint8_t> decode(std::vector<char> data);
+    virtual std::vector<uint8_t> decode(std::vector<char> data) = 0;
 
 protected:
+    size_t encryptedByteSize;
     QAudioFormat const inputFormat, outputFormat;
     double const windowLength;
 

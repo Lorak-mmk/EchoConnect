@@ -24,8 +24,8 @@ set(SRC_FILES
         ${SRC_DIR}/AudioFormatFactory.h
         ${SRC_DIR}/QTInitializer.cc
         ${SRC_DIR}/AudioStream.h
-	${SRC_DIR}/IAudioConverter.h
-	${SRC_DIR}/BitAudioConverter.h)
+        ${SRC_DIR}/IAudioConverter.h
+        ${SRC_DIR}/BitAudioConverter.h)
 
 set(API_FILES
         ${API_DIR}/echo.h)

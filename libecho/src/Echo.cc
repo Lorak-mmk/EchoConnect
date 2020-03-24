@@ -2,8 +2,8 @@
 #include "AudioFormatFactory.h"
 #include "AudioInput.h"
 #include "AudioOutput.h"
-#include "QTInitializer.h"
 #include "BitAudioConverter.h"
+#include "QTInitializer.h"
 
 #include <QCoreApplication>
 #include <QDebug>
@@ -15,21 +15,28 @@ using SampleType = int16_t;
 Echo::Echo() {
     auto inputFormat = AudioFormatFactory::getDefaultInputFormat();
     input = std::make_unique<AudioInput>(inputFormat);
+
     auto outputFormat = AudioFormatFactory::getDefaultOutputFormat();
     output = std::make_unique<AudioOutput>(outputFormat);
-    converter = std::make_unique<BitAudioConverter<SampleType>>(inputFormat, outputFormat, windowLength, loFreq, hiFreq);
+
+    converter =
+        std::make_unique<BitAudioConverter<SampleType>>(inputFormat, outputFormat, windowLength, loFreq, hiFreq);
 }
 
-void Echo::initEcho(int a_argc, char** a_argv) {
-    static QTInitializer init(a_argc, a_argv);
+void Echo::initEcho(int a_argc, char **a_argv) {
+    static QTInitializer init{a_argc, a_argv};
 }
 
-void Echo::send(const std::vector<uint8_t>& buffer) {
+void Echo::send(const std::vector<uint8_t> &buffer) {
     auto encoded = converter->encode(buffer);
     const size_t atOnce = 260;  // (bitrate / notify_interval) + eps; - TODO: wyjaśnić
+
     output->enqueueData(encoded.data(), std::min(encoded.size(), atOnce));
     for (int i = atOnce; i < encoded.size(); i += atOnce) {
-        output->enqueueData(encoded.data() + i, std::min(atOnce, encoded.size() - i)); //TODO: pozbyć się operacji na pointerach
+        // NOLINTNEXTLINE(cppcoreguidelines-pro-bounds-pointer-arithmetic)
+        output->enqueueData(encoded.data() + i, std::min(atOnce, encoded.size() - i));
+        auto status = output->getStreamStatus();
+        qDebug() << "Status: " << status.first << " " << status.second;
         output->waitForTick();
     }
 
@@ -40,9 +47,11 @@ std::vector<uint8_t> Echo::receive() {
     auto info = input->getStreamInfo();
 
     const size_t atOnce = info.periodSize;
-    char* array = new char[atOnce];
+    char *array = new char[atOnce];
     int idx = 0;
-    while (input->getStreamStatus().second < 2000000) {
+    const int time = 2000000;
+
+    while (input->getStreamStatus().second < time) {
         int read = input->readBytes(array, atOnce - idx);
         idx = idx + read;
         if (idx == atOnce) {
@@ -51,6 +60,8 @@ std::vector<uint8_t> Echo::receive() {
         }
         input->waitForTick();
     }
-    
+
+    delete[] array;
+
     return std::vector<uint8_t>();
 }

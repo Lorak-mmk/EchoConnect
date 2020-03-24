@@ -15,7 +15,7 @@ endif ()
 set(SRC_DIR "src" CACHE PATH "Source files path")
 set(API_DIR "include" CACHE PATH "Public API files path")
 set(SRC_FILES
-        ${SRC_DIR}/echo.cpp
+        ${SRC_DIR}/Echo.cc
         ${SRC_DIR}/AudioOutput.cc
         ${SRC_DIR}/AudioOutput.h
         ${SRC_DIR}/AudioInput.cc
@@ -23,14 +23,16 @@ set(SRC_FILES
         ${SRC_DIR}/AudioFormatFactory.cc
         ${SRC_DIR}/AudioFormatFactory.h
         ${SRC_DIR}/QTInitializer.cc
-        ${SRC_DIR}/AudioStream.h)
+        ${SRC_DIR}/AudioStream.h
+        ${SRC_DIR}/IAudioConverter.h
+        ${SRC_DIR}/BitAudioConverter.h)
 
 set(API_FILES
         ${API_DIR}/echo.h)
 
 
 include_directories(echo PRIVATE ${API_DIR})
-
+include_directories(echo PRIVATE ${SRC_DIR})
 
 add_library(echo SHARED "${SRC_FILES}")
 set_target_properties(echo

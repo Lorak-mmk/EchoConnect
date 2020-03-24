@@ -1,20 +1,53 @@
 #include "echo.h"
-#include <iostream>
+#include "AudioFormatFactory.h"
+#include "AudioInput.h"
+#include "AudioOutput.h"
+#include "QTInitializer.h"
 
+void echo::send(const std::vector<uint8_t> &buffer) {
+    static AudioOutput audio(AudioFormatFactory::getDefaultOutputFormat());
 
-void echo::send(const std::vector<uint8_t>& buffer) {
-    std::cout << "Sending: ";
-    for (auto c : buffer) {
-        std::cout << c;
+    /* Example transmission */
+    const size_t atOnce = 260;  // (bitrate / notify_interval) + eps;
+    // NOLINTNEXTLINE(cppcoreguidelines-pro-type-reinterpret-cast)
+    audio.enqueueData(reinterpret_cast<const char *>(buffer.data()), std::min(buffer.size(), atOnce));
+
+    for (int i = atOnce; i < buffer.size(); i += atOnce) {
+        // Push some bytes to sound output
+        // NOLINTNEXTLINE(cppcoreguidelines-pro-type-reinterpret-cast, cppcoreguidelines-pro-bounds-pointer-arithmetic)
+        audio.enqueueData(reinterpret_cast<const char *>(buffer.data() + i), std::min(atOnce, buffer.size() - i));
+        auto status = audio.getStreamStatus();
+        qDebug() << "Status: " << status.first << " " << status.second;
+        audio.waitForTick();
     }
-    std::cout << std::endl;
+    /* End example */
+
+    audio.waitForState(QAudio::State::IdleState);
 }
 
 std::vector<uint8_t> echo::receive() {
-    std::vector<uint8_t> result;
-    const size_t LENGTH = 40;
-    for (size_t i = 0; i < LENGTH; i++) {
-        result.push_back(static_cast<uint8_t>('0' + i));
+    static AudioInput audio(AudioFormatFactory::getDefaultInputFormat());
+    auto info = audio.getStreamInfo();
+
+    const size_t atOnce = info.periodSize;
+    char *array = new char[atOnce];
+    int idx = 0;
+    const int time = 2000000;
+    while (audio.getStreamStatus().second < time) {
+        int read = audio.readBytes(array, atOnce - idx);
+        idx = idx + read;
+        if (idx == atOnce) {
+            idx = 0;
+            qDebug() << "Process data here - or better: schedule it so this loop is not blocked";
+        }
+        audio.waitForTick();
     }
-    return result;
+
+    delete[] array;
+
+    return std::vector<uint8_t>();
+}
+
+void echo::initEcho(int a_argc, char **a_argv) {
+    static QTInitializer init{a_argc, a_argv};
 }

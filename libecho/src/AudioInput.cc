@@ -1,6 +1,13 @@
 #include "AudioInput.h"
 
-AudioInput::AudioInput(const QAudioFormat &format) : AudioStream(format) {}
+
+constexpr int NOTIFY_INTERVAL = 32;
+constexpr double VOLUME = 1.0;
+
+AudioInput::AudioInput(const QAudioFormat &format) : AudioStream(format) {
+    qStream->setNotifyInterval(NOTIFY_INTERVAL);
+    qStream->setVolume(VOLUME);
+}
 
 qint64 AudioInput::readBytes(char *data, qint64 maxSize) {
     return qDevice->read(data, maxSize);

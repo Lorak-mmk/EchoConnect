@@ -21,7 +21,13 @@ public:
     Echo();
 
     /**
-     * TODO for @Lorak-mmk: add a comment here
+     * @brief Initializes library, required if program doesn't need QT.
+     * If program doesn't use QT (by using QT I mean creating QApplication),
+     * it need to call this method before using library.
+     * If program uses QT, calling this method is unnecessary.
+     * If it is called anyway, it must not be called before creating QApplication.
+     * @param a_argc    Program's argc from main().
+     * @param a_argv    Program's argv from main().
      */
     static void initEcho(int a_argc, char **a_argv);
 

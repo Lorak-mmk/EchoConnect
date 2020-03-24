@@ -1,6 +1,13 @@
 #include "AudioOutput.h"
 
-AudioOutput::AudioOutput(const QAudioFormat &format) : AudioStream(format) {}
+
+constexpr int NOTIFY_INTERVAL = 32;
+constexpr double VOLUME = 1.0;
+
+AudioOutput::AudioOutput(const QAudioFormat &format) : AudioStream(format) {
+    qStream->setNotifyInterval(NOTIFY_INTERVAL);
+    qStream->setVolume(VOLUME);
+}
 
 void AudioOutput::enqueueData(const char *data, int length) {
     qDebug() << "Queueing" << length << "bytes to play";

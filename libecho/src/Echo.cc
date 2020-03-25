@@ -29,9 +29,9 @@ void Echo::initEcho(int a_argc, char **a_argv) {
 
 void Echo::send(const std::vector<uint8_t> &buffer) {
     auto encoded = converter->encode(buffer);
-    const size_t atOnce =
-        2600; /* < Temporary - this constant was created empirically. Shortly - it says how much audio data need to be
-                 in the pushed to stream buffer every time so there won't be pause in transmission.  */
+    const size_t atOnce = 2600; /* < Temporary - this constant was created empirically.
+                                     Shortly - it says how much audio data need to be pushed to stream buffer
+                                     every time so there won't be pause in transmission. */
 
     output->enqueueData(
         encoded.data(),

@@ -53,8 +53,8 @@ protected:
     size_t encryptedByteSize;        /**< Says how much space of type T we need to encode one byte of data. */
     const QAudioFormat inputFormat;  /**< Audio stream output format. */
     const QAudioFormat outputFormat; /**< Audio stream output format. */
-    const int
-        windowSize; /**< Says how much of bitrate we want to use to play sound in which unit od data is encoded. */
+    const int windowSize;            /**< Says how much of bitrate we want to use
+                                          to play sound in which unit od data is encoded. */
 
 private:
     /**

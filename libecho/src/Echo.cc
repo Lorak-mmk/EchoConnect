@@ -8,11 +8,10 @@
 #include <QCoreApplication>
 #include <QDebug>
 
-static const int windowSize = 200;
-static const int loFreq = 19000;
-static const int hiFreq = 20000;
-static const int magLimit = 500000 / windowSize;
-static const double PI = 3.1415926535;
+static constexpr int windowSize = 200;
+static constexpr int loFreq = 19000;
+static constexpr int hiFreq = 20000;
+static constexpr int magLimit = 500000 / windowSize;
 
 using SampleType = int8_t;
 
@@ -51,10 +50,11 @@ static double dft(const char *buffer, int samples, int sampleSize, double ratio)
     double re = 0;
     double im = 0;
     double angle = 0;
-    const double d_angle = 2.0 * PI * ratio;
+    const double d_angle = 2.0 * M_PI * ratio;
+    const int mask = (1 << sampleSize) - 1;
 
     for (int i = 0; i < samples; i++) {
-        double val = *((int *) buffer) >> (4 - sampleSize); // why does this work???
+        double val = *((int *) buffer) & mask;
         re += val * cos(angle);
         im += val * sin(angle);
         buffer += (sampleSize / 8);

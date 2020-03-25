@@ -38,7 +38,7 @@ public:
      *
      * TODO for Paweł: implementation and documentation
      */
-    std::vector<uint8_t> decode(const std::vector<char> &data) override {
+    std::vector<uint8_t> decode(__attribute__((unused)) const std::vector<char> &data) override {
         return std::vector<uint8_t>();
     }
 
@@ -72,7 +72,7 @@ private:
      *
      * TODO for Paweł: implementation and documentation
      */
-    uint8_t decode_byte(const std::vector<char> &data) override {
+    uint8_t decode_byte(__attribute__((unused)) const std::vector<char> &data) override {
         return 0;
     }
 

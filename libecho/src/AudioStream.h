@@ -50,8 +50,18 @@ protected slots:
      */
     virtual void handleNotify_slot() = 0;
 
+    /**
+     * @brief Starts underlying StreamType object (by calling start method on it).
+     *
+     * As any other slot, should only be called from thread that owns this object.
+     */
     virtual void startStream_slot() = 0;
 
+    /**
+     * @brief Stops underlying StreamType object (by calling stop method on it).
+     *
+     * As any other slot, should only be called from thread that owns this object.
+     */
     virtual void stopStream_slot() = 0;
 };
 
@@ -78,14 +88,15 @@ public:
     AudioStream() = delete;
 
     /**
-     * @brief Constructors for AudioStream.
+     * @brief Constructor for AudioStream.
      *
      * Initializes members of class. Starts QThread which will process stream's signals.
-     * Returns after thread is started,
+     * Returns after thread is started.
      * @param format    Format that will be used by stream.
      */
     explicit AudioStream(const QAudioFormat &format) : format(format) {
         std::unique_lock<std::mutex> lock(mutex);
+
         qDebug() << "Constructing AudioStream. Thread:" << QThread::thread();
         this->moveToThread(this);
         QThread::start();
@@ -149,14 +160,15 @@ public:
     /**
      * @brief Waits for qStream to be in given state.
      *
-     * Returns immmediately if qStream is already in desired state.
-     * Else returns after stateChanged(new_state) slot with desired state is called.
+     * Returns immediately if qStream is already in desired state.
+     * Otherwise returns after stateChanged(new_state) slot with desired state is called.
      * @param waitFor   State we are waiting for.
      */
     void waitForState(QAudio::State waitFor) {
         if (qStream->state() == waitFor) {
             return;
         }
+
         std::unique_lock<std::mutex> lock(mutex);
         forState.wait(lock, [=] { return qStream->state() == waitFor; });
     }
@@ -221,12 +233,12 @@ private:
         qDebug() << "Running thread " << thread();
 
         qStream = new StreamType(format, this);
-
         connect(qStream, &StreamType::stateChanged, this, &AudioStream<StreamType>::handleStateChanged_slot);
         connect(qStream, &StreamType::notify, this, &AudioStream<StreamType>::handleNotify_slot);
 
         lock.unlock();
         sync.notify_all();
+
         QThread::exec();
     }
 
@@ -247,16 +259,12 @@ private:
         forState.notify_all();
     };
 
-    /**
-     * @brief Starts underlying StreamType object (by calling start method on it).
-     *
-     * As any other slot, should only be called from thread that owns this object.
-     */
     void startStream_slot() override {
         std::unique_lock<std::mutex> lock(mutex);
 
         qDebug() << "Starting stream from thread" << thread();
         qDevice = qStream->start();
+        
         auto info = getStreamInfo();
         qDebug("\tBuffer size: %d\n\tPeriod size: %d\n\tNotify interval: %d\n\tVolume: %lf\n\t", info.bufferSize,
                info.periodSize, info.notifyInterval, info.volume);
@@ -265,11 +273,6 @@ private:
         sync.notify_all();
     }
 
-    /**
-     * @brief Stops underlying StreamType object (by calling stop method on it).
-     *
-     * As any other slot, should only be called from thread that owns this object.
-     */
     void stopStream_slot() override {
         std::unique_lock<std::mutex> lock(mutex);
 

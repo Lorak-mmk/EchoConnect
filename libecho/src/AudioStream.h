@@ -108,7 +108,7 @@ public:
      */
     void waitForTick_NT() {
         std::unique_lock<std::mutex> lock(mutex);
-        forTick.wait_for(lock);
+        forTick.wait(lock);
     }
 
     /**

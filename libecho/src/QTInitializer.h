@@ -3,6 +3,9 @@
 
 #include <QtCore/QCoreApplication>
 
+/**
+ * @brief Helper class to initialize QApplication, if it hasn't already been initialized.
+ */
 class QTInitializer {
 public:
     /**

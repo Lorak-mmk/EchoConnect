@@ -247,6 +247,11 @@ private:
         forState.notify_all();
     };
 
+    /**
+     * @brief Starts underlying StreamType object (by calling start method on it).
+     *
+     * As any other slot, should only be called from thread that owns this object.
+     */
     void startStream_slot() override {
         std::unique_lock<std::mutex> lock(mutex);
 
@@ -260,6 +265,11 @@ private:
         sync.notify_all();
     }
 
+    /**
+     * @brief Stops underlying StreamType object (by calling stop method on it).
+     *
+     * As any other slot, should only be called from thread that owns this object.
+     */
     void stopStream_slot() override {
         std::unique_lock<std::mutex> lock(mutex);
 

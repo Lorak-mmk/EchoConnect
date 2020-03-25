@@ -6,6 +6,9 @@
 #include <QtMultimedia/QAudioFormat>
 #include <QtMultimedia/QAudioOutput>
 
+/**
+ * @brief AudioStream with QAudioOutput as internal stream.
+ */
 class AudioOutput : public AudioStream<QAudioOutput> {
 public:
     /**

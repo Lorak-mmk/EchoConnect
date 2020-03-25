@@ -24,11 +24,11 @@ public:
      *
      * Following parameters are mostly used to determine how data should be encoded/decoded. @see
      * IAudioConverter::IAudioConverter.
-     * @param inputFormat   look at IAudioConverter::IAudioConverter.
-     * @param outputFormat  look at IAudioConverter::IAudioConverter.
-     * @param windowSize  look at IAudioConverter::IAudioConverter
-     * @param lo    frequency in which we encode bits of value 0
-     * @param hi    frequency in which we encode bits of value 1
+     * @param inputFormat   Look at IAudioConverter::IAudioConverter.
+     * @param outputFormat  Look at IAudioConverter::IAudioConverter.
+     * @param windowSize  Look at IAudioConverter::IAudioConverter.
+     * @param lo    Frequency in which we encode bits of value 0.
+     * @param hi    Frequency in which we encode bits of value 1.
      */
     BitAudioConverter(QAudioFormat inputFormat, QAudioFormat outputFormat, int windowSize, int lo, int hi)
         : IAudioConverter<T>(inputFormat, outputFormat, windowSize, SOUNDS_PER_BYTE), loFreq(lo), hiFreq(hi) {}

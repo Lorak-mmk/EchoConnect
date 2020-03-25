@@ -13,11 +13,11 @@ public:
      * @brief Used to simplify constructors for derived classes.
      *
      * Following parameters are mostly used to determine how data should be encoded/decoded.
-     * @param inputFormat   audio stream input format
-     * @param outputFormat  audio stream output format
-     * @param windowSize  how much of bitrate we want to use to play sound in which unit od data is encoded
-     * @param soundsPerByte how many sounds (units of encoded data) is needed to send a byte - useful when improving
-     * performance
+     * @param inputFormat   Audio stream input format.
+     * @param outputFormat  Audio stream output format.
+     * @param windowSize  How much of bitrate we want to use to play sound in which unit od data is encoded.
+     * @param soundsPerByte How many sounds (units of encoded data) is needed to send a byte - useful when improving
+     * performance.
      */
     IAudioConverter(QAudioFormat inputFormat, QAudioFormat outputFormat, int windowSize, size_t soundsPerByte)
         : inputFormat(inputFormat), outputFormat(outputFormat), windowSize(windowSize) {

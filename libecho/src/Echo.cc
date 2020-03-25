@@ -8,10 +8,11 @@
 #include <QCoreApplication>
 #include <QDebug>
 
-static constexpr int windowSize = 200;
-static constexpr int loFreq = 19000;
-static constexpr int hiFreq = 20000;
-static constexpr double magLimit = 300.0 / windowSize;
+static constexpr int windowSize = 300;
+static constexpr int loFreq = 14500;
+static constexpr int hiFreq = 15000;
+static constexpr double magLimitBegin = 0.2;//300.0 / windowSize;
+static constexpr double magLimitEnd = 0.04;
 
 Echo::Echo() {
     auto inputFormat = AudioFormatFactory::getDefaultInputFormat();
@@ -66,8 +67,9 @@ void Echo::getbuff(int bytes, char *buffer) {
     int inc = 0;
     while (bytes > 0) {
         // NOLINTNEXTLINE(cppcoreguidelines-pro-bounds-pointer-arithmetic)
-        int nread = input->readBytes(buffer + inc, bytes - inc);
+        int nread = input->readBytes(buffer + inc, bytes);
         inc += nread;
+        bytes -= nread;
         input->waitForTick();
     }
 }
@@ -102,7 +104,7 @@ std::vector<uint8_t> Echo::receive() {
         loMag = dft(buffer.data(), samples, sampleSize, loRatio);
         hiMag = dft(buffer.data(), samples, sampleSize, hiRatio);
         qDebug() << std::max(loMag, hiMag);
-    } while (loMag < magLimit && hiMag < magLimit);
+    } while (loMag < magLimitBegin && hiMag < magLimitBegin);
 
     qDebug() << "Recording";
 
@@ -114,7 +116,7 @@ std::vector<uint8_t> Echo::receive() {
         loMag = dft(buffer.data(), samples, sampleSize, loRatio);
         hiMag = dft(buffer.data(), samples, sampleSize, hiRatio);
         qDebug() << std::max(loMag, hiMag);
-        if (loMag < magLimit && hiMag < magLimit) {
+        if (loMag < magLimitEnd && hiMag < magLimitEnd) {
             break;
         }
         res_bits.push_back(loMag < hiMag);

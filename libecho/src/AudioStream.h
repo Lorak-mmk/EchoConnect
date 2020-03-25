@@ -49,6 +49,20 @@ protected slots:
      * See also: https://doc.qt.io/qt-5/qaudiooutput.html#setNotifyInterval
      */
     virtual void handleNotify_slot() = 0;
+
+    /**
+     * @brief Starts underlying StreamType object (by calling start method on it).
+     *
+     * As any other slot, should only be called from thread that owns this object.
+     */
+    virtual void startStream_slot() = 0;
+
+    /**
+     * @brief Stops underlying StreamType object (by calling stop method on it).
+     *
+     * As any other slot, should only be called from thread that owns this object.
+     */
+    virtual void stopStream_slot() = 0;
 };
 
 /**
@@ -75,24 +89,26 @@ public:
     AudioStream() = delete;
 
     /**
-     * @brief Constructors for AudioStream.
+     * @brief Constructor for AudioStream.
      *
      * Initializes members of class. Starts QThread which will process stream's signals.
-     * Starts stream. Returns after thread and stream are started,
+     * Returns after thread is started.
      * @param format    Format that will be used by stream.
      */
     explicit AudioStream(const QAudioFormat &format) : format(format) {
+        std::unique_lock<std::mutex> lock(mutex);
+
         qDebug() << "Constructing AudioStream. Thread:" << QThread::thread();
         this->moveToThread(this);
         QThread::start();
-        waitForTick_NT();
+
+        sync.wait(lock);
     }
 
     /**
      * @brief Destroys AudioStream.
      *
      * Stops stream. Kills QThread and waits for it to end.
-     * Currently produces console errors because of stopping timers from wrong thread.
      */
     ~AudioStream() override {
         qDebug() << "Destroying AudioStream";
@@ -100,6 +116,30 @@ public:
         this->quit();
         this->wait();
         delete qStream;
+    }
+
+    /**
+     * @brief Starts the underlying QT audio stream.
+     */
+    void startStream() {
+        std::unique_lock<std::mutex> lock(mutex);
+
+        bool success = QMetaObject().invokeMethod(this, "startStream_slot");
+        qDebug() << "Calling startStream:" << (success ? "success" : "failed");
+
+        sync.wait(lock);
+    }
+
+    /**
+     * @brief Stops the underlying QT audio stream.
+     */
+    void stopStream() {
+        std::unique_lock<std::mutex> lock(mutex);
+
+        bool success = QMetaObject().invokeMethod(this, "stopStream_slot");
+        qDebug() << "Calling startStream:" << (success ? "success" : "failed");
+
+        sync.wait(lock);
     }
 
     /**
@@ -121,14 +161,15 @@ public:
     /**
      * @brief Waits for qStream to be in given state.
      *
-     * Returns immmediately if qStream is already in desired state.
-     * Else returns after stateChanged(new_state) slot with desired state is called.
+     * Returns immediately if qStream is already in desired state.
+     * Otherwise returns after stateChanged(new_state) slot with desired state is called.
      * @param waitFor   State we are waiting for.
      */
     void waitForState(QAudio::State waitFor) {
         if (qStream->state() == waitFor) {
             return;
         }
+
         std::unique_lock<std::mutex> lock(mutex);
         forState.wait(lock, [=] { return qStream->state() == waitFor; });
     }
@@ -175,38 +216,12 @@ protected:
      */
     std::mutex mutex{};
 
-    /**
-     * @brief Starts the underlying QT audio stream.
-     *
-     * The implementation doesn't currently support stopping and restarting stream,because of problems with QMetaObject.
-     * Doing so results in console errors.
-     */
-    void startStream() {
-        qDebug() << "Starting stream from thread" << thread();
-        qDevice = qStream->start();
-        auto info = getStreamInfo();
-        qDebug("\tBuffer size: %d\n\tPeriod size: %d\n\tNotify interval: %d\n\tVolume: %lf\n\t", info.bufferSize,
-               info.periodSize, info.notifyInterval, info.volume);
-        forTick.notify_all();
-    }
-
-    /**
-     * @brief Stops the underlying QT audio stream.
-     *
-     * The implementation doesn't currently support stopping and restarting audio stream. Doing so results in console
-     * errors.
-     */
-    void stopStream() {
-        qDebug() << "Stopping stream from thread" << thread();
-        qStream->stop();
-        qDevice = nullptr;
-    }
-
 private:
     QAudioFormat format{};
 
     std::condition_variable forTick{};
     std::condition_variable forState{};
+    std::condition_variable sync{};
 
     /**
      * @brief Executed by QThread when starting it. Initializes and starts qStream.
@@ -215,14 +230,17 @@ private:
      * lifetime of object.
      */
     void run() override {
+        std::unique_lock<std::mutex> lock(mutex);
+
         qDebug() << "Running thread " << thread();
 
         qStream = new StreamType(format, this);
-
         connect(qStream, &StreamType::stateChanged, this, &AudioStream<StreamType>::handleStateChanged_slot);
         connect(qStream, &StreamType::notify, this, &AudioStream<StreamType>::handleNotify_slot);
 
-        startStream();
+        lock.unlock();
+        sync.notify_all();
+
         QThread::exec();
     }
 
@@ -243,6 +261,31 @@ private:
         qDebug() << "State changed signal received. New state: " << newState;
         forState.notify_all();
     };
+
+    void startStream_slot() override {
+        std::unique_lock<std::mutex> lock(mutex);
+
+        qDebug() << "Starting stream from thread" << thread();
+        qDevice = qStream->start();
+        
+        auto info = getStreamInfo();
+        qDebug("\tBuffer size: %d\n\tPeriod size: %d\n\tNotify interval: %d\n\tVolume: %lf\n\t", info.bufferSize,
+               info.periodSize, info.notifyInterval, info.volume);
+
+        lock.unlock();
+        sync.notify_all();
+    }
+
+    void stopStream_slot() override {
+        std::unique_lock<std::mutex> lock(mutex);
+
+        qDebug() << "Stopping stream from thread" << thread();
+        qStream->stop();
+        qDevice = nullptr;
+
+        lock.unlock();
+        sync.notify_all();
+    }
 };
 
 #endif  // ECHOCONNECT_AUDIOSTREAM_H

@@ -7,12 +7,12 @@
 #include <QtMultimedia/QAudioOutput>
 
 /**
- * TODO
+ * @brief AudioStream with QAudioOutput as internal stream.
  */
 class AudioOutput : public AudioStream<QAudioOutput> {
 public:
     /**
-     * @brief Constructs AudioOutput object - AudioStream with QAudioOutput as internal stream.
+     * @brief Constructs AudioOutput object.
      *
      * @param format    Parameters for stream, passed to QAudioOutput.
      */

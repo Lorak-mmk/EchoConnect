@@ -33,11 +33,10 @@ void Echo::send(const std::vector<uint8_t> &buffer) {
     const size_t atOnce = 2600; /* < Temporary - this constant was created empirically.
                                      Shortly - it says how much audio data need to be pushed to stream buffer
                                      every time so there won't be pause in transmission. */
-
-    output->enqueueData(
-        encoded.data(),
-        std::min(encoded.size(), atOnce)); /* < At the beggining we enqueue surplus audio data to play to fill out the
-                                              buffer so the pause in transmission won't happen. */
+    output->startStream();
+    /* At the beggining we enqueue surplus audio data to play
+       to fill out the buffer so the pause in transmission won't happen. */
+    output->enqueueData(encoded.data(), std::min(encoded.size(), atOnce));
     for (size_t i = atOnce; i < encoded.size(); i += atOnce) {
         // NOLINTNEXTLINE(cppcoreguidelines-pro-bounds-pointer-arithmetic)
         output->enqueueData(encoded.data() + i, std::min(atOnce, encoded.size() - i));
@@ -47,6 +46,7 @@ void Echo::send(const std::vector<uint8_t> &buffer) {
     }
 
     output->waitForState(QAudio::State::IdleState);
+    output->stopStream();
 }
 
 static double dft(const char *buffer, int samples, int sampleSize, double ratio) {
@@ -72,8 +72,9 @@ void Echo::getbuff(int bytes, char *buffer) {
     int inc = 0;
     while (bytes > 0) {
         // NOLINTNEXTLINE(cppcoreguidelines-pro-bounds-pointer-arithmetic)
-        int nread = input->readBytes(buffer + inc, bytes - inc);
+        int nread = input->readBytes(buffer + inc, bytes);
         inc += nread;
+        bytes -= nread;
         input->waitForTick();
     }
 }
@@ -98,6 +99,7 @@ std::vector<uint8_t> Echo::receive() {
     double loMag;
     double hiMag;
 
+    input->startStream();
     clearInput();
 
     qDebug() << "Listening for" << loFreq << "/" << hiFreq << "Hz";
@@ -126,6 +128,8 @@ std::vector<uint8_t> Echo::receive() {
         res_bits.push_back(loMag < hiMag);
         getbuff(bytes, buffer.data());
     }
+
+    input->stopStream();
 
     // pad the bit vector with zeroes
     while (res_bits.size() % CHAR_BIT != 0) {

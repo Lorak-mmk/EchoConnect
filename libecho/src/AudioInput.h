@@ -6,13 +6,13 @@
 #include <QtMultimedia/QAudioInput>
 
 /**
- * TODO
+ * @brief AudioStream with QAudioInput as internal stream.
  */
 class AudioInput : public AudioStream<QAudioInput> {
 public:
     /**
-     * @brief Constructs AudioInput object - AudioStream with QAudioInput as internal stream.
-     *
+     * @brief Constructs AudioInput object.
+     
      * @param format    Parameters for stream, passed to QAudioOutput.
      */
     explicit AudioInput(const QAudioFormat &format);

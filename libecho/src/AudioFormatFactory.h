@@ -4,7 +4,7 @@
 #include <QtMultimedia/QAudioFormat>
 
 /**
- * TODO
+ * @brief Class to create QAudioFormat instances with predefined settings.
  */
 class AudioFormatFactory {
 public:

@@ -107,8 +107,8 @@ public:
     }
 
     /**
-    * @brief Starts the underlying QT audio stream.
-    */
+     * @brief Starts the underlying QT audio stream.
+     */
     void startStream() {
         std::unique_lock<std::mutex> lock(mutex);
 

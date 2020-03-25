@@ -25,12 +25,17 @@ TEST(test_send_receive, tmp_test) {
             if (rec[i] == vbuff[i]) ok++;
         }
         EXPECT_LE((int)rec.size() - (int)vbuff.size(), 5);
-        printf("vbuff: ");
-        for (size_t i=vbuff.size(); i-->0; ) printf("%x ", vbuff[i]);
-        puts("");
-        printf("rec:   ");
-        for (size_t i=rec.size(); i-->0; ) printf("%x ", rec[i]);
-        puts("");
+        {
+            QDebug deb = qDebug();
+            deb << hex << "vbuff: ";
+            for (size_t i=vbuff.size(); i-->0; ) {
+                deb << vbuff[i];
+            }
+            deb << "\nrec:   ";
+            for (size_t i=rec.size(); i-->0; ) {
+                deb << rec[i];
+            }
+        }
         qDebug() << ok << "/ 100 bytes received correctly";
         exit(ok);
     }

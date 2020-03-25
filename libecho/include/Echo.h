@@ -16,7 +16,7 @@
 class Echo {
 public:
     /**
-     * @brief Default constructor.
+     * @brief Initializes an object to call library functions.
      */
     Echo();
 

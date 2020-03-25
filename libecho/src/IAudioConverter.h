@@ -15,7 +15,7 @@ public:
         encryptedByteSize = soundsPerByte * windowSize;
     }
 
-    virtual std::vector<char> encode(std::vector<uint8_t> data) {
+    virtual std::vector<char> encode(const std::vector<uint8_t> &data) {
         std::vector<T> result;
         result.reserve(data.size() * encryptedByteSize);
 
@@ -27,7 +27,7 @@ public:
         return std::vector<char>(result.data(), result.data() + result.size());
     }
 
-    virtual std::vector<uint8_t> decode(std::vector<char> data) = 0;
+    virtual std::vector<uint8_t> decode(const std::vector<char> &data) = 0;
 
 protected:
     size_t encryptedByteSize;
@@ -36,7 +36,7 @@ protected:
 
 private:
     virtual std::vector<T> encode_byte(uint8_t data) = 0;
-    virtual uint8_t decode_byte(std::vector<char>) = 0;
+    virtual uint8_t decode_byte(const std::vector<char> &data) = 0;
 };
 
 #endif  // ECHOCONNECT_I_AUDIO_CONVERTER_H

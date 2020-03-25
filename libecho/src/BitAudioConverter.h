@@ -15,7 +15,7 @@ public:
     BitAudioConverter(QAudioFormat inputFormat, QAudioFormat outputFormat, double windowSize, int lo, int hi)
         : IAudioConverter<T>(inputFormat, outputFormat, windowSize, SOUNDS_PER_BYTE), loFreq(lo), hiFreq(hi) {}
 
-    std::vector<uint8_t> decode(std::vector<char> data) override {
+    std::vector<uint8_t> decode(const std::vector<char> &data) override {
         return std::vector<uint8_t>();
     }
 
@@ -37,7 +37,7 @@ private:
         return result;
     }
 
-    uint8_t decode_byte(std::vector<char>) override {
+    uint8_t decode_byte(const std::vector<char> &data) override {
         return 0;
     }
 

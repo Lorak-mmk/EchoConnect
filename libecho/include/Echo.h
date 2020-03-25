@@ -41,7 +41,14 @@ public:
 
     /**
      * @brief Waits for the signal, returns buffer with received bytes.
-     * There is no guarantee regarding correctness of transmission.
+     * Works by reading fixed-sized windows from the input stream and computing
+     * the discrene fourier transform for each one for 2 specific frequencies.
+     * If they're both sufficiently low, it registers no signal. Otherwise the
+     * larger one gets interpreted as the sent bit. The recording stops after
+     * receiving a non-registered bit again. For larger robustness, the
+     * function actually reads windows twice as short and discards every other
+     * one, because the sender and receiver may be aligned differently.
+     * For now, there is no guarantee regarding correctness of transmission.
      * @return  Received bytes.
      */
     std::vector<uint8_t> receive();

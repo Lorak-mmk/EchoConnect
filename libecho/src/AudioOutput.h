@@ -12,13 +12,15 @@
 class AudioOutput : public AudioStream<QAudioOutput> {
 public:
     /**
-     * @brief Constructs AudioOutput object - AudioStream with QAudioOutput as internal stream.
+     * @brief Constructs AudioOutput object.
+     *
      * @param format    Parameters for stream, passed to QAudioOutput.
      */
     explicit AudioOutput(const QAudioFormat &format);
 
     /**
      * @brief Appends data to temporary buffer. Tries to push data from temporary buffer to output buffer.
+     *
      * @param data  Byte array with data to play.
      * @param length    Length of @p data.
      */

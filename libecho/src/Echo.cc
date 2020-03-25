@@ -29,11 +29,15 @@ void Echo::initEcho(int a_argc, char **a_argv) {
 
 void Echo::send(const std::vector<uint8_t> &buffer) {
     auto encoded = converter->encode(buffer);
-    const size_t atOnce = 2600;  // (bitrate / notify_interval) + eps; - TODO: wyjaśnić
-
+    // TODO: try to make atOnce smaller
+    const size_t atOnce = 2600; /* < Temporary - this constant was created empirically.
+                                     Shortly - it says how much audio data need to be pushed to stream buffer
+                                     every time so there won't be pause in transmission. */
     output->startStream();
+    /* At the beggining we enqueue surplus audio data to play
+       to fill out the buffer so the pause in transmission won't happen. */
     output->enqueueData(encoded.data(), std::min(encoded.size(), atOnce));
-    for (int i = atOnce; i < encoded.size(); i += atOnce) {
+    for (size_t i = atOnce; i < encoded.size(); i += atOnce) {
         // NOLINTNEXTLINE(cppcoreguidelines-pro-bounds-pointer-arithmetic)
         output->enqueueData(encoded.data() + i, std::min(atOnce, encoded.size() - i));
         auto status = output->getStreamStatus();
@@ -133,7 +137,7 @@ std::vector<uint8_t> Echo::receive() {
     }
 
     std::vector<uint8_t> res_bytes;
-    for (int i = 0; i < res_bits.size(); i += CHAR_BIT) {
+    for (size_t i = 0; i < res_bits.size(); i += CHAR_BIT) {
         uint8_t byte = 0;
         for (int j = 0; j < CHAR_BIT; j++) {
             byte |= (static_cast<int>(res_bits[i + j]) << j);

@@ -67,6 +67,7 @@ protected slots:
 
 /**
  * @brief Class with common code for Audio Input/Output streams.
+ *
  * @tparam StreamType   Underlying QT class. Shall be one of QAudioInput (for input stream), QAudioOutput (for output
  * stream).
  */
@@ -188,6 +189,7 @@ public:
 
     /**
      * @brief Check current stream status. See docs for StatusType for info about returned data.
+     *
      * @return Current stream status - available bytes in buffer and processed usecs.
      */
     virtual StatusType getStreamStatus() = 0;
@@ -252,6 +254,7 @@ private:
 
     /**
      * @brief Implementation of handleStateChanged slot from AudioStreamSignalsAndSlots
+     *
      * @param newState  Current state of qStream.
      */
     void handleStateChanged_slot(QAudio::State newState) override {

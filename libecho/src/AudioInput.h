@@ -12,6 +12,7 @@ class AudioInput : public AudioStream<QAudioInput> {
 public:
     /**
      * @brief Constructs AudioInput object.
+     
      * @param format    Parameters for stream, passed to QAudioOutput.
      */
     explicit AudioInput(const QAudioFormat &format);
@@ -22,6 +23,7 @@ public:
 
     /**
      * @brief Writes data from input buffer to @p data.
+     *
      * @param data Pointer to buffer where data will be written.
      * @param maxSize Max amount of bytes to write.
      * @return Amount of bytes written. Can be lower than @p maxSize if there is not enough available bytes in buffer.

@@ -79,7 +79,7 @@ public:
         qDebug() << "Constructing AudioStream. Thread:" << QThread::thread();
         this->moveToThread(this);
         QThread::start();
-        waitForTick();
+        waitForTick_NT();
     }
 
     /**
@@ -96,11 +96,19 @@ public:
     }
 
     /**
-     * @brief Returns next time notify() slot is called.
+     * @brief Returns next time notify() slot is called. Times out after notifyInterval() of stream.
      */
     void waitForTick() {
         std::unique_lock<std::mutex> lock(mutex);
         forTick.wait_for(lock, std::chrono::milliseconds(qStream->notifyInterval()));
+    }
+
+    /**
+     * @brief Returns next time notify() slot is called - no-timeout version.
+     */
+    void waitForTick_NT() {
+        std::unique_lock<std::mutex> lock(mutex);
+        forTick.wait_for(lock);
     }
 
     /**

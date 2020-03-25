@@ -66,8 +66,9 @@ void Echo::getbuff(int bytes, char *buffer) {
     int inc = 0;
     while (bytes > 0) {
         // NOLINTNEXTLINE(cppcoreguidelines-pro-bounds-pointer-arithmetic)
-        int nread = input->readBytes(buffer + inc, bytes - inc);
+        int nread = input->readBytes(buffer + inc, bytes);
         inc += nread;
+        bytes -= nread;
         input->waitForTick();
     }
 }

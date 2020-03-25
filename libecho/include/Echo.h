@@ -3,6 +3,7 @@
 
 /**
  * @brief Public API for libecho.
+ *
  * All functionalities provided by the library will be usable through Echo class methods.
  */
 
@@ -13,6 +14,9 @@
 #include <cstdint>
 #include <vector>
 
+/**
+ * @brief Class enabling usage of library.
+ */
 class Echo {
 public:
     /**
@@ -22,6 +26,7 @@ public:
 
     /**
      * @brief Initializes library, required if program doesn't need QT.
+     *
      * If program doesn't use QT (by using QT I mean creating QApplication),
      * it need to call this method before using library.
      * If program uses QT, calling this method is unnecessary.
@@ -33,6 +38,7 @@ public:
 
     /**
      * @brief Sends given byte sequence.
+     *
      * Currently there is no pairing or connection implemented, so anyone can receive it, and there is no guarantee
      * that received transmission will be correct.
      * @param buffer    Bytes to send.
@@ -41,6 +47,7 @@ public:
 
     /**
      * @brief Waits for the signal, returns buffer with received bytes.
+     *
      * There is no guarantee regarding correctness of transmission.
      * @return  Received bytes.
      */

@@ -3,10 +3,14 @@
 
 #include <QtCore/QCoreApplication>
 
+/**
+ * TODO
+ */
 class QTInitializer {
 public:
     /**
      * @brief If QApplication isn't already initialized, creates QCoreApplication.
+     *
      * @param a_argc    Program's argc from main().
      * @param a_argv    Program's argv from main().
      */

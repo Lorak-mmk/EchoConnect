@@ -5,7 +5,7 @@
 
 TEST(test_send, tmp_test) {
     std::vector<uint8_t> vbuffer;
-    for (int i = 0; i < 25; i++)
+    for (uint8_t i = 0; i < 25; i++)
         vbuffer.push_back(i);
     Echo echo;
     echo.send(vbuffer);

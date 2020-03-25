@@ -3,6 +3,9 @@
 
 #include <QtMultimedia/QAudioFormat>
 
+/**
+ * @brief Class to create QAudioFormat instances with predefined settings.
+ */
 class AudioFormatFactory {
 public:
     /**

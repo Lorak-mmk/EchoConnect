@@ -32,6 +32,7 @@ void Echo::send(const std::vector<uint8_t> &buffer) {
     auto encoded = converter->encode(buffer);
     const size_t atOnce = 2600;  // (bitrate / notify_interval) + eps; - TODO: wyjaśnić
 
+    output->startStream();
     output->enqueueData(encoded.data(), std::min(encoded.size(), atOnce));
     for (int i = atOnce; i < encoded.size(); i += atOnce) {
         // NOLINTNEXTLINE(cppcoreguidelines-pro-bounds-pointer-arithmetic)
@@ -42,6 +43,7 @@ void Echo::send(const std::vector<uint8_t> &buffer) {
     }
 
     output->waitForState(QAudio::State::IdleState);
+    output->stopStream();
 }
 
 static double dft(const char *buffer, int samples, int sampleSize, double ratio) {
@@ -94,6 +96,7 @@ std::vector<uint8_t> Echo::receive() {
     double loMag;
     double hiMag;
 
+    input->startStream();
     clearInput();
 
     qDebug() << "Listening for" << loFreq << "/" << hiFreq << "Hz";
@@ -122,6 +125,8 @@ std::vector<uint8_t> Echo::receive() {
         res_bits.push_back(loMag < hiMag);
         getbuff(bytes, buffer.data());
     }
+
+    input->stopStream();
 
     // pad the bit vector with zeroes
     while (res_bits.size() % CHAR_BIT != 0) {

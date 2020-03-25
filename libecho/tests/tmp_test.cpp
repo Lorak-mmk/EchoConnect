@@ -9,32 +9,6 @@
 #include <unistd.h>
 #include <stdlib.h>
 
-
-/*TEST(test_receive, tmp_test) {
-    int pid = fork();
-    assert(pid != -1);
-    if (pid > 0) {
-        Echo echo;
-
-        std::vector<uint8_t> rec = echo.receive();
-        //assert(rec.size() < 258 && rec.size() > 254);
-        for (int i = 0; i != 0x100; ++i) printf("%x ", rec[i]);
-        puts("");
-    }
-    else {
-        sleep(1);
-        execlp("/usr/bin/aplay", "aplay", "sample.wav", NULL);
-    }
-}
-TEST(test_send, tmp_test) {
-    std::vector<uint8_t> vbuffer;
-    for (int i = 0; i < 256; i++) {
-        vbuffer.push_back(i);
-    }
-    Echo echo;
-    echo.send(vbuffer);
-}*/
-
 TEST(test_send_receive, tmp_test) {
     srand(time(nullptr));
     std::vector<uint8_t> vbuff;

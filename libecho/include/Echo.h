@@ -47,7 +47,8 @@ public:
     std::vector<uint8_t> receive();
 
 private:
-	void getbuff(int bytes, char *buffer);
+    void getbuff(int bytes, char *buffer);
+    void clearInput();
 
     using SampleType = int8_t;
     std::unique_ptr<AudioInput> input;

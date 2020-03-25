@@ -155,7 +155,8 @@ protected:
     StreamType *qStream{};
 
     /**
-     * @brief QIODevice representing audio device. Communication with audio device is done y reading/writing from/to this device.
+     * @brief QIODevice representing audio device. Communication with audio device is done y reading/writing from/to
+     * this device.
      */
     QIODevice *qDevice{};
 

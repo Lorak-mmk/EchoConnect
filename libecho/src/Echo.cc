@@ -11,7 +11,7 @@
 static constexpr int windowSize = 200;
 static constexpr int loFreq = 19000;
 static constexpr int hiFreq = 20000;
-static constexpr int magLimit = 500000 / windowSize;
+static constexpr double magLimit = 300.0 / windowSize;
 
 Echo::Echo() {
     auto inputFormat = AudioFormatFactory::getDefaultInputFormat();
@@ -29,7 +29,7 @@ void Echo::initEcho(int a_argc, char **a_argv) {
 
 void Echo::send(const std::vector<uint8_t> &buffer) {
     auto encoded = converter->encode(buffer);
-    const size_t atOnce = 260;  // (bitrate / notify_interval) + eps; - TODO: wyjaśnić
+    const size_t atOnce = 2600;  // (bitrate / notify_interval) + eps; - TODO: wyjaśnić
 
     output->enqueueData(encoded.data(), std::min(encoded.size(), atOnce));
     for (int i = atOnce; i < encoded.size(); i += atOnce) {
@@ -48,17 +48,16 @@ static double dft(const char *buffer, int samples, int sampleSize, double ratio)
     double im = 0;
     double angle = 0;
     const double d_angle = 2.0 * M_PI * ratio;
-    const int mask = (1 << sampleSize) - 1;
 
     for (int i = 0; i < samples; i++) {
-        double val = *((int *) buffer) & mask;
+        double val = *((int16_t *)buffer);
         re += val * std::cos(angle);
         im += val * std::sin(angle);
         buffer += (sampleSize / 8);
         angle += d_angle;
     }
 
-    return std::sqrt(re * re + im * im);
+    return std::sqrt(re * re + im * im) / 65536.0;
 }
 
 void Echo::getbuff(int bytes, char *buffer) {
@@ -70,27 +69,36 @@ void Echo::getbuff(int bytes, char *buffer) {
     }
 }
 
+void Echo::clearInput() {
+    int size = input->getStreamStatus().first;
+    std::vector<char> dummy(size);
+    input->readBytes(dummy.data(), size);
+}
+
 std::vector<uint8_t> Echo::receive() {
     static QAudioFormat inputFormat = AudioFormatFactory::getDefaultInputFormat();
 
     int sampleRate = inputFormat.sampleRate();
     int sampleSize = inputFormat.sampleSize();
-    int samples = windowSize / 2; // we're dealing with half-windows
+    int samples = windowSize / 2;  // we're dealing with half-windows
     int bytes = samples * (sampleSize / 8);
-    char *buffer = new char[bytes];
+    std::vector<char> buffer(bytes);
 
     double loRatio = (double)loFreq / sampleRate;
     double hiRatio = (double)hiFreq / sampleRate;
     double loMag;
     double hiMag;
 
+    clearInput();
+
     qDebug() << "Listening for" << loFreq << "/" << hiFreq << "Hz";
 
     // wait for the first half-window and discard it
     do {
-        getbuff(bytes, buffer);
-        loMag = dft(buffer, samples, sampleSize, loRatio);
-        hiMag = dft(buffer, samples, sampleSize, hiRatio);
+        getbuff(bytes, buffer.data());
+        loMag = dft(buffer.data(), samples, sampleSize, loRatio);
+        hiMag = dft(buffer.data(), samples, sampleSize, hiRatio);
+        qDebug() << std::max(loMag, hiMag);
     } while (loMag < magLimit && hiMag < magLimit);
 
     qDebug() << "Recording";
@@ -99,19 +107,21 @@ std::vector<uint8_t> Echo::receive() {
 
     // then, starting from the second half-window, read every other one
     while (true) {
-        getbuff(bytes, buffer);
-        loMag = dft(buffer, samples, sampleSize, loRatio);
-        hiMag = dft(buffer, samples, sampleSize, hiRatio);
-        if (loMag < magLimit && hiMag < magLimit) break;
+        getbuff(bytes, buffer.data());
+        loMag = dft(buffer.data(), samples, sampleSize, loRatio);
+        hiMag = dft(buffer.data(), samples, sampleSize, hiRatio);
+        qDebug() << std::max(loMag, hiMag);
+        if (loMag < magLimit && hiMag < magLimit) {
+            break;
+        }
         res_bits.push_back(loMag < hiMag);
-        getbuff(bytes, buffer);
+        getbuff(bytes, buffer.data());
     }
 
-    delete[] buffer;
-
     // pad the bit vector with zeroes
-    while (res_bits.size() % 8 != 0)
+    while (res_bits.size() % 8 != 0) {
         res_bits.push_back(false);
+    }
 
     std::vector<uint8_t> res_bytes;
     for (int i = 0; i < res_bits.size(); i += 8) {

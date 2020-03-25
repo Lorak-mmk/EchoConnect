@@ -42,8 +42,8 @@ private:
     }
 
     T audio_wave(int frequency, int time) {
-        return (std::sin(2.0 * M_PI * time * frequency / this->outputFormat.sampleRate()) + 1.0) * 
-                (1 << (this->outputFormat.sampleSize() - 2));
+        return (std::sin(2.0 * M_PI * time * frequency / this->outputFormat.sampleRate()) + 1.0) *
+               (1 << (this->outputFormat.sampleSize() - 2));
     }
 };
 

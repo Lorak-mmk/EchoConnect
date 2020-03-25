@@ -208,7 +208,6 @@ private:
      * @brief Implementation of handleNotify_slot from Current state of qStream.
      */
     void handleNotify_slot() override {
-        auto status = getStreamStatus();
         handleNotify();
         forTick.notify_all();
     }

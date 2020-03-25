@@ -7,30 +7,33 @@
 
 #include <sys/types.h>
 #include <unistd.h>
+#include <stdlib.h>
 
+
+/*TEST(test_receive, tmp_test) {
+    int pid = fork();
+    assert(pid != -1);
+    if (pid > 0) {
+        Echo echo;
+
+        std::vector<uint8_t> rec = echo.receive();
+        //assert(rec.size() < 258 && rec.size() > 254);
+        for (int i = 0; i != 0x100; ++i) printf("%x ", rec[i]);
+        puts("");
+    }
+    else {
+        sleep(1);
+        execlp("/usr/bin/aplay", "aplay", "sample.wav", NULL);
+    }
+}
 TEST(test_send, tmp_test) {
     std::vector<uint8_t> vbuffer;
-    for (uint8_t i = 0; i < 25; i++) {
+    for (int i = 0; i < 256; i++) {
         vbuffer.push_back(i);
     }
     Echo echo;
     echo.send(vbuffer);
-}
-
-TEST(test_receive, tmp_test) {
-    Echo echo;
-
-    QThread::msleep(100);  // to prevent interference with the previous test
-    std::vector<uint8_t> rec = echo.receive();
-    for (uint8_t u : rec) {
-        if (32 < u && u < 127) {
-            putchar(u);
-        } else {
-            printf("<%hhu>", u);
-        }
-    }
-    printf("\n");
-}
+}*/
 
 TEST(test_send_receive, tmp_test) {
     srand(time(nullptr));

@@ -6,7 +6,7 @@ SET(CMAKE_CXX_STANDARD 17)
 
 project(EchoConnect VERSION 0)
 
-SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -Wextra")
+SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -Wextra -fno-strict-aliasing")
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
 enable_testing()

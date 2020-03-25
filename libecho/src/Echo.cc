@@ -50,21 +50,24 @@ static double dft(const char *buffer, int samples, int sampleSize, double ratio)
     const double d_angle = 2.0 * M_PI * ratio;
 
     for (int i = 0; i < samples; i++) {
-        double val = *((int16_t *)buffer);
+        // NOLINTNEXTLINE(cppcoreguidelines-pro-type-reinterpret-cast)
+        double val = *reinterpret_cast<const int16_t *>(buffer);
         re += val * std::cos(angle);
         im += val * std::sin(angle);
-        buffer += (sampleSize / 8);
+        // NOLINTNEXTLINE(cppcoreguidelines-pro-bounds-pointer-arithmetic)
+        buffer += (sampleSize / CHAR_BIT);
         angle += d_angle;
     }
 
-    return std::sqrt(re * re + im * im) / 65536.0;
+    return std::sqrt(re * re + im * im) / (1 << sampleSize);
 }
 
 void Echo::getbuff(int bytes, char *buffer) {
+    int inc = 0;
     while (bytes > 0) {
-        int nread = input->readBytes(buffer, bytes);
-        buffer += nread;
-        bytes -= nread;
+        // NOLINTNEXTLINE(cppcoreguidelines-pro-bounds-pointer-arithmetic)
+        int nread = input->readBytes(buffer + inc, bytes - inc);
+        inc += nread;
         input->waitForTick();
     }
 }
@@ -81,7 +84,7 @@ std::vector<uint8_t> Echo::receive() {
     int sampleRate = inputFormat.sampleRate();
     int sampleSize = inputFormat.sampleSize();
     int samples = windowSize / 2;  // we're dealing with half-windows
-    int bytes = samples * (sampleSize / 8);
+    int bytes = samples * (sampleSize / CHAR_BIT);
     std::vector<char> buffer(bytes);
 
     double loRatio = (double)loFreq / sampleRate;
@@ -119,14 +122,14 @@ std::vector<uint8_t> Echo::receive() {
     }
 
     // pad the bit vector with zeroes
-    while (res_bits.size() % 8 != 0) {
+    while (res_bits.size() % CHAR_BIT != 0) {
         res_bits.push_back(false);
     }
 
     std::vector<uint8_t> res_bytes;
-    for (int i = 0; i < res_bits.size(); i += 8) {
+    for (int i = 0; i < res_bits.size(); i += CHAR_BIT) {
         uint8_t byte = 0;
-        for (int j = 0; j < 8; j++) {
+        for (int j = 0; j < CHAR_BIT; j++) {
             byte |= (static_cast<int>(res_bits[i + j]) << j);
         }
         res_bytes.push_back(byte);

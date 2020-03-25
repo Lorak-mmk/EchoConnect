@@ -24,6 +24,7 @@ struct AudioStreamInfo {
 
 /**
  * @brief Helper class for AudioStream<StreamType>.
+ *
  * It is needed because Q_OBJECT macro doesn't support template classes.
  * One way to solve it is to move signals/slots to base, non-template class,
  * and override those methods in derived class (without using signals/slots keywords again).
@@ -33,6 +34,7 @@ class AudioStreamSignalsAndSlots : public QThread {
 protected slots:
     /**
      * @brief Slot called very time stream status changes.
+     *
      * QAudio::State: https://doc.qt.io/qt-5/qaudio.html#State-enum
      * According to QT docs (https://doc.qt.io/qt-5/qaudiooutput.html), not all states are possible here:
      * "At any given time, the QAudioOutput will be in one of four states: active, suspended, stopped, or idle."
@@ -42,6 +44,7 @@ protected slots:
 
     /**
      * @brief Slot called once in a configurable amount of time.
+     *
      * It's based on amount of sound data processed, not real time.
      * See also: https://doc.qt.io/qt-5/qaudiooutput.html#setNotifyInterval
      */
@@ -62,6 +65,7 @@ class AudioStream : public AudioStreamSignalsAndSlots {
 public:
     /**
      * @brief Status of stream.
+     *
      * First element is available bytes in buffer (free buffer for output, available bytes in buffer for input).
      * Output: https://doc.qt.io/qt-5/qaudiooutput.html#bytesFree
      * Input: https://doc.qt.io/qt-5/qaudioinput.html#bytesReady
@@ -75,8 +79,9 @@ public:
 
     /**
      * @brief Constructors for AudioStream.
+     *
      * Initializes members of class. Starts QThread which will process stream's signals.
-     * Starts stream. Returns after thread and stream are started,
+     * Returns after thread is started,
      * @param format    Format that will be used by stream.
      */
     explicit AudioStream(const QAudioFormat &format) : format(format) {
@@ -90,8 +95,8 @@ public:
 
     /**
      * @brief Destroys AudioStream.
+     *
      * Stops stream. Kills QThread and waits for it to end.
-     * Currently produces console errors because of stopping timers from wrong thread.
      */
     ~AudioStream() override {
         qDebug() << "Destroying AudioStream";
@@ -103,8 +108,6 @@ public:
 
     /**
     * @brief Starts the underlying QT audio stream.
-    * The implementation doesn't currently support stopping and restarting stream,because of problems with QMetaObject.
-    * Doing so results in console errors.
     */
     void startStream() {
         std::unique_lock<std::mutex> lock(mutex);
@@ -117,8 +120,6 @@ public:
 
     /**
      * @brief Stops the underlying QT audio stream.
-     * The implementation doesn't currently support stopping and restarting audio stream. Doing so results in console
-     * errors.
      */
     void stopStream() {
         std::unique_lock<std::mutex> lock(mutex);
@@ -147,6 +148,7 @@ public:
 
     /**
      * @brief Waits for qStream to be in given state.
+     *
      * Returns immmediately if qStream is already in desired state.
      * Else returns after stateChanged(new_state) slot with desired state is called.
      * @param waitFor   State we are waiting for.
@@ -161,6 +163,7 @@ public:
 
     /**
      * @brief Returns current stream information.
+     *
      * Meaning of certain fields is explained in AudioStreamInfo docs.
      * @return  Struct with current informations about stream.
      */
@@ -208,6 +211,7 @@ private:
 
     /**
      * @brief Executed by QThread when starting it. Initializes and starts qStream.
+     *
      * Currently the implementation doesn't support stopping and restarting the thread - it is alive for the whole
      * lifetime of object.
      */

@@ -33,6 +33,7 @@ private:
 
     /**
      * @brief Temporary buffer to allow pushing more data than normal buffer allows.
+     *
      * Data from it will be pushed to normal buffer on every notify() signal and after calling enqueueData.
      */
     QByteArray buffer{};

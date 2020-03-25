@@ -13,8 +13,6 @@ static constexpr int loFreq = 19000;
 static constexpr int hiFreq = 20000;
 static constexpr int magLimit = 500000 / windowSize;
 
-using SampleType = int8_t;
-
 Echo::Echo() {
     auto inputFormat = AudioFormatFactory::getDefaultInputFormat();
     input = std::make_unique<AudioInput>(inputFormat);
@@ -39,8 +37,7 @@ void Echo::send(const std::vector<uint8_t> &buffer) {
         output->enqueueData(encoded.data() + i, std::min(atOnce, encoded.size() - i));
         auto status = output->getStreamStatus();
         qDebug() << "Status: " << status.first << " " << status.second;
-        // TODO: i changed something and this line now freezes the playback after a short time
-        // output->waitForTick();
+        output->waitForTick();
     }
 
     output->waitForState(QAudio::State::IdleState);
@@ -55,27 +52,26 @@ static double dft(const char *buffer, int samples, int sampleSize, double ratio)
 
     for (int i = 0; i < samples; i++) {
         double val = *((int *) buffer) & mask;
-        re += val * cos(angle);
-        im += val * sin(angle);
+        re += val * std::cos(angle);
+        im += val * std::sin(angle);
         buffer += (sampleSize / 8);
         angle += d_angle;
     }
 
-    return sqrt(re * re + im * im);
+    return std::sqrt(re * re + im * im);
 }
 
-// TODO: make it not use 100%cpu
-void getbuff(AudioInput &audio, int bytes, char *buffer) {
+void Echo::getbuff(int bytes, char *buffer) {
     while (bytes > 0) {
-        int nread = audio.readBytes(buffer, bytes);
+        int nread = input->readBytes(buffer, bytes);
         buffer += nread;
         bytes -= nread;
+        input->waitForTick();
     }
 }
 
 std::vector<uint8_t> Echo::receive() {
     static QAudioFormat inputFormat = AudioFormatFactory::getDefaultInputFormat();
-    static AudioInput audio(inputFormat);
 
     int sampleRate = inputFormat.sampleRate();
     int sampleSize = inputFormat.sampleSize();
@@ -92,7 +88,7 @@ std::vector<uint8_t> Echo::receive() {
 
     // wait for the first half-window and discard it
     do {
-        getbuff(audio, bytes, buffer);
+        getbuff(bytes, buffer);
         loMag = dft(buffer, samples, sampleSize, loRatio);
         hiMag = dft(buffer, samples, sampleSize, hiRatio);
     } while (loMag < magLimit && hiMag < magLimit);
@@ -103,12 +99,12 @@ std::vector<uint8_t> Echo::receive() {
 
     // then, starting from the second half-window, read every other one
     while (true) {
-        getbuff(audio, bytes, buffer);
+        getbuff(bytes, buffer);
         loMag = dft(buffer, samples, sampleSize, loRatio);
         hiMag = dft(buffer, samples, sampleSize, hiRatio);
         if (loMag < magLimit && hiMag < magLimit) break;
         res_bits.push_back(loMag < hiMag);
-        getbuff(audio, bytes, buffer);
+        getbuff(bytes, buffer);
     }
 
     delete[] buffer;

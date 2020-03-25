@@ -47,7 +47,9 @@ public:
     std::vector<uint8_t> receive();
 
 private:
-    using SampleType = int16_t;
+	void getbuff(int bytes, char *buffer);
+
+    using SampleType = int8_t;
     std::unique_ptr<AudioInput> input;
     std::unique_ptr<AudioOutput> output;
     std::unique_ptr<IAudioConverter<SampleType>> converter;

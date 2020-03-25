@@ -1,11 +1,6 @@
 #ifndef ECHOCONNECT_ECHO_H
 #define ECHOCONNECT_ECHO_H
 
-/**
- * @brief Public API for libecho.
- * All functionalities provided by the library will be usable through Echo class methods.
- */
-
 #include "AudioInput.h"
 #include "AudioOutput.h"
 #include "IAudioConverter.h"
@@ -13,6 +8,11 @@
 #include <cstdint>
 #include <vector>
 
+/**
+ * @brief Public API for libecho.
+ *
+ * All functionalities provided by the library will be usable through Echo class methods.
+ */
 class Echo {
 public:
     /**
@@ -22,10 +22,11 @@ public:
 
     /**
      * @brief Initializes library, required if program doesn't need QT.
+     *
      * If program doesn't use QT (by using QT I mean creating QApplication),
-     * it need to call this method before using library.
+     * it needs to call this method before using this library.
      * If program uses QT, calling this method is unnecessary.
-     * If it is called anyway, it must not be called before creating QApplication.
+     * This method must never be called before creating QApplication manually!s
      * @param a_argc    Program's argc from main().
      * @param a_argv    Program's argv from main().
      */
@@ -33,6 +34,7 @@ public:
 
     /**
      * @brief Sends given byte sequence.
+     *
      * Currently there is no pairing or connection implemented, so anyone can receive it, and there is no guarantee
      * that received transmission will be correct.
      * @param buffer    Bytes to send.
@@ -41,6 +43,7 @@ public:
 
     /**
      * @brief Waits for the signal, returns buffer with received bytes.
+     *
      * There is no guarantee regarding correctness of transmission.
      * @return  Received bytes.
      */

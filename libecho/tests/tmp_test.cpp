@@ -20,8 +20,7 @@ TEST(test_receive, tmp_test) {
     for (uint8_t u : rec) {
         if (32 < u && u < 127) {
             putchar(u);
-        }
-        else {
+        } else {
             printf("<%hhu>", u);
         }
     }

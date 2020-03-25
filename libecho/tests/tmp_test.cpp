@@ -4,16 +4,23 @@
 #include <QtCore/QFile>
 
 TEST(test_send, tmp_test) {
-    QFile sourceFile;
-    sourceFile.setFileName("/dev/urandom");
-    sourceFile.open(QIODevice::ReadOnly);
-    auto urandom = sourceFile.read(10000);
-    std::vector<uint8_t> vbuffer(urandom.begin(), urandom.end());
+    std::vector<uint8_t> vbuffer;
+    for (int i = 0; i < 256; i++)
+        vbuffer.push_back(i);
     Echo echo;
     echo.send(vbuffer);
 }
 
 TEST(test_receive, tmp_test) {
     Echo echo;
-    echo.receive();
+
+    QThread::sleep(1); // to prevent interference with the previous test
+    std::vector<uint8_t> rec = echo.receive();
+    for (uint8_t u : rec) {
+        if (32 < u && u < 127)
+            putchar(u);
+        else
+            printf("<%hhu>", u);
+    }
+    printf("\n");
 }

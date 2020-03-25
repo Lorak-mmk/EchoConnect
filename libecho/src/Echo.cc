@@ -8,9 +8,13 @@
 #include <QCoreApplication>
 #include <QDebug>
 
-const double windowLength = 0.1;
-const int loFreq = 19000, hiFreq = 20000;
-using SampleType = int16_t;
+static const int windowSize = 200;
+static const int loFreq = 19000;
+static const int hiFreq = 20000;
+static const int magLimit = 500000 / windowSize;
+static const double PI = 3.1415926535;
+
+using SampleType = int8_t;
 
 Echo::Echo() {
     auto inputFormat = AudioFormatFactory::getDefaultInputFormat();
@@ -19,8 +23,7 @@ Echo::Echo() {
     auto outputFormat = AudioFormatFactory::getDefaultOutputFormat();
     output = std::make_unique<AudioOutput>(outputFormat);
 
-    converter =
-        std::make_unique<BitAudioConverter<SampleType>>(inputFormat, outputFormat, windowLength, loFreq, hiFreq);
+    converter = std::make_unique<BitAudioConverter<SampleType>>(inputFormat, outputFormat, windowSize, loFreq, hiFreq);
 }
 
 void Echo::initEcho(int a_argc, char **a_argv) {
@@ -37,31 +40,91 @@ void Echo::send(const std::vector<uint8_t> &buffer) {
         output->enqueueData(encoded.data() + i, std::min(atOnce, encoded.size() - i));
         auto status = output->getStreamStatus();
         qDebug() << "Status: " << status.first << " " << status.second;
-        output->waitForTick();
+        // TODO: i changed something and this line now freezes the playback after a short time
+        // output->waitForTick();
     }
 
     output->waitForState(QAudio::State::IdleState);
 }
 
-std::vector<uint8_t> Echo::receive() {
-    auto info = input->getStreamInfo();
+static double dft(const char *buffer, int samples, int sampleSize, double ratio) {
+    double re = 0;
+    double im = 0;
+    double angle = 0;
+    const double d_angle = 2.0 * PI * ratio;
 
-    const size_t atOnce = info.periodSize;
-    char *array = new char[atOnce];
-    int idx = 0;
-    const int time = 2000000;
-
-    while (input->getStreamStatus().second < time) {
-        int read = input->readBytes(array, atOnce - idx);
-        idx = idx + read;
-        if (idx == atOnce) {
-            idx = 0;
-            qDebug() << "Process data here - or better: schedule it so this loop is not blocked";
-        }
-        input->waitForTick();
+    for (int i = 0; i < samples; i++) {
+        double val = *((int *) buffer) >> (4 - sampleSize); // why does this work???
+        re += val * cos(angle);
+        im += val * sin(angle);
+        buffer += (sampleSize / 8);
+        angle += d_angle;
     }
 
-    delete[] array;
+    return sqrt(re * re + im * im);
+}
 
-    return std::vector<uint8_t>();
+// TODO: make it not use 100%cpu
+void getbuff(AudioInput &audio, int bytes, char *buffer) {
+    while (bytes > 0) {
+        int nread = audio.readBytes(buffer, bytes);
+        buffer += nread;
+        bytes -= nread;
+    }
+}
+
+std::vector<uint8_t> Echo::receive() {
+    static QAudioFormat inputFormat = AudioFormatFactory::getDefaultInputFormat();
+    static AudioInput audio(inputFormat);
+
+    int sampleRate = inputFormat.sampleRate();
+    int sampleSize = inputFormat.sampleSize();
+    int samples = windowSize / 2; // we're dealing with half-windows
+    int bytes = samples * (sampleSize / 8);
+    char *buffer = new char[bytes];
+
+    double loRatio = (double)loFreq / sampleRate;
+    double hiRatio = (double)hiFreq / sampleRate;
+    double loMag;
+    double hiMag;
+
+    qDebug() << "Listening for" << loFreq << "/" << hiFreq << "Hz";
+
+    // wait for the first half-window and discard it
+    do {
+        getbuff(audio, bytes, buffer);
+        loMag = dft(buffer, samples, sampleSize, loRatio);
+        hiMag = dft(buffer, samples, sampleSize, hiRatio);
+    } while (loMag < magLimit && hiMag < magLimit);
+
+    qDebug() << "Recording";
+
+    std::vector<bool> res_bits;
+
+    // then, starting from the second half-window, read every other one
+    while (true) {
+        getbuff(audio, bytes, buffer);
+        loMag = dft(buffer, samples, sampleSize, loRatio);
+        hiMag = dft(buffer, samples, sampleSize, hiRatio);
+        if (loMag < magLimit && hiMag < magLimit) break;
+        res_bits.push_back(loMag < hiMag);
+        getbuff(audio, bytes, buffer);
+    }
+
+    delete[] buffer;
+
+    // pad the bit vector with zeroes
+    while (res_bits.size() % 8 != 0)
+        res_bits.push_back(false);
+
+    std::vector<uint8_t> res_bytes;
+    for (int i = 0; i < res_bits.size(); i += 8) {
+        uint8_t byte = 0;
+        for (int j = 0; j < 8; j++) {
+            byte |= (static_cast<int>(res_bits[i + j]) << j);
+        }
+        res_bytes.push_back(byte);
+    }
+
+    return res_bytes;
 }

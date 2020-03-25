@@ -23,7 +23,7 @@ QAudioFormat AudioFormatFactory::getDefaultInputFormat() {
 const QAudioFormat::Endian OUTPUT_BYTEORDER = QAudioFormat::LittleEndian;
 const int OUTPUT_CHANNEL_COUNT = 1;
 const char *OUTPUT_CODEC = "audio/pcm";
-const int OUTPUT_SAMPLERATE = 8000;
+const int OUTPUT_SAMPLERATE = 44100;
 const int OUTPUT_SAMPLESIZE = 8;
 const QAudioFormat::SampleType OUTPUT_SAMPLETYPE = QAudioFormat::UnSignedInt;
 

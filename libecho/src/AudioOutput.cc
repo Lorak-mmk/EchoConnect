@@ -1,6 +1,5 @@
 #include "AudioOutput.h"
 
-
 constexpr int NOTIFY_INTERVAL = 32;
 constexpr double VOLUME = 1.0;
 

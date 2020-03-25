@@ -8,9 +8,10 @@
 #include <QCoreApplication>
 #include <QDebug>
 
-const double windowLength = 0.1;
-const int loFreq = 19000, hiFreq = 20000;
-using SampleType = int16_t;
+static constexpr int windowSize = 200;
+static constexpr int loFreq = 19000;
+static constexpr int hiFreq = 20000;
+static constexpr double magLimit = 300.0 / windowSize;
 
 Echo::Echo() {
     auto inputFormat = AudioFormatFactory::getDefaultInputFormat();
@@ -19,8 +20,7 @@ Echo::Echo() {
     auto outputFormat = AudioFormatFactory::getDefaultOutputFormat();
     output = std::make_unique<AudioOutput>(outputFormat);
 
-    converter =
-        std::make_unique<BitAudioConverter<SampleType>>(inputFormat, outputFormat, windowLength, loFreq, hiFreq);
+    converter = std::make_unique<BitAudioConverter<SampleType>>(inputFormat, outputFormat, windowSize, loFreq, hiFreq);
 }
 
 void Echo::initEcho(int a_argc, char **a_argv) {
@@ -29,7 +29,7 @@ void Echo::initEcho(int a_argc, char **a_argv) {
 
 void Echo::send(const std::vector<uint8_t> &buffer) {
     auto encoded = converter->encode(buffer);
-    const size_t atOnce = 260;  // (bitrate / notify_interval) + eps; - TODO: wyjaśnić
+    const size_t atOnce = 2600;  // (bitrate / notify_interval) + eps; - TODO: wyjaśnić
 
     output->enqueueData(encoded.data(), std::min(encoded.size(), atOnce));
     for (int i = atOnce; i < encoded.size(); i += atOnce) {
@@ -43,25 +43,97 @@ void Echo::send(const std::vector<uint8_t> &buffer) {
     output->waitForState(QAudio::State::IdleState);
 }
 
-std::vector<uint8_t> Echo::receive() {
-    auto info = input->getStreamInfo();
+static double dft(const char *buffer, int samples, int sampleSize, double ratio) {
+    double re = 0;
+    double im = 0;
+    double angle = 0;
+    const double d_angle = 2.0 * M_PI * ratio;
 
-    const size_t atOnce = info.periodSize;
-    char *array = new char[atOnce];
-    int idx = 0;
-    const int time = 2000000;
-
-    while (input->getStreamStatus().second < time) {
-        int read = input->readBytes(array, atOnce - idx);
-        idx = idx + read;
-        if (idx == atOnce) {
-            idx = 0;
-            qDebug() << "Process data here - or better: schedule it so this loop is not blocked";
-        }
-        input->waitForTick();
+    for (int i = 0; i < samples; i++) {
+        // NOLINTNEXTLINE(cppcoreguidelines-pro-type-reinterpret-cast)
+        double val = *reinterpret_cast<const int16_t *>(buffer);
+        re += val * std::cos(angle);
+        im += val * std::sin(angle);
+        // NOLINTNEXTLINE(cppcoreguidelines-pro-bounds-pointer-arithmetic)
+        buffer += (sampleSize / CHAR_BIT);
+        angle += d_angle;
     }
 
-    delete[] array;
+    return std::sqrt(re * re + im * im) / (1 << sampleSize);
+}
 
-    return std::vector<uint8_t>();
+void Echo::getbuff(int bytes, char *buffer) {
+    int inc = 0;
+    while (bytes > 0) {
+        // NOLINTNEXTLINE(cppcoreguidelines-pro-bounds-pointer-arithmetic)
+        int nread = input->readBytes(buffer + inc, bytes - inc);
+        inc += nread;
+        input->waitForTick();
+    }
+}
+
+void Echo::clearInput() {
+    int size = input->getStreamStatus().first;
+    std::vector<char> dummy(size);
+    input->readBytes(dummy.data(), size);
+}
+
+std::vector<uint8_t> Echo::receive() {
+    static QAudioFormat inputFormat = AudioFormatFactory::getDefaultInputFormat();
+
+    int sampleRate = inputFormat.sampleRate();
+    int sampleSize = inputFormat.sampleSize();
+    int samples = windowSize / 2;  // we're dealing with half-windows
+    int bytes = samples * (sampleSize / CHAR_BIT);
+    std::vector<char> buffer(bytes);
+
+    double loRatio = (double)loFreq / sampleRate;
+    double hiRatio = (double)hiFreq / sampleRate;
+    double loMag;
+    double hiMag;
+
+    clearInput();
+
+    qDebug() << "Listening for" << loFreq << "/" << hiFreq << "Hz";
+
+    // wait for the first half-window and discard it
+    do {
+        getbuff(bytes, buffer.data());
+        loMag = dft(buffer.data(), samples, sampleSize, loRatio);
+        hiMag = dft(buffer.data(), samples, sampleSize, hiRatio);
+        qDebug() << std::max(loMag, hiMag);
+    } while (loMag < magLimit && hiMag < magLimit);
+
+    qDebug() << "Recording";
+
+    std::vector<bool> res_bits;
+
+    // then, starting from the second half-window, read every other one
+    while (true) {
+        getbuff(bytes, buffer.data());
+        loMag = dft(buffer.data(), samples, sampleSize, loRatio);
+        hiMag = dft(buffer.data(), samples, sampleSize, hiRatio);
+        qDebug() << std::max(loMag, hiMag);
+        if (loMag < magLimit && hiMag < magLimit) {
+            break;
+        }
+        res_bits.push_back(loMag < hiMag);
+        getbuff(bytes, buffer.data());
+    }
+
+    // pad the bit vector with zeroes
+    while (res_bits.size() % CHAR_BIT != 0) {
+        res_bits.push_back(false);
+    }
+
+    std::vector<uint8_t> res_bytes;
+    for (int i = 0; i < res_bits.size(); i += CHAR_BIT) {
+        uint8_t byte = 0;
+        for (int j = 0; j < CHAR_BIT; j++) {
+            byte |= (static_cast<int>(res_bits[i + j]) << j);
+        }
+        res_bytes.push_back(byte);
+    }
+
+    return res_bytes;
 }

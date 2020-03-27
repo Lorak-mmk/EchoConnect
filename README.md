@@ -35,7 +35,7 @@ Projekt ma docelowo umożliwiać łatwą komunikację pomiędzy komputerami nie 
 ```shell script
 mkdir -p build
 cd build
-cmake ..
+cmake .. -DCMAKE_BUILD_TYPE=Release
 make
 
 # Testy
@@ -45,8 +45,14 @@ ctest
 ```
 
 Pliki wyjściowe:
+
 Biblioteka: build/libecho/*.so*
+
 Testy: build/libecho/tests/libecho_tests
+
+**Budowanie dokumentacji wymaga budowania w trybie Release**
+**tzn cmake -DCMAKE_BUILD_TYPE=Release**
+
 Dokumentacja: build/libecho/docs/doc_doxygen
 
 ### Wymagane bilbioteki:

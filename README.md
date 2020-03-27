@@ -45,10 +45,14 @@ ctest
 ```
 
 Pliki wyjściowe:
+
 Biblioteka: build/libecho/*.so*
+
 Testy: build/libecho/tests/libecho_tests
+
 **Budowanie dokumentacji wymaga budowania w trybie Release**
 **tzn cmake -DCMAKE_BUILD_TYPE=Release**
+
 Dokumentacja: build/libecho/docs/doc_doxygen
 
 ### Wymagane bilbioteki:

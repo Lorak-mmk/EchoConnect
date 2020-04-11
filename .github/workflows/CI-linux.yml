@@ -58,8 +58,8 @@ jobs:
       working-directory: ${{ env.DEPS_DIR }}
 
 
-    - name: Install PulseAudio
-      run: sudo apt-get install libpulse-dev
+    - name: Install PulseAudio & Doxygen
+      run: sudo apt-get install libpulse-dev doxygen graphviz
 
     - name: Check code formatting with clang-format
       uses: DoozyX/clang-format-lint-action@v0.5

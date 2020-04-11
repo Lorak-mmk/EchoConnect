@@ -26,17 +26,22 @@ jobs:
     # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
     - uses: actions/checkout@v2
 
-    - name: Cache Qt
-      id: cache-qt
-      uses: actions/cache@v1
-      with:
-        path: ../Qt
-        key: ${{ runner.os }}-QtCache
-
     - name: Install QT
       uses: jurplel/install-qt-action@v2
-      with:
-        cached: ${{ steps.cache-qt.outputs.cache-hit }}
+
+    - name: build gtest
+      run: |
+        git clone https://github.com/google/googletest.git
+        cd googletest
+        mkdir build && cd build
+        cmake .. -DBUILD_SHARED_LIBS=ON -DINSTALL_GTEST=ON -DCMAKE_INSTALL_PREFIX:PATH=/usr
+        make -j8
+        sudo make install
+        sudo ldconfig
+      working-directory: ${{env.HOME}}
+
+    - name: install pulseaudio
+      run: sudo apt-get install libpulse-dev
 
     - name: clang-format
       uses: DoozyX/clang-format-lint-action@v0.5

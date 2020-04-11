@@ -33,6 +33,7 @@ set(API_FILES
 
 include_directories(echo PRIVATE ${API_DIR})
 include_directories(echo PRIVATE ${SRC_DIR})
+include_directories(echo PRIVATE external/crcpp/inc)
 
 add_library(echo SHARED "${SRC_FILES}")
 set_target_properties(echo

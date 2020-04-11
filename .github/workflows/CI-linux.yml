@@ -13,6 +13,7 @@ on:
 
 env:
   BUILD_TYPE: Release
+  DEPS_DIR: /home/runner/work/EchoConnect/dependencies
 
 # A workflow run is made up of one or more jobs that can run sequentially or in parallel
 jobs:
@@ -26,31 +27,48 @@ jobs:
     # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
     - uses: actions/checkout@v2
 
+    - name: Cache dependencies
+      id: cache-deps
+      uses: actions/cache@v1
+      with:
+        path: ${{ env.DEPS_DIR }}
+        key: ${{ runner.os }}-dependencies
+
     - name: Install QT
       uses: jurplel/install-qt-action@v2
+      with:
+        dir: ${{ env.DEPS_DIR }}
+        cached: ${{ steps.cache-deps.outputs.cache-hit }}
 
-    - name: build gtest
+    - name: Download and build GoogleTest
+      if: steps.cache-deps.outputs.cache-hit != 'true'
       run: |
         git clone https://github.com/google/googletest.git
         cd googletest
         mkdir build && cd build
         cmake .. -DBUILD_SHARED_LIBS=ON -DINSTALL_GTEST=ON -DCMAKE_INSTALL_PREFIX:PATH=/usr
         make -j8
+      working-directory: ${{ env.DEPS_DIR }}
+
+    - name: Install GoogleTest
+      run: |
+        cd googletest/build
         sudo make install
         sudo ldconfig
-      working-directory: ${{env.HOME}}
+      working-directory: ${{ env.DEPS_DIR }}
 
-    - name: install pulseaudio
+
+    - name: Install PulseAudio
       run: sudo apt-get install libpulse-dev
 
-    - name: clang-format
+    - name: Check code formatting with clang-format
       uses: DoozyX/clang-format-lint-action@v0.5
       with:
         source: './libecho'
         extensions: 'h,cpp,cc'
         clangFormatVersion: 9
 
-    - name: Create Build Environment
+    - name: Create build folder
       run: cmake -E make_directory ${{runner.workspace}}/build
 
     - name: Configure CMake

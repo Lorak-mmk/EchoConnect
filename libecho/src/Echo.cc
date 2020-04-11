@@ -11,7 +11,7 @@
 static constexpr int windowSize = 300;
 static constexpr int loFreq = 14500;
 static constexpr int hiFreq = 15000;
-static constexpr double magLimitBegin = 0.2;//300.0 / windowSize;
+static constexpr double magLimitBegin = 0.2;  // 300.0 / windowSize;
 static constexpr double magLimitEnd = 0.04;
 
 Echo::Echo() {

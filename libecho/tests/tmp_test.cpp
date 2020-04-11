@@ -1,4 +1,4 @@
-#include "Echo.h"
+#include "RawReceiver.h"
 
 #include <gtest/gtest.h>
 #include <QtCore/QFile>
@@ -36,6 +36,13 @@ TEST(test_send, tmp_test) {
 }*/
 
 TEST(test_send_receive, tmp_test) {
+    char buff[10];
+    RawReceiver receiver(14000, 15000, 3, 4, 100000);
+    receiver.receive(buff, 10);
+}
+
+/*
+TEST(test_send_receive, tmp_test) {
     srand(time(nullptr));
     std::vector<uint8_t> vbuff;
     for (uint8_t i = 0; i != 100; ++i) {
@@ -72,3 +79,4 @@ TEST(test_send_receive, tmp_test) {
         else exit(1);
     }
 }
+*/

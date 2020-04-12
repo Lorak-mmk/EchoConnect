@@ -11,8 +11,11 @@ Packet Packet::loadHeaderFromBytes(const std::vector<uint8_t> &bytes) {
         throw IncorrectFormat();
     }
 
+    // NOLINTNEXTLINE(cppcoreguidelines-pro-bounds-pointer-arithmetic, cppcoreguidelines-pro-type-cstyle-cast)
     p.flags = ntohs(((uint16_t *)bytes.data())[0]);
+    // NOLINTNEXTLINE(cppcoreguidelines-pro-bounds-pointer-arithmetic, cppcoreguidelines-pro-type-cstyle-cast)
     p.size = ntohs(((uint16_t *)bytes.data())[1]);
+    // NOLINTNEXTLINE(cppcoreguidelines-pro-bounds-pointer-arithmetic, cppcoreguidelines-pro-type-cstyle-cast)
     p.number = ntohs(((uint16_t *)bytes.data())[2]);
 
     return p;
@@ -33,6 +36,7 @@ Packet &Packet::loadCRCFromBytes(const std::vector<uint8_t> &bytes) {
         throw IncorrectFormat();
     }
 
+    // NOLINTNEXTLINE(cppcoreguidelines-pro-bounds-pointer-arithmetic, cppcoreguidelines-pro-type-cstyle-cast)
     crc32 = ntohl(((uint32_t *)bytes.data())[0]);
 
     if (crc32 != calculateCRC()) {
@@ -54,7 +58,7 @@ std::vector<uint8_t> Packet::toBytes() {
 }
 
 bool Packet::isSet(Flag f) {
-    return flags & f;
+    return (flags & f) != 0;
 }
 
 uint16_t Packet::getSize() {

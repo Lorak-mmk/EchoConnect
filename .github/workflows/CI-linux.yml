@@ -34,6 +34,9 @@ jobs:
         path: ${{ env.DEPS_DIR }}
         key: ${{ runner.os }}-dependencies
 
+    - name: Install PulseAudio, Doxygen
+      run: sudo apt-get install libpulse-dev doxygen graphviz
+
     - name: Install QT
       uses: jurplel/install-qt-action@v2
       with:
@@ -57,10 +60,6 @@ jobs:
         sudo ldconfig
       working-directory: ${{ env.DEPS_DIR }}
 
-
-    - name: Install PulseAudio & Doxygen
-      run: sudo apt-get install libpulse-dev doxygen graphviz
-
     - name: Check code formatting with clang-format
       uses: DoozyX/clang-format-lint-action@v0.5
       with:
@@ -80,6 +79,10 @@ jobs:
       # and build directories, but this is only available with CMake 3.13 and higher.
       # The CMake binaries on the Github Actions machines are (as of this writing) 3.12
       run: cmake $GITHUB_WORKSPACE -DCMAKE_BUILD_TYPE=$BUILD_TYPE
+
+    - name: Check with clang-tidy
+      shell: bash
+      run: ./tools/clang-tidy.sh
 
     - name: Build
       working-directory: ${{runner.workspace}}/build

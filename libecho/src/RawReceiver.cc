@@ -20,20 +20,20 @@ static double dft(const int16_t *buffer, int samples, double ratio) {
 }
 
 RawReceiver::RawReceiver(int loFreq, int hiFreq, double magLimitBegin, double magLimitEnd, int winSize) {
-	format.setByteOrder(QAudioFormat::LittleEndian);
-	format.setChannelCount(1);
-	format.setCodec("audio/pcm");
-	format.setSampleRate(SAMPLE_RATE);
-	format.setSampleSize(16);
-	format.setSampleType(QAudioFormat::SignedInt);
+    format.setByteOrder(QAudioFormat::LittleEndian);
+    format.setChannelCount(1);
+    format.setCodec("audio/pcm");
+    format.setSampleRate(SAMPLE_RATE);
+    format.setSampleSize(16);
+    format.setSampleType(QAudioFormat::SignedInt);
 
-	input = std::make_unique<AudioInput>(format);
+    input = std::make_unique<AudioInput>(format);
 
-	this->loFreq = loFreq;
-	this->hiFreq = hiFreq;
-	this->magLimitBegin = magLimitBegin;
-	this->magLimitEnd = magLimitEnd;
-	this->winSize = winSize;
+    this->loFreq = loFreq;
+    this->hiFreq = hiFreq;
+    this->magLimitBegin = magLimitBegin;
+    this->magLimitEnd = magLimitEnd;
+    this->winSize = winSize;
 }
 
 
@@ -56,8 +56,8 @@ void RawReceiver::clearInput() {
 }
 
 int RawReceiver::receive(char *buffer, int size) {
-	int received_bits = 0;
-	int received_bytes = 0;
+    int received_bits = 0;
+    int received_bytes = 0;
     int samples = winSize / 2;  // we're dealing with half-windows
     double loRatio = (double)loFreq / SAMPLE_RATE;
     double hiRatio = (double)hiFreq / SAMPLE_RATE;
@@ -77,7 +77,7 @@ int RawReceiver::receive(char *buffer, int size) {
         getBytes(window_ptr, samples * 2);
         loMag = dft(window.data(), samples, loRatio);
         hiMag = dft(window.data(), samples, hiRatio);
-       	printf("%.9lf\n", std::max(loMag, hiMag));
+           printf("%.9lf\n", std::max(loMag, hiMag));
     } while (loMag < magLimitEnd && hiMag < magLimitEnd);
 
     qDebug() << "Recording";
@@ -94,13 +94,13 @@ int RawReceiver::receive(char *buffer, int size) {
         getBytes(window_ptr, samples * 2);
 
         if (received_bits % 8 == 0)
-        	buffer[received_bytes] = 0;
+            buffer[received_bytes] = 0;
         bool bit = loMag < hiMag;
-		buffer[received_bytes] |= (bit << (received_bits & 7));
+        buffer[received_bytes] |= (bit << (received_bits & 7));
         received_bits++;
-        received_bytes = received_bytes >> 3;
+        received_bytes = received_bits >> 3;
         if (received_bytes == size)
-        	break;
+            break;
     }
 
     input->stopStream();

@@ -1,8 +1,9 @@
 #include <QtMultimedia/QAudioFormat>
 #include <memory>
 #include "AudioInput.h"
+#include "IReceiver.h"
 
-class RawReceiver {
+class RawReceiver : public IReceiver {
 public:
 	RawReceiver(int loFreq, int hiFreq, double magLimitBegin, double magLimitEnd, int winSize);
 	int receive(char *buffer, int size);

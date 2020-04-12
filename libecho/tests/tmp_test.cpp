@@ -37,7 +37,7 @@ TEST(test_send, tmp_test) {
 
 TEST(test_send_receive, tmp_test) {
     char buff[10];
-    RawReceiver receiver(14000, 15000, 3, 4, 100000);
+    RawReceiver receiver(14000, 15000, 3, 4, 600);
     receiver.receive(buff, 10);
 }
 

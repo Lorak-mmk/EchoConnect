@@ -35,7 +35,7 @@ jobs:
         key: ${{ runner.os }}-dependencies
 
     - name: Install PulseAudio, Doxygen
-      run: sudo apt-get install libpulse-dev doxygen graphviz
+      run: sudo apt-get install libpulse-dev doxygen graphviz clang-tidy
 
     - name: Install QT
       uses: jurplel/install-qt-action@v2

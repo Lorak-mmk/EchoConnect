@@ -1,10 +1,10 @@
 #ifndef ECHOCONNECT_PACKET_H
 #define ECHOCONNECT_PACKET_H
 
-#include <vector>
-#include <limits>
 #include <cstdint>
 #include <exception>
+#include <limits>
+#include <vector>
 
 static constexpr size_t HEADER_SIZE = 6;
 static constexpr size_t CRC_SIZE = 4;

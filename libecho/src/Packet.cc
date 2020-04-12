@@ -1,20 +1,20 @@
 #include "Packet.h"
 
 // #define crcpp_uint32
-#include "CRC.h"
 #include <arpa/inet.h>
+#include "CRC.h"
 
 Packet Packet::loadHeaderFromBytes(const std::vector<uint8_t> &bytes) {
     Packet p;
-    
+
     if (bytes.size() != HEADER_SIZE) {
         throw IncorrectFormat();
     }
 
-    p.flags = ntohs(((uint16_t *)bytes.data())[0] );
+    p.flags = ntohs(((uint16_t *)bytes.data())[0]);
     p.size = ntohs(((uint16_t *)bytes.data())[1]);
     p.number = ntohs(((uint16_t *)bytes.data())[2]);
-    
+
     return p;
 }
 
@@ -34,6 +34,7 @@ Packet &Packet::loadCRCFromBytes(const std::vector<uint8_t> &bytes) {
     }
 
     crc32 = ntohl(((uint32_t *)bytes.data())[0]);
+
     if (crc32 != calculateCRC()) {
         throw IncorrectCRC();
     }

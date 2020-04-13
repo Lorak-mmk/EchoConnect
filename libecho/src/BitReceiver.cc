@@ -1,7 +1,7 @@
 #include "BitReceiver.h"
 #include <cmath>
 
-static const double SAMPLE_RATE = 44100.0;
+static constexpr double SAMPLE_RATE = 44100.0;
 
 static double mag(double re, double im) {
     return sqrt(re * re + im * im);

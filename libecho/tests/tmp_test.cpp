@@ -1,14 +1,13 @@
-#include "RawReceiver.h"
+#include "BitReceiver.h"
 
 #include <gtest/gtest.h>
 #include <QtCore/QFile>
 
 #include <cassert>
 
+#include <stdlib.h>
 #include <sys/types.h>
 #include <unistd.h>
-#include <stdlib.h>
-
 
 /*TEST(test_receive, tmp_test) {
     int pid = fork();
@@ -36,9 +35,12 @@ TEST(test_send, tmp_test) {
 }*/
 
 TEST(test_send_receive, tmp_test) {
-    char buff[10];
-    RawReceiver receiver(14000, 15000, 3, 4, 600);
-    receiver.receive(buff, 10);
+    uint8_t buff[10];
+    BitReceiver receiver(14000, 15000, 600, 6);
+    receiver.receiveFirst(buff, 10);
+    for (int i = 0; i < 10; i++) {
+        printf("%02hhx ", buff[i]);
+    }
 }
 
 /*
@@ -71,7 +73,7 @@ TEST(test_send_receive, tmp_test) {
         Echo echo;
         QThread::msleep(4000);
         echo.send(vbuff);
-        
+
         int wstatus;
         pid_t p = wait(&wstatus);
         assert(p == pid);

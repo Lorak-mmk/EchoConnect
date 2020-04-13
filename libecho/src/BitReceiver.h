@@ -1,3 +1,6 @@
+#ifndef BITRECEIVER_H
+#define BITRECEIVER_H
+
 #include <QtMultimedia/QAudioFormat>
 #include <memory>
 #include "AudioInput.h"
@@ -29,3 +32,5 @@ private:
     int win_size;
     int mag_lim;
 };
+
+#endif

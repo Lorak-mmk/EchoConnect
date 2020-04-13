@@ -30,6 +30,8 @@ set(SRC_FILES
         ${SRC_DIR}/BitReceiver.cc
         ${SRC_DIR}/BitReceiver.h)
 
+set(API_FILES
+        ${API_DIR}/Echo.h)
 
 include_directories(echo PRIVATE ${API_DIR})
 include_directories(echo PRIVATE ${SRC_DIR})

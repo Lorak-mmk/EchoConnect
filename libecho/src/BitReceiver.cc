@@ -1,7 +1,12 @@
 #include "BitReceiver.h"
 #include <cmath>
 
-static constexpr int SAMPLE_RATE = 44100;
+static const int SAMPLE_RATE = 44100;
+static const int SAMPLE_SIZE = 16;
+static const int CHANNEL_COUNT = 1;
+static const char *CODEC = "audio/pcm";
+static const QAudioFormat::SampleType SAMPLE_TYPE = QAudioFormat::SignedInt;
+static const QAudioFormat::Endian BYTEORDER = QAudioFormat::LittleEndian;
 
 static double mag(double re, double im) {
     return sqrt(re * re + im * im);
@@ -55,18 +60,23 @@ void BitReceiver::clearInput() {
     input->readBytes(dummy.data(), size);
 }
 
+static QAudioFormat makeFormat() {
+    QAudioFormat format;
+    format.setByteOrder(BYTEORDER);
+    format.setChannelCount(CHANNEL_COUNT);
+    format.setCodec(CODEC);
+    format.setSampleRate(SAMPLE_RATE);
+    format.setSampleSize(SAMPLE_SIZE);
+    format.setSampleType(SAMPLE_TYPE);
+    return format;
+}
+
 BitReceiver::BitReceiver(int lo_freq, int hi_freq, int win_size, int mag_lim)
     : lo_ratio(static_cast<double>(lo_freq) / SAMPLE_RATE),
       hi_ratio(static_cast<double>(hi_freq) / SAMPLE_RATE),
       win_size(win_size),
       mag_lim(mag_lim) {
-    format.setByteOrder(QAudioFormat::LittleEndian);
-    format.setChannelCount(1);
-    format.setCodec("audio/pcm");
-    format.setSampleRate(SAMPLE_RATE);
-    format.setSampleSize(16);
-    format.setSampleType(QAudioFormat::SignedInt);
-
+    format = makeFormat();
     input = std::make_unique<AudioInput>(format);
     input->startStream();
 

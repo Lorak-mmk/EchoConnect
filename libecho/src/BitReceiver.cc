@@ -55,7 +55,11 @@ void BitReceiver::clearInput() {
     input->readBytes(dummy.data(), size);
 }
 
-BitReceiver::BitReceiver(int lo_freq, int hi_freq, int win_size, int mag_lim) {
+BitReceiver::BitReceiver(int lo_freq, int hi_freq, int win_size, int mag_lim)
+    : lo_ratio(static_cast<double>(lo_freq) / SAMPLE_RATE),
+      hi_ratio(static_cast<double>(hi_freq) / SAMPLE_RATE),
+      win_size(win_size),
+      mag_lim(mag_lim) {
     format.setByteOrder(QAudioFormat::LittleEndian);
     format.setChannelCount(1);
     format.setCodec("audio/pcm");
@@ -70,15 +74,10 @@ BitReceiver::BitReceiver(int lo_freq, int hi_freq, int win_size, int mag_lim) {
     sync_in.reserve(3 * win_size);
     sync_lo_out.reserve(2 * win_size);
     sync_hi_out.reserve(2 * win_size);
-
-    this->lo_ratio = static_cast<double>(lo_freq) / SAMPLE_RATE;
-    this->hi_ratio = static_cast<double>(hi_freq) / SAMPLE_RATE;
-    this->win_size = win_size;
-    this->mag_lim = mag_lim;
 }
 
 BitReceiver::~BitReceiver() {
-	input->stopStream();
+    input->stopStream();
 }
 
 void BitReceiver::readSamples(int16_t *buffer, int len) {
@@ -149,8 +148,10 @@ int BitReceiver::receiveFirstTwoBits() {
         }
         lo_shift = stepShift(sync_lo_out.data(), win_size);
         hi_shift = stepShift(sync_hi_out.data(), win_size);
-        if (lo_shift != -1) shift = lo_shift;
-        if (hi_shift != -1) shift = hi_shift;
+        if (lo_shift != -1)
+            shift = lo_shift;
+        if (hi_shift != -1)
+            shift = hi_shift;
     } while (shift == -1);
 
     qDebug() << "Message start detected!";

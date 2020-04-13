@@ -13,6 +13,14 @@ const QAudioFormat::SampleType OUTPUT_SAMPLETYPE = QAudioFormat::SignedInt;
 static constexpr size_t SOUNDS_PER_BYTE =
     8; /**< States the number of sounds we need to play to encode a byte of data. */
 
+void BitSender::send(const std::vector<uint8_t> &buffer) {
+    auto encoded = encode(buffer);
+    output->startStream();
+    output->enqueueData(encoded.data(), encoded.size());
+    output->waitForState(QAudio::State::IdleState);
+    output->stopStream();
+}
+
 std::vector<char> BitSender::encode(const std::vector<uint8_t> &data) {
     std::vector<SampleType> result;
     result.reserve(data.size() * windowSize * SOUNDS_PER_BYTE);
@@ -22,6 +30,7 @@ std::vector<char> BitSender::encode(const std::vector<uint8_t> &data) {
         result.insert(result.end(), encoded_byte.begin(), encoded_byte.end());
     }
 
+    // NOLINTNEXTLINE(cppcoreguidelines-pro-bounds-pointer-arithmetic)
     return std::vector<char>(result.data(), result.data() + result.size());
 }
 
@@ -29,6 +38,7 @@ std::vector<SampleType> BitSender::encode_byte(uint8_t data) {
     std::vector<SampleType> result;
     result.reserve(windowSize * SOUNDS_PER_BYTE);
 
+    // NOLINTNEXTLINE(cppcoreguidelines-avoid-magic-numbers, readability-magic-numbers)
     for (int i = 0; i < 8; i++) {
         int bit = (data >> i) & 1;
         int freq = (bit == 1) ? hiFreq : loFreq;
@@ -41,8 +51,8 @@ std::vector<SampleType> BitSender::encode_byte(uint8_t data) {
 }
 
 SampleType BitSender::audio_wave(int frequency, int time) {
-    return (std::sin(2.0 * M_PI * time * frequency / format.sampleRate()) + 1.0) *
-           (1 << (format.sampleSize() - 2));
+    // NOLINTNEXTLINE(cppcoreguidelines-avoid-magic-numbers, readability-magic-numbers)
+    return (std::sin(2.0 * M_PI * time * frequency / format.sampleRate()) + 1.0) * (1 << (format.sampleSize() - 2));
 }
 
 QAudioFormat BitSender::getOutputFormat() {

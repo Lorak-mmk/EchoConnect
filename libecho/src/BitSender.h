@@ -29,13 +29,52 @@ public:
     BitSender(int windowSize, int lo = DEFAULT_LO_FREQ, int hi = DEFAULT_LO_FREQ)
         : ISender(getOutputFormat(), windowSize), loFreq(lo), hiFreq(hi) {}
 
-private:
-    const int loFreq, hiFreq; /**< Frequencies used to encode/decode bits, respectively for 0 and 1 values. */
+    /**
+     * @brief loFreq member getter.
+     */
+    int getLoFreq() {
+        return loFreq;
+    }
 
     /**
-     * @brief @see ISender::encode
+     * @brief hiFreq member getter.
      */
-    std::vector<char> encode(const std::vector<uint8_t> &data) override;
+    int getHiFreq() {
+        return hiFreq;
+    }
+
+    /**
+     * @brief loFreq member setter.
+     *
+     * @param newFreq   New loFreq value.
+     */
+    void setLoFreq(int newFreq) {
+        loFreq = newFreq;
+    }
+
+    /**
+     * @brief hiFreq member setter.
+     *
+     * @param newFreq   New hiFreq value.
+     */
+    void setHiFreq(int newFreq) {
+        hiFreq = newFreq;
+    }
+
+    /**
+     * @brief @see ISender::send
+     */
+    void send(const std::vector<uint8_t> &buffer) override;
+
+private:
+    int loFreq, hiFreq; /**< Frequencies used to encode/decode bits, respectively for 0 and 1 values. */
+
+    /**
+     * @brief Encodes data to send into audio format.
+     *
+     * @param data    Bytes to encode.
+     */
+    std::vector<char> encode(const std::vector<uint8_t> &data);
 
     /**
      * @brief Encodes byte into audio format (speakers membrane amplitude) by encoding every single bit.
@@ -54,7 +93,7 @@ private:
     /**
      * @brief Creates instance of QAudioFormat with with predefined setting. Parameters are set in .cc file.
      */
-    QAudioFormat getOutputFormat();
+    static QAudioFormat getOutputFormat();
 };
 
 #endif  // ECHOCONNECT_BIT_SENDER_H

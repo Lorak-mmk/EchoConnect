@@ -5,7 +5,6 @@
 
 #include <cstdint>
 #include <memory>
-#include <vector>
 
 class EchoRawConnection {
 public:

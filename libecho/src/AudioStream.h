@@ -267,7 +267,7 @@ private:
 
         qDebug() << "Starting stream from thread" << thread();
         qDevice = qStream->start();
-        
+
         auto info = getStreamInfo();
         qDebug("\tBuffer size: %d\n\tPeriod size: %d\n\tNotify interval: %d\n\tVolume: %lf\n\t", info.bufferSize,
                info.periodSize, info.notifyInterval, info.volume);

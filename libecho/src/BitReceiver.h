@@ -1,8 +1,8 @@
 #ifndef BITRECEIVER_H
 #define BITRECEIVER_H
 
-#include <vector>
 #include <cstdint>
+#include <vector>
 
 #include "AudioInput.h"
 #include "IReceiver.h"

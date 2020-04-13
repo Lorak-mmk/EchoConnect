@@ -1,5 +1,5 @@
-#ifndef BITRECEIVER_H
-#define BITRECEIVER_H
+#ifndef ECHOCONNECT_BITRECEIVER_H
+#define ECHOCONNECT_BITRECEIVER_H
 
 #include <cstdint>
 #include <vector>

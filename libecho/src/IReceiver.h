@@ -1,5 +1,5 @@
-#ifndef IRECEIVER_H
-#define IRECEIVER_H
+#ifndef ECHOCONNECT_IRECEIVER_H
+#define ECHOCONNECT_IRECEIVER_H
 
 #include <QtMultimedia/QAudioFormat>
 #include <memory>

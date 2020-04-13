@@ -1,7 +1,7 @@
 #include "BitReceiver.h"
 #include <cmath>
 
-static constexpr double SAMPLE_RATE = 44100.0;
+static constexpr int SAMPLE_RATE = 44100;
 
 static double mag(double re, double im) {
     return sqrt(re * re + im * im);
@@ -64,6 +64,7 @@ BitReceiver::BitReceiver(int lo_freq, int hi_freq, int win_size, int mag_lim) {
     format.setSampleType(QAudioFormat::SignedInt);
 
     input = std::make_unique<AudioInput>(format);
+    input->startStream();
 
     window.reserve(win_size);
     sync_in.reserve(3 * win_size);
@@ -74,6 +75,10 @@ BitReceiver::BitReceiver(int lo_freq, int hi_freq, int win_size, int mag_lim) {
     this->hi_ratio = static_cast<double>(hi_freq) / SAMPLE_RATE;
     this->win_size = win_size;
     this->mag_lim = mag_lim;
+}
+
+BitReceiver::~BitReceiver() {
+	input->stopStream();
 }
 
 void BitReceiver::readSamples(int16_t *buffer, int len) {
@@ -164,7 +169,6 @@ int BitReceiver::receiveFirstTwoBits() {
 int BitReceiver::receiveFirst(uint8_t *buffer, int size) {
     uint8_t byte = 0;
 
-    input->startStream();
     clearInput();
 
     byte = receiveFirstTwoBits();
@@ -183,15 +187,12 @@ int BitReceiver::receiveFirst(uint8_t *buffer, int size) {
         buffer[i] = byte;
     }
 
-    input->stopStream();
-
     return size;
 }
 
 int BitReceiver::receive(uint8_t *buffer, int size) {
     uint8_t byte;
 
-    input->startStream();
     for (int i = 0; i < size; i++) {
         byte = 0;
         for (int j = 0; j < CHAR_BIT; j++) {
@@ -200,7 +201,6 @@ int BitReceiver::receive(uint8_t *buffer, int size) {
         }
         buffer[i] = byte;
     }
-    input->stopStream();
 
     return size;
 }

@@ -10,6 +10,7 @@
 class BitReceiver : public IReceiver {
 public:
     BitReceiver(int lo_freq, int hi_freq, int win_size, int mag_lim);
+    ~BitReceiver();
     virtual int receiveFirst(uint8_t *buffer, int size) override;
     virtual int receive(uint8_t *buffer, int size) override;
 
@@ -20,14 +21,13 @@ private:
     int receiveFirstTwoBits();
     void clearInput();  // TODO: i don't actually know if this is needed
 
-
     std::vector<int16_t> window;
     std::vector<int16_t> sync_in;
     std::vector<double> sync_lo_out;
     std::vector<double> sync_hi_out;
 
-    int lo_ratio;
-    int hi_ratio;
+    double lo_ratio;
+    double hi_ratio;
     int win_size;
     int mag_lim;
 };

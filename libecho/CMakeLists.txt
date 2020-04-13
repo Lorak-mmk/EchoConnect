@@ -27,8 +27,8 @@ set(SRC_FILES
         ${SRC_DIR}/IAudioConverter.h
         ${SRC_DIR}/BitAudioConverter.h
         ${SRC_DIR}/IReceiver.h
-        ${SRC_DIR}/RawReceiver.cc
-        ${SRC_DIR}/RawReceiver.h)
+        ${SRC_DIR}/BitReceiver.cc
+        ${SRC_DIR}/BitReceiver.h)
 
 
 include_directories(echo PRIVATE ${API_DIR})

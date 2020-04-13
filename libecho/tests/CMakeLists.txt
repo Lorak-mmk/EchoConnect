@@ -3,7 +3,8 @@ set(CMAKE_EXPORT_COMPILE_COMMANDS OFF)
 
 set(TEST_FILES
         main.cpp
-        packet_tests.cpp)
+        packet_tests.cpp
+        ecc_tests.cpp)
 
 add_executable(${EXEC_NAME} ${TEST_FILES})
 add_test(NAME ${EXEC_NAME} COMMAND ${EXEC_NAME})

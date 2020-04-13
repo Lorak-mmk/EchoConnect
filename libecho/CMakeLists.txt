@@ -33,7 +33,7 @@ set(SRC_FILES
         ${SRC_DIR}/BitReceiver.cc
         ${SRC_DIR}/BitReceiver.h
         ${SRC_DIR}/Packet.h
-        ${SRC_DIR}/Packet.cc)
+        ${SRC_DIR}/Packet.cc src/HammingCode.cpp src/HammingCode.h)
 
 set(API_FILES
         ${API_DIR}/Echo.h)

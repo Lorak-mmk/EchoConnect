@@ -1,7 +1,11 @@
 #include "Packet.h"
 
-// #define crcpp_uint32
+#ifdef _WIN32
+#include <winsock2.h>
+#elif defined __unix__
 #include <arpa/inet.h>
+#endif
+
 #include "CRC.h"
 
 Packet Packet::loadHeaderFromBytes(const std::vector<uint8_t> &bytes) {
@@ -11,12 +15,12 @@ Packet Packet::loadHeaderFromBytes(const std::vector<uint8_t> &bytes) {
         throw IncorrectFormat();
     }
 
-    // NOLINTNEXTLINE(cppcoreguidelines-pro-bounds-pointer-arithmetic, cppcoreguidelines-pro-type-cstyle-cast)
-    p.flags = ntohs(((uint16_t *)bytes.data())[0]);
-    // NOLINTNEXTLINE(cppcoreguidelines-pro-bounds-pointer-arithmetic, cppcoreguidelines-pro-type-cstyle-cast)
-    p.size = ntohs(((uint16_t *)bytes.data())[1]);
-    // NOLINTNEXTLINE(cppcoreguidelines-pro-bounds-pointer-arithmetic, cppcoreguidelines-pro-type-cstyle-cast)
-    p.number = ntohs(((uint16_t *)bytes.data())[2]);
+    // NOLINTNEXTLINE(cppcoreguidelines-pro-bounds-pointer-arithmetic, cppcoreguidelines-pro-type-reinterpret-cast)
+    p.flags = ntohs(reinterpret_cast<const uint16_t *>(bytes.data())[0]);
+    // NOLINTNEXTLINE(cppcoreguidelines-pro-bounds-pointer-arithmetic, cppcoreguidelines-pro-type-reinterpret-cast)
+    p.size = ntohs(reinterpret_cast<const uint16_t *>(bytes.data())[1]);
+    // NOLINTNEXTLINE(cppcoreguidelines-pro-bounds-pointer-arithmetic, cppcoreguidelines-pro-type-reinterpret-cast)
+    p.number = ntohs(reinterpret_cast<const uint16_t *>(bytes.data())[2]);
 
     return p;
 }
@@ -36,8 +40,8 @@ Packet &Packet::loadCRCFromBytes(const std::vector<uint8_t> &bytes) {
         throw IncorrectFormat();
     }
 
-    // NOLINTNEXTLINE(cppcoreguidelines-pro-bounds-pointer-arithmetic, cppcoreguidelines-pro-type-cstyle-cast)
-    crc32 = ntohl(((uint32_t *)bytes.data())[0]);
+    // NOLINTNEXTLINE(cppcoreguidelines-pro-bounds-pointer-arithmetic, cppcoreguidelines-pro-type-reinterpret-cast)
+    crc32 = ntohl(reinterpret_cast<const uint32_t *>(bytes.data())[0]);
 
     if (crc32 != calculateCRC()) {
         throw IncorrectCRC();

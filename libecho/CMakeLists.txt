@@ -25,14 +25,17 @@ set(SRC_FILES
         ${SRC_DIR}/QTInitializer.cc
         ${SRC_DIR}/AudioStream.h
         ${SRC_DIR}/IAudioConverter.h
-        ${SRC_DIR}/BitAudioConverter.h)
+        ${SRC_DIR}/BitAudioConverter.h
+        ${SRC_DIR}/Packet.h
+        ${SRC_DIR}/Packet.cc)
 
 set(API_FILES
-        ${API_DIR}/echo.h)
+        ${API_DIR}/Echo.h)
 
 
 include_directories(echo PRIVATE ${API_DIR})
 include_directories(echo PRIVATE ${SRC_DIR})
+include_directories(echo PRIVATE external/CRCpp/inc)
 
 add_library(echo SHARED "${SRC_FILES}")
 set_target_properties(echo

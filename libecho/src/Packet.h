@@ -86,8 +86,8 @@ public:
      * @brief Returns data encapsulated in packet.
      */
     const std::vector<uint8_t> &getData();
-    
-    /** 
+
+    /**
      * @brief Indicates that CRC in packet is invalid.
      */
     class IncorrectCRC : public std::exception {
@@ -96,7 +96,7 @@ public:
         }
     };
 
-    /** 
+    /**
      * @brief Thrown when trying to deserialize packet from incorrect data.
      */
     class IncorrectFormat : public std::exception {
@@ -105,7 +105,7 @@ public:
         }
     };
 
-    /** 
+    /**
      * @brief Thrown when someone is trying to encapsulate to large data in packet.
      */
     class OversizedData : public std::exception {

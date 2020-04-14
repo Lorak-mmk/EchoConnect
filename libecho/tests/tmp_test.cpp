@@ -32,7 +32,7 @@ TEST(test_send, tmp_test) {
         vbuffer.push_back(i);
     }
     Echo echo;
-    echo.send(vbuffer);
+//     echo.send(vbuffer);
 }
 
 TEST(test_send, sender_test) {
@@ -42,6 +42,7 @@ TEST(test_send, sender_test) {
     }
     BitSender s(200, 14000, 15000);
     s.send(vbuffer);
+    sleep(10);
 }
 
 // TEST(test_send_receive, tmp_test) {

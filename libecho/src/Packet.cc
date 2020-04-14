@@ -8,6 +8,12 @@
 
 #include "CRC.h"
 
+template <typename T>
+union converter {
+    T a;
+    uint8_t b[sizeof(T)];
+};
+
 Packet Packet::loadHeaderFromBytes(const std::vector<uint8_t> &bytes) {
     Packet p;
 
@@ -53,11 +59,23 @@ Packet &Packet::loadCRCFromBytes(const std::vector<uint8_t> &bytes) {
 std::vector<uint8_t> Packet::toBytes() {
     std::vector<uint8_t> bytes;
     bytes.reserve(FRAME_SIZE + size);
-    bytes.push_back(htons(flags));
-    bytes.push_back(htons(size));
-    bytes.push_back(htons(number));
+    converter<uint16_t> converter_u16;
+    converter<uint32_t> converter_u32;
+
+    converter_u16.a = htons(flags);
+    bytes.insert(bytes.end(), converter_u16.b, converter_u16.b + 2);
+
+    converter_u16.a = htons(size);
+    bytes.insert(bytes.end(), converter_u16.b, converter_u16.b + 2);
+
+    converter_u16.a = htons(number);
+    bytes.insert(bytes.end(), converter_u16.b, converter_u16.b + 2);
+
     bytes.insert(bytes.end(), data.begin(), data.end());
-    bytes.push_back(htonl(crc32));
+
+    converter_u32.a = htonl(crc32);
+    bytes.insert(bytes.end(), converter_u32.b, converter_u32.b + 4);
+
     return bytes;
 }
 

@@ -60,7 +60,7 @@ void BitReceiver::clearInput() {
     input->readBytes(dummy.data(), size);
 }
 
-static QAudioFormat makeFormat() {
+QAudioFormat BitReceiver::getInputFormat() {
     QAudioFormat format;
     format.setByteOrder(BYTEORDER);
     format.setChannelCount(CHANNEL_COUNT);
@@ -71,23 +71,30 @@ static QAudioFormat makeFormat() {
     return format;
 }
 
-BitReceiver::BitReceiver(int lo_freq, int hi_freq, int win_size, int mag_lim)
-    : lo_ratio(static_cast<double>(lo_freq) / SAMPLE_RATE),
-      hi_ratio(static_cast<double>(hi_freq) / SAMPLE_RATE),
-      win_size(win_size),
-      mag_lim(mag_lim) {
-    format = makeFormat();
-    input = std::make_unique<AudioInput>(format);
-    input->startStream();
-
+BitReceiver::BitReceiver(int win_size, int lo_freq, int hi_freq, int mag_lim)
+    : IReceiver(getInputFormat(), win_size), mag_lim(mag_lim) {
+    setLoFrequency(lo_freq);
+    setHiFrequency(hi_freq);
     window.reserve(win_size);
     sync_in.reserve(3 * win_size);
     sync_lo_out.reserve(2 * win_size);
     sync_hi_out.reserve(2 * win_size);
 }
 
-BitReceiver::~BitReceiver() {
-    input->stopStream();
+int BitReceiver::getLoFrequency() {
+    return std::round(lo_ratio * SAMPLE_RATE);
+}
+
+int BitReceiver::getHiFrequency() {
+    return std::round(hi_ratio * SAMPLE_RATE);
+}
+
+void BitReceiver::setLoFrequency(int freq) {
+    lo_ratio = static_cast<double>(freq) / SAMPLE_RATE;
+}
+
+void BitReceiver::setHiFrequency(int freq) {
+    hi_ratio = static_cast<double>(freq) / SAMPLE_RATE;
 }
 
 void BitReceiver::readSamples(int16_t *buffer, int len) {

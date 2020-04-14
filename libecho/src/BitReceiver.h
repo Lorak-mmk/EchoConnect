@@ -9,10 +9,13 @@
 
 class BitReceiver : public IReceiver {
 public:
-    BitReceiver(int lo_freq, int hi_freq, int win_size, int mag_lim);
-    ~BitReceiver();
+    BitReceiver(int win_size, int lo_freq, int hi_freq, int mag_lim);
     virtual int receiveFirst(uint8_t *buffer, int size) override;
     virtual int receive(uint8_t *buffer, int size) override;
+    int getLoFrequency();
+    int getHiFrequency();
+    void setLoFrequency(int freq);
+    void setHiFrequency(int freq);
 
 private:
     void readSamples(int16_t *buffer, int len);
@@ -20,6 +23,7 @@ private:
     int decodeBit(int16_t *window);
     int receiveFirstTwoBits();
     void clearInput();  // TODO: i don't actually know if this is needed
+    static QAudioFormat getInputFormat();
 
     std::vector<int16_t> window;
     std::vector<int16_t> sync_in;
@@ -28,7 +32,6 @@ private:
 
     double lo_ratio;
     double hi_ratio;
-    int win_size;
     int mag_lim;
 };
 

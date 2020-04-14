@@ -86,6 +86,33 @@ public:
      * @brief Returns data encapsulated in packet.
      */
     const std::vector<uint8_t> &getData();
+    
+    /** 
+     * @brief Indicates that CRC in packet is invalid.
+     */
+    class IncorrectCRC : public std::exception {
+        const char *what() const throw() {
+            return "Incorrect package CRC";
+        }
+    };
+
+    /** 
+     * @brief Thrown when trying to deserialize packet from incorrect data.
+     */
+    class IncorrectFormat : public std::exception {
+        const char *what() const throw() {
+            return "Incorrect package format";
+        }
+    };
+
+    /** 
+     * @brief Thrown when someone is trying to encapsulate to large data in packet.
+     */
+    class OversizedData : public std::exception {
+        const char *what() const throw() {
+            return "Too large data";
+        }
+    };
 
 private:
     Packet() {}
@@ -98,24 +125,6 @@ private:
     uint32_t crc32;            /**< Control sum CRC32 of packet. */
 
     friend class PacketBuilder;
-
-    class IncorrectCRC : public std::exception {
-        const char *what() const throw() {
-            return "Incorrect package CRC";
-        }
-    };
-
-    class IncorrectFormat : public std::exception {
-        const char *what() const throw() {
-            return "Incorrect package format";
-        }
-    };
-
-    class OversizedData : public std::exception {
-        const char *what() const throw() {
-            return "Too large data";
-        }
-    };
 };
 
 /**
@@ -124,10 +133,9 @@ private:
 class PacketBuilder {
 public:
     /**
-     * @brief Initialize PacketBuilder instance.
+     * @brief Initializes PacketBuilder instance.
      */
     PacketBuilder() {}
-    PacketBuilder(const PacketBuilder &pb) = delete;
 
     /**
      * @brief Puts data into packet.

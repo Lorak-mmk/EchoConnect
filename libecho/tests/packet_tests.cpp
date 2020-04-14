@@ -1,6 +1,5 @@
 #include <gtest/gtest.h>
 #include <algorithm>
-#include <cassert>
 #include <cstdint>
 #include <string>
 #include <vector>
@@ -15,7 +14,9 @@
 #include "Packet.h"
 
 uint16_t SIZE = 3, NUM = 2137;
+
 const std::vector<Flag> SET_FLAGS{Flag::ACK, Flag::DMD, Flag::LPC}, UNSET_FLAGS{Flag::SYN, Flag::FIN, Flag::RST};
+
 const std::vector<uint8_t> header{0, 38, 0, 3, 8, 89}, data{13, 4, 55}, incorrect_header{10, 37, 0, 4, 1, 2, 70},
     incorrect_data_small{1}, incorrect_data_big{12, 34, 56, 78}, incorrect_crc_format_small{12},
     incorrect_crc_format_big{12, 13, 14, 16, 17}, incorrect_crc{1, 1, 1, 1};
@@ -36,10 +37,13 @@ TEST(tests_packet, test_loadHeaderFromBytes) {
     auto p = Packet::loadHeaderFromBytes(header);
     ASSERT_EQ(SIZE, p.getSize());
     ASSERT_EQ(NUM, p.getNumber());
-    for (auto f : SET_FLAGS)
+
+    for (auto f : SET_FLAGS) {
         ASSERT_TRUE(p.isSet(f));
-    for (auto f : UNSET_FLAGS)
+    }
+    for (auto f : UNSET_FLAGS) {
         ASSERT_FALSE(p.isSet(f));
+    }
 }
 
 TEST(tests_packet, test_incorrect_loadHeaderFromBytes) {
@@ -119,11 +123,12 @@ TEST(tests_packet, test_isSet) {
 
     auto p = pb.getPacket();
 
-    for (auto f : SET_FLAGS)
+    for (auto f : SET_FLAGS) {
         ASSERT_TRUE(p.isSet(f));
-
-    for (auto f : UNSET_FLAGS)
+    }
+    for (auto f : UNSET_FLAGS) {
         ASSERT_FALSE(p.isSet(f));
+    }
 }
 
 TEST(tests_packet_builder, test_PacketBuilder) {
@@ -135,11 +140,12 @@ TEST(tests_packet_builder, test_PacketBuilder) {
     ASSERT_EQ(p.getNumber(), 0);
     ASSERT_EQ(d.size(), 0);
 
-    for (auto f : SET_FLAGS)
+    for (auto f : SET_FLAGS) {
         ASSERT_FALSE(p.isSet(f));
-
-    for (auto f : UNSET_FLAGS)
+    }
+    for (auto f : UNSET_FLAGS) {
         ASSERT_FALSE(p.isSet(f));
+    }
 }
 
 TEST(tests_packet_builder, test_setData) {
@@ -153,8 +159,9 @@ TEST(tests_packet_builder, test_setData) {
     ASSERT_EQ(s, data.size());
     ASSERT_EQ(s, d.size());
 
-    for (size_t i = 0; i < data.size(); i++)
+    for (size_t i = 0; i < data.size(); i++) {
         ASSERT_EQ(data[i], d[i]);
+    }
 
     std::vector<uint8_t> v(MAX_DATA_SIZE + 10);
     ASSERT_THROW(pb.setData(v), Packet::OversizedData);
@@ -167,8 +174,9 @@ TEST(tests_packet_builder, test_setData) {
     ASSERT_EQ(s, data.size());
     ASSERT_EQ(s, d.size());
 
-    for (size_t i = 0; i < data.size(); i++)
+    for (size_t i = 0; i < data.size(); i++) {
         ASSERT_EQ(data[i], d[i]);
+    }
 
     pb.setData(incorrect_data_big);
     p = pb.getPacket();
@@ -179,32 +187,39 @@ TEST(tests_packet_builder, test_setData) {
     ASSERT_EQ(s, incorrect_data_big.size());
     ASSERT_EQ(s, d.size());
 
-    for (size_t i = 0; i < data.size(); i++)
+    for (size_t i = 0; i < data.size(); i++) {
         ASSERT_EQ(incorrect_data_big[i], d[i]);
+    }
 }
 
 TEST(tests_packet_builder, test_setFlag) {
     auto pb = PacketBuilder();
 
-    for (auto f : SET_FLAGS)
+    for (auto f : SET_FLAGS) {
         pb.setFlag(f);
+    }
 
     auto p = pb.getPacket();
 
-    for (auto f : SET_FLAGS)
+    for (auto f : SET_FLAGS) {
         ASSERT_TRUE(p.isSet(f));
-    for (auto f : UNSET_FLAGS)
+    }
+    for (auto f : UNSET_FLAGS) {
         ASSERT_FALSE(p.isSet(f));
+    }
 
-    for (auto f : SET_FLAGS)
+    for (auto f : SET_FLAGS) {
         pb.setFlag(f);
+    }
 
     p = pb.getPacket();
 
-    for (auto f : SET_FLAGS)
+    for (auto f : SET_FLAGS) {
         ASSERT_TRUE(p.isSet(f));
-    for (auto f : UNSET_FLAGS)
+    }
+    for (auto f : UNSET_FLAGS) {
         ASSERT_FALSE(p.isSet(f));
+    }
 }
 
 TEST(tests_packet_builder, test_setNumber) {
@@ -234,10 +249,12 @@ TEST(tests_packet_builder, test_getPacket) {
         ASSERT_EQ(d[i], data[i]);
     }
 
-    for (auto f : SET_FLAGS)
+    for (auto f : SET_FLAGS) {
         ASSERT_TRUE(p.isSet(f));
-    for (auto f : UNSET_FLAGS)
+    }
+    for (auto f : UNSET_FLAGS) {
         ASSERT_FALSE(p.isSet(f));
+    }
 }
 
 TEST(tests_packet_builder, test_getBytes) {

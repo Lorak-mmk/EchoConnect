@@ -1,0 +1,3 @@
+[submodule "libecho/external/CRCpp"]
+	path = libecho/external/CRCpp
+	url = https://github.com/d-bahr/CRCpp.git

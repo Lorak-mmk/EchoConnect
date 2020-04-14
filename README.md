@@ -33,6 +33,8 @@ Projekt ma docelowo umożliwiać łatwą komunikację pomiędzy komputerami nie 
 
 ## Budowanie:
 ```shell script
+git clone --recurse-submodules https://github.com/Lorak-mmk/EchoConnect.git
+cd EchoConnect
 mkdir -p build
 cd build
 cmake .. -DCMAKE_BUILD_TYPE=Release

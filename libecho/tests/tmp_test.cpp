@@ -1,6 +1,8 @@
 #include <gtest/gtest.h>
 #include <QtCore/QFile>
 
+#include "Echo.h"
+#include "BitSender.h"
 #include <cassert>
 
 #include <stdlib.h>
@@ -23,6 +25,7 @@
         execlp("/usr/bin/aplay", "aplay", "sample.wav", NULL);
     }
 }
+*/
 TEST(test_send, tmp_test) {
     std::vector<uint8_t> vbuffer;
     for (int i = 0; i < 256; i++) {
@@ -30,7 +33,16 @@ TEST(test_send, tmp_test) {
     }
     Echo echo;
     echo.send(vbuffer);
-}*/
+}
+
+TEST(test_send, sender_test) {
+    std::vector<uint8_t> vbuffer;
+    for (int i = 0; i < 256; i++) {
+        vbuffer.push_back(i);
+    }
+    BitSender s(200, 14000, 15000);
+    s.send(vbuffer);
+}
 
 // TEST(test_send_receive, tmp_test) {
 //     srand(time(nullptr));
@@ -73,4 +85,3 @@ TEST(test_send, tmp_test) {
 //             exit(1);
 //     }
 // }
-

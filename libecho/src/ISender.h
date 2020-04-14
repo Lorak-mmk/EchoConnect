@@ -18,32 +18,35 @@ public:
      *
      * Derived classes must call it.
      *
-     * @param format        Audio stream output format.
-     * @param windowSize    How much of bitrate we want to use to play sound in which unit data is encoded.
+     * @param format    Audio stream output format.
+     * @param winSize   How much of bitrate we want to use to play sound in which unit data is encoded.
      */
-    ISender(QAudioFormat format, int windowSize) : format(format), windowSize(windowSize) {
+    ISender(QAudioFormat format, int winSize) : format(format), winSize(winSize) {
         output = std::make_unique<AudioOutput>(format);
+        output->startStream();
     }
 
     /**
      * @brief Default object destructor.
      */
-    virtual ~ISender() {}
-
-    /**
-     * @brief windowSize member getter.
-     */
-    int getWindowSize() {
-        return windowSize;
+    virtual ~ISender() {
+        output->stopStream();
     }
 
     /**
-     * @brief windowSize member setter.
+     * @brief winSize member getter.
+     */
+    int getWindowSize() {
+        return winSize;
+    }
+
+    /**
+     * @brief winSize member setter.
      *
-     * @param newSize   New windowSize value.
+     * @param newSize   New winSize value.
      */
     void setWindowSize(int newSize) {
-        windowSize = newSize;
+        winSize = newSize;
     }
 
     /**
@@ -55,9 +58,9 @@ public:
     virtual void send(const std::vector<uint8_t> &buffer) = 0;
 
 protected:
-    std::unique_ptr<AudioOutput> output; /**< Output audio device. */
     const QAudioFormat format;           /**< Audio stream output format. */
-    int windowSize;                      /**< Says how much of bitrate we want to use
+    std::unique_ptr<AudioOutput> output; /**< Output audio device. */
+    int winSize;                         /**< Says how much of bitrate we want to use
                                               to play sound in which unit od data is encoded. */
 };
 

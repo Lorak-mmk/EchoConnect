@@ -26,12 +26,14 @@ set(SRC_FILES
         ${SRC_DIR}/AudioStream.h
         ${SRC_DIR}/IAudioConverter.h
         ${SRC_DIR}/BitAudioConverter.h
+        ${SRC_DIR}/IReceiver.h
+        ${SRC_DIR}/BitReceiver.cc
+        ${SRC_DIR}/BitReceiver.h
         ${SRC_DIR}/Packet.h
         ${SRC_DIR}/Packet.cc)
 
 set(API_FILES
         ${API_DIR}/Echo.h)
-
 
 include_directories(echo PRIVATE ${API_DIR})
 include_directories(echo PRIVATE ${SRC_DIR})

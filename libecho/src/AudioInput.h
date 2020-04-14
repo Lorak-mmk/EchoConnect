@@ -12,7 +12,7 @@ class AudioInput : public AudioStream<QAudioInput> {
 public:
     /**
      * @brief Constructs AudioInput object.
-     
+
      * @param format    Parameters for stream, passed to QAudioOutput.
      */
     explicit AudioInput(const QAudioFormat &format);

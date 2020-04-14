@@ -3,6 +3,7 @@
 
 #include "Echo.h"
 #include "BitSender.h"
+#include "BitReceiver.h"
 #include <cassert>
 
 #include <stdlib.h>
@@ -32,7 +33,7 @@ TEST(test_send, tmp_test) {
         vbuffer.push_back(i);
     }
     Echo echo;
-//     echo.send(vbuffer);
+    echo.send(vbuffer);
 }
 
 TEST(test_send, sender_test) {
@@ -43,6 +44,16 @@ TEST(test_send, sender_test) {
     BitSender s(200, 14000, 15000);
     s.send(vbuffer);
     sleep(10);
+}
+    
+
+TEST(test_sync, tmp_test) {
+    // uint8_t buff[10];
+    // BitReceiver receiver(600, 14000, 15000, 6);
+    // receiver.receiveFirst(buff, 10);
+    // for (int i = 0; i < 10; i++) {
+    // printf("%02hhx ", buff[i]);
+    //}
 }
 
 // TEST(test_send_receive, tmp_test) {

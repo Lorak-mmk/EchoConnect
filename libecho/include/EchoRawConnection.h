@@ -14,21 +14,24 @@
 class EchoRawConnection {
 public:
     /**
-     * @brief Initializes EchoRawConnection object which allows data audio transfer by encoding every bit of information
+     * @brief Returns pointer to EchoRawConnection object which allows data audio transfer by encoding every bit of information
      * separately.
      *
      * For data transfer, frequencies in which we encode(send) and decode(receive) every bit
      * (respectively loFreq for 0 value and hiFreq for 1 value) are specified.
      * Then each bit is being send for a winSize long period of time.
+     * 
+     * @warning Caller needs to remember about calling delete on return pointer or wrapping it in some smart_ptr!
+     * 
      * @param winSize       How much of bitrate we want to use to play sound in which we encode bit.
      * @param receiveLoFreq Frequency used to decode bits of value 0 when receving data.
      * @param receiveLoFreq Frequency used to decode bits of value 1 when receiving data.
      * @param sendLoFreq    Frequency used to encode bits of value 0 when sending data.
      * @param sendHiFreq    Frequency used to encode bits of value 1 when sending data.
      * @param magLim        TODO: PawelA
-     * @return              Desired EchoRawConnection object.
+     * @return              Pointer to desired EchoRawConnection object.
      */
-    static EchoRawConnection &getBitEchoRawConnection(int winSize, int receiveLoFreq, int receiveHiFreq, int sendLoFreq,
+    static EchoRawConnection *getBitEchoRawConnection(int winSize, int receiveLoFreq, int receiveHiFreq, int sendLoFreq,
                                                       int sendHiFreq, int magLim);
 
     /**

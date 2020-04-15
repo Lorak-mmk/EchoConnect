@@ -2,11 +2,11 @@
 #include "BitReceiver.h"
 #include "BitSender.h"
 
-EchoRawConnectionImpl &EchoRawConnectionImpl::getBitEchoRawConnection(int winSize, int receiveLoFreq, int receiveHiFreq,
+EchoRawConnectionImpl *EchoRawConnectionImpl::getBitEchoRawConnection(int winSize, int receiveLoFreq, int receiveHiFreq,
                                                                       int sendLoFreq, int sendHiFreq, int magLim) {
-    EchoRawConnectionImpl echorc;
-    echorc.receiver = std::make_unique<BitReceiver>(winSize, receiveLoFreq, receiveHiFreq, magLim);
-    echorc.sender = std::make_unique<BitSender>(winSize, sendLoFreq, sendHiFreq);
+    EchoRawConnectionImpl* echorc = new EchoRawConnectionImpl;
+    echorc->receiver = std::make_unique<BitReceiver>(winSize, receiveLoFreq, receiveHiFreq, magLim);
+    echorc->sender = std::make_unique<BitSender>(winSize, sendLoFreq, sendHiFreq);
     return echorc;
 }
 

@@ -56,7 +56,7 @@ private:
         std::vector<T> result;
         result.reserve(this->encryptedByteSize);
 
-        for (int i = 0; i < 8; i++) {
+        for (unsigned i = 0; i < CHAR_BIT * sizeof(data); i++) {
             int bit = (data >> i) & 1;
             int freq = (bit == 1) ? hiFreq : loFreq;
             for (int t = 0; t < this->windowSize; t++) {

@@ -14,6 +14,7 @@ public:
 
     static size_t encodedLength(size_t bytesCount);
     static size_t decodedLength(size_t bitCount);
+
 private:
     static constexpr bool nthBit(uint8_t num, uint8_t idx);
 

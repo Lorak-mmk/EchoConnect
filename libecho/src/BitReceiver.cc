@@ -1,6 +1,6 @@
 #include "BitReceiver.h"
-#include "HammingCode.h"
 #include <cmath>
+#include "HammingCode.h"
 
 static const int SAMPLE_RATE = 44100;
 static const int SAMPLE_SIZE = 16;
@@ -199,30 +199,30 @@ void BitReceiver::receiveBits(std::vector<bool> &vec, int offset) {
 }
 
 int BitReceiver::receiveFirst(uint8_t *buffer, int size) {
-	HammingCode hamming;
+    HammingCode hamming;
 
-	std::vector<bool> bits;
-	bits.resize(HammingCode::encodedLength(size));
+    std::vector<bool> bits;
+    bits.resize(HammingCode::encodedLength(size));
 
-	int first_two = receiveFirstTwoBits();
-	bits[0] = first_two & 1;
-	bits[1] = first_two & 2;
-	receiveBits(bits, 2);
-	std::vector<uint8_t> decoded = hamming.decode(bits);
-	memcpy(buffer, decoded.data(), size);
+    int first_two = receiveFirstTwoBits();
+    bits[0] = first_two & 1;
+    bits[1] = first_two & 2;
+    receiveBits(bits, 2);
+    std::vector<uint8_t> decoded = hamming.decode(bits);
+    memcpy(buffer, decoded.data(), size);
 
     return size;
 }
 
 int BitReceiver::receive(uint8_t *buffer, int size) {
-	HammingCode hamming;
+    HammingCode hamming;
 
-	std::vector<bool> bits;
-	bits.resize(HammingCode::encodedLength(size));
+    std::vector<bool> bits;
+    bits.resize(HammingCode::encodedLength(size));
 
-	receiveBits(bits, 0);
-	std::vector<uint8_t> decoded = hamming.decode(bits);
-	memcpy(buffer, decoded.data(), size);
+    receiveBits(bits, 0);
+    std::vector<uint8_t> decoded = hamming.decode(bits);
+    memcpy(buffer, decoded.data(), size);
 
     return size;
 }

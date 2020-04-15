@@ -49,8 +49,8 @@ std::vector<SampleType> BitSender::encodeByte(uint8_t data) {
     std::vector<SampleType> result;
     result.reserve(winSize * SOUNDS_PER_BYTE);
 
-	HammingCode hamming;
-	std::vector<uint8_t> data_vec = {data}; // TODO: this is really slow
+    HammingCode hamming;
+    std::vector<uint8_t> data_vec = {data};  // TODO: this is really slow
     std::vector<bool> hammingEnc = hamming.encode(data_vec);
 
     // NOLINTNEXTLINE(cppcoreguidelines-avoid-magic-numbers, readability-magic-numbers)

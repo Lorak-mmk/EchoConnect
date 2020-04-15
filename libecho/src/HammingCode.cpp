@@ -32,11 +32,11 @@ std::vector<uint8_t> HammingCode::decode(const std::vector<bool> &data) {
     return result;
 }
 
-constexpr size_t HammingCode::encodedLength(size_t bytesCount) {
+size_t HammingCode::encodedLength(size_t bytesCount) {
     return bytesCount * BITS_PER_BYTE;
 }
 
-constexpr size_t HammingCode::decodedLength(size_t bitCount) {
+size_t HammingCode::decodedLength(size_t bitCount) {
     if (bitCount % BITS_PER_BYTE) {
         throw std::invalid_argument("Bits number must be divisible by BITS_PER_BYTE");
     }

@@ -20,7 +20,6 @@ void AudioOutput::tryWriteData() {
     if (bytesToWrite == 0) {
         return;
     }
-    qDebug() << "Pushing" << bytesToWrite << "bytes to output audio buffer";
     qDevice->write(buffer, bytesToWrite);
     buffer.remove(0, bytesToWrite);
 }

@@ -22,6 +22,7 @@ private:
     int stepShift(double *buffer, int size);
     int decodeBit(int16_t *window);
     int receiveFirstTwoBits();
+	void receiveBits(std::vector<bool> &vec, int offset);
     void clearInput();  // TODO: i don't actually know if this is needed
     static QAudioFormat getInputFormat();
 

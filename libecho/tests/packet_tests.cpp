@@ -15,7 +15,7 @@
 
 uint16_t SIZE = 3, NUM = 2137;
 
-const std::vector<Flag> SET_FLAGS{Flag::ACK, Flag::DMD, Flag::LPC}, UNSET_FLAGS{Flag::SYN, Flag::FIN, Flag::RST};
+const std::vector<Flag> SET_FLAGS{Flag::ACK1, Flag::DMD, Flag::LPC}, UNSET_FLAGS{Flag::SYN, Flag::FIN, Flag::RST};
 
 const std::vector<uint8_t> header{0, 38, 0, 3, 8, 89}, data{13, 4, 55}, incorrect_header{10, 37, 0, 4, 1, 2, 70},
     incorrect_data_small{1}, incorrect_data_big{12, 34, 56, 78}, incorrect_crc_format_small{12},

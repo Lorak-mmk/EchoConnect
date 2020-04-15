@@ -12,9 +12,9 @@ public:
 
     std::vector<uint8_t> decode(const std::vector<bool> &data);
 
+    static size_t encodedLength(size_t bytesCount);
+    static size_t decodedLength(size_t bitCount);
 private:
-    static constexpr size_t encodedLength(size_t bytesCount);
-    static constexpr size_t decodedLength(size_t bitCount);
     static constexpr bool nthBit(uint8_t num, uint8_t idx);
 
     void encodeHalfByte(std::vector<bool> &dest, size_t start_index, uint8_t data);

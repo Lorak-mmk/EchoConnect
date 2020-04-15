@@ -1,5 +1,6 @@
 #include "BitReceiver.h"
 #include <cmath>
+#include "HammingCode.h"
 
 static const int SAMPLE_RATE = 44100;
 static const int SAMPLE_SIZE = 16;
@@ -117,8 +118,7 @@ int BitReceiver::stepShift(const double *buffer, int size) {
     // TODO: this cutoff point is loosely dependent on the window size and the
     // volume and noisiness of the microphone. I don't think there's a reasonable
     // way to compute this, but who knows. For now it's just hardcoded.
-    // NOLINTNEXTLINE(cppcoreguidelines-avoid-magic-numbers, readability-magic-numbers)
-    double diff_min = 10;
+    double diff_min = 200;
     int res = -1;
 
     for (int i = 0; i < size; i++) {
@@ -191,41 +191,40 @@ int BitReceiver::receiveFirstTwoBits() {
     return res;
 }
 
-int BitReceiver::receiveFirst(uint8_t *buffer, int size) {
-    uint8_t byte = 0;
-
-    clearInput();
-
-    byte = receiveFirstTwoBits();
-    for (int j = 2; j < CHAR_BIT; j++) {
+void BitReceiver::receiveBits(std::vector<bool> &vec, int offset) {
+    for (unsigned i = offset; i < vec.size(); i++) {
         readSamples(window.data(), win_size);
-        byte |= decodeBit(window.data()) << j;
+        vec[i] = decodeBit(window.data());
     }
-    buffer[0] = byte;
+}
 
-    for (int i = 1; i < size; i++) {
-        byte = 0;
-        for (int j = 0; j < CHAR_BIT; j++) {
-            readSamples(window.data(), win_size);
-            byte |= decodeBit(window.data()) << j;
-        }
-        buffer[i] = byte;
-    }
+int BitReceiver::receiveFirst(uint8_t *buffer, int size) {
+    HammingCode hamming;
+
+    std::vector<bool> bits;
+    bits.resize(HammingCode::encodedLength(size));
+
+    int first_two = receiveFirstTwoBits();
+    bits[0] = first_two & 1;
+    bits[1] = first_two & 2;
+    receiveBits(bits, 2);
+    hamming.fixErrors(bits);
+    std::vector<uint8_t> decoded = hamming.decode(bits);
+    memcpy(buffer, decoded.data(), size);
 
     return size;
 }
 
 int BitReceiver::receive(uint8_t *buffer, int size) {
-    uint8_t byte;
+    HammingCode hamming;
 
-    for (int i = 0; i < size; i++) {
-        byte = 0;
-        for (int j = 0; j < CHAR_BIT; j++) {
-            readSamples(window.data(), win_size);
-            byte |= decodeBit(window.data()) << j;
-        }
-        buffer[i] = byte;
-    }
+    std::vector<bool> bits;
+    bits.resize(HammingCode::encodedLength(size));
+
+    receiveBits(bits, 0);
+    hamming.fixErrors(bits);
+    std::vector<uint8_t> decoded = hamming.decode(bits);
+    memcpy(buffer, decoded.data(), size);
 
     return size;
 }

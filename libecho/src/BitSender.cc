@@ -1,4 +1,5 @@
 #include "BitSender.h"
+#include "HammingCode.h"
 
 #include <cmath>
 #include <iostream>
@@ -48,9 +49,12 @@ std::vector<SampleType> BitSender::encodeByte(uint8_t data) {
     std::vector<SampleType> result;
     result.reserve(winSize * SOUNDS_PER_BYTE);
 
+    HammingCode hamming;
+    std::vector<uint8_t> data_vec = {data};  // TODO: this is really slow
+    std::vector<bool> hammingEnc = hamming.encode(data_vec);
+
     // NOLINTNEXTLINE(cppcoreguidelines-avoid-magic-numbers, readability-magic-numbers)
-    for (unsigned int i = 0; i < CHAR_BIT * sizeof(data); i++) {
-        int bit = (data >> i) & 1;
+    for (bool bit : hammingEnc) {
         int freq = (bit == 1) ? hiFreq : loFreq;
         for (int t = 0; t < winSize; t++) {
             result.emplace_back(audioWave(freq, t));

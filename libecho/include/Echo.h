@@ -4,9 +4,7 @@
 #include "QTInitializer.h"
 
 /**
- * @brief Public API for libecho.
- *
- * All functionalities provided by the library will be usable through Echo class methods.
+ * @brief Public API for possibly neccessary libecho initialization.
  */
 class Echo {
 public:

@@ -33,8 +33,7 @@ set(SRC_FILES
 
 set(API_FILES
         ${API_DIR}/Echo.h
-        ${API_DIR}/EchoRawConnection.h
-        ${SRC_DIR}/QTInitializer.cc)
+        ${API_DIR}/EchoRawConnection.h)
 
 include_directories(echo PRIVATE ${API_DIR})
 include_directories(echo PRIVATE ${SRC_DIR})

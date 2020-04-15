@@ -6,70 +6,174 @@
 #include <limits>
 #include <vector>
 
-static constexpr size_t HEADER_SIZE = 6;
-static constexpr size_t CRC_SIZE = 4;
-static constexpr size_t FRAME_SIZE = HEADER_SIZE + CRC_SIZE;
-static constexpr size_t MAX_DATA_SIZE = std::numeric_limits<uint16_t>::max();
+static constexpr size_t HEADER_SIZE = 6;                     /**< Size of packet header in bytes. */
+static constexpr size_t CRC_SIZE = 4;                        /**< Size of control sum of packet in bytes. */
+static constexpr size_t FRAME_SIZE = HEADER_SIZE + CRC_SIZE; /**< Size of packet frame in bytes. */
+static constexpr size_t MAX_DATA_SIZE =
+    std::numeric_limits<uint16_t>::max(); /**< Maximum size of data send in packet in bytes. */
 
+/**
+ * @brief Enum representing flags with which packet may be marked.
+ */
 enum Flag : uint16_t {
-    SYN = 1 << 0,  // Synchronization
-    ACK = 1 << 1,  // Acknowledgement
-    DMD = 1 << 2,  // Demand resend
-    FIN = 1 << 3,  // Finish
-    RST = 1 << 4,  // Reset
-    LPC = 1 << 5   // Last packet
+    SYN = 1 << 0, /**< Synchronization: used in connection initialization, only first send packet should have that flag
+                     set. */
+    ACK = 1 << 1, /**< Acknowledgement: used to confirm something, ex. creating a connection or that packets were
+                     received coffectly. */
+    DMD = 1 << 2, /**< Demand resend: used to inform that some packet from were incorrect or lost and there is need to
+                     resend them. */
+    FIN = 1 << 3, /**< Finish: used to inform that party is ending connection. */
+    RST = 1 << 4, /**< Reset: used to break the connection brutally. */
+    LPC = 1 << 5  /**< Last packet: informs that this is the last packet in a group of consecutive packets. */
 };
 
+/**
+ * @brief Class representing packets used to encapsulate and send data through audio.
+ */
 class Packet {
 public:
+    /**
+     * @brief Constructs (deserializes) a packet with only flags, size and number set from raw bytes.
+     *
+     * @param bytes             Raw bytes from which we build packet header.
+     * @throws IncorrectFormat  Thrown when size of @p bytes is different than expected size of packet header.
+     */
     static Packet loadHeaderFromBytes(const std::vector<uint8_t> &bytes);
+
+    /**
+     * @brief Loads (deserializes) data to packet from given raw bytes.
+     *
+     * @param bytes             Raw bytes from which we restore packet data.
+     * @throws IncorrectFormat  Thrown when size of @p bytes is different than size set in packet.
+     */
     Packet &loadDataFromBytes(const std::vector<uint8_t> &bytes);
+
+    /**
+     * @brief Loads (deserializes) CRC sum to packet from given raw bytes and check whether gained packet is vaild.
+     *
+     * @param bytes             Raw bytes from which we restore packet CRC.
+     * @throws IncorrectFormat  Thrown when size of @p bytes is different than expected size of CRC.
+     * @throws IncorrectCRC     Thrown when leaded CRC sum is different than one calculated from data.
+     */
     Packet &loadCRCFromBytes(const std::vector<uint8_t> &bytes);
+
+    /**
+     * @brief Serializes packet.
+     *
+     * @return Bytes representing serialized packet.
+     */
     std::vector<uint8_t> toBytes();
+
+    /**
+     * @brief Checks whether given flag is set in the packet.
+     *
+     * @param f Checked flag.
+     * @return  Returns @p true if given flag is set, otherwise @p false.
+     */
     bool isSet(Flag f);
+
+    /**
+     * @brief Returns size of packet encapsulated data.
+     */
     uint16_t getSize();
+
+    /**
+     * @brief Returns sequential number of packet.
+     */
     uint16_t getNumber();
+
+    /**
+     * @brief Returns data encapsulated in packet.
+     */
     const std::vector<uint8_t> &getData();
 
-private:
-    Packet() = default;
-    uint32_t calculateCRC();
-    void updateCRC();
-    uint16_t flags;
-    uint16_t size;
-    uint16_t number;
-    std::vector<uint8_t> data;
-    uint32_t crc32;
-
-    friend class PacketBuilder;
-
+    /**
+     * @brief Indicates that CRC in packet is invalid.
+     */
     class IncorrectCRC : public std::exception {
         const char *what() const throw() {
             return "Incorrect package CRC";
         }
     };
 
+    /**
+     * @brief Thrown when trying to deserialize packet from incorrect data.
+     */
     class IncorrectFormat : public std::exception {
         const char *what() const throw() {
             return "Incorrect package format";
         }
     };
 
+    /**
+     * @brief Thrown when someone is trying to encapsulate to large data in packet.
+     */
     class OversizedData : public std::exception {
         const char *what() const throw() {
             return "Too large data";
         }
     };
+
+private:
+    Packet() {}
+    uint32_t calculateCRC();
+    void updateCRC();
+    uint16_t flags = 0;        /**< Respresents flags set in packet. */
+    uint16_t size = 0;         /**< Size of data encapsulated in packet. */
+    uint16_t number = 0;       /**< Sequential number of packet. */
+    std::vector<uint8_t> data; /**< Data encapsulated in packet. */
+    uint32_t crc32;            /**< Control sum CRC32 of packet. */
+
+    friend class PacketBuilder;
 };
 
+/**
+ * @brief Builder class for Packets.
+ */
 class PacketBuilder {
 public:
-    PacketBuilder() = default;
-    PacketBuilder(const PacketBuilder &pb) = delete;
+    /**
+     * @brief Initializes PacketBuilder instance.
+     */
+    PacketBuilder() {}
+
+    /**
+     * @brief Puts data into packet.
+     *
+     * @param data              Data to encapsulate.
+     * @return                  Reference to itself.
+     * @throws OversizedData    Throws when given @p data size exceeds MAX_DATA_SIZE.
+     */
     PacketBuilder &setData(const std::vector<uint8_t> &data);
+
+    /**
+     * @brief Marks packet with given flag.
+     *
+     * @param f Flag to set.
+     * @return  Reference to itself.
+     */
     PacketBuilder &setFlag(Flag f);
+
+    /**
+     * @brief Sets sequential number of packet.
+     *
+     * @param num    Number to set.
+     * @return          Reference to itself.
+     */
     PacketBuilder &setNumber(uint16_t num);
+
+    /**
+     * @brief Builds a packet created using PacketBuilder.
+     *
+     * @return  Created packet.
+     */
     Packet getPacket();
+
+    /**
+     * @brief Builds and serializes packet created using PacketBuilder.
+     *
+     * @return Serialization of created packet.
+     */
     std::vector<uint8_t> getBytes();
 
 private:

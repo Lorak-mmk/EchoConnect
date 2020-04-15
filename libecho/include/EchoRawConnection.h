@@ -5,9 +5,6 @@
 #include <memory>
 #include <vector>
 
-#include "IReceiver.h"
-#include "ISender.h"
-
 /**
  * @brief Public API for raw data through sound sending provided by libecho.
  */
@@ -64,10 +61,6 @@ public:
      * @return          Size of read data.
      */
     virtual int receive(uint8_t *buffer, int size) = 0;
-
-private:
-    std::unique_ptr<IReceiver> receiver; /**< Receiver used by instance. */
-    std::unique_ptr<ISender> sender;     /**< Sender used by instance. */
 };
 
 #endif  // ECHOCONNECT_ECHO_RAW_CONNECTION_H

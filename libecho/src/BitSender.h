@@ -3,7 +3,7 @@
 
 #include "ISender.h"
 
-using SampleType = int8_t;
+using SampleType = uint8_t;
 /**< Type in which we keep audio samples. */
 
 /**

@@ -9,10 +9,10 @@ const char *OUTPUT_CODEC = "audio/pcm";
 const int OUTPUT_SAMPLERATE = 44100;
 const int OUTPUT_SAMPLESIZE = 8;
 const QAudioFormat::SampleType OUTPUT_SAMPLETYPE = QAudioFormat::UnSignedInt;
-/**^ QAudioFormat settings we use while sending audio. */
+/* ^ QAudioFormat settings we use while sending audio. */
 
-static constexpr size_t SOUNDS_PER_BYTE =
-    8; /**< States the number of sounds we need to play to encode a byte of data. */
+/* v States the number of sounds we need to play to encode a byte of data. */
+static constexpr size_t SOUNDS_PER_BYTE = 8;
 
 QAudioFormat BitSender::getOutputFormat() {
     QAudioFormat result;

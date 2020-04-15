@@ -29,12 +29,12 @@ jobs:
       with:
         submodules: true
 
-    #- name: Cache dependencies
-    #  id: cache-deps
-    #  uses: actions/cache@v1
-    #  with:
-    #    path: ${{ env.DEPS_DIR }}
-    #    key: ${{ runner.os }}-dependencies
+    - name: Cache dependencies
+      id: cache-deps
+      uses: actions/cache@v1
+      with:
+        path: ${{ env.DEPS_DIR }}
+        key: ${{ runner.os }}-dependencies
 
     - name: Install PulseAudio, Doxygen
       run: sudo apt-get install libpulse-dev doxygen graphviz clang-tidy-9
@@ -44,10 +44,10 @@ jobs:
       with:
         dir: ${{ env.DEPS_DIR }}
         version: 5.12.7
-    #    cached: ${{ steps.cache-deps.outputs.cache-hit }}
+        cached: ${{ steps.cache-deps.outputs.cache-hit }}
 
     - name: Download and build GoogleTest
-    #  if: steps.cache-deps.outputs.cache-hit != 'true'
+      if: steps.cache-deps.outputs.cache-hit != 'true'
       run: |
         git clone https://github.com/google/googletest.git
         cd googletest

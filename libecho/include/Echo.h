@@ -1,10 +1,13 @@
 #ifndef ECHOCONNECT_ECHO_H
 #define ECHOCONNECT_ECHO_H
 
+#include "EchoRawConnection.h"
 #include "QTInitializer.h"
 
 /**
- * @brief Public API for possibly neccessary libecho initialization.
+ * @brief Public API for possibly neccessary libecho initialization. Also, includes other libecho API headers.
+ *
+ * As it includes every other libecho API classes it is possible to include only "Echo.h" while using libecho.
  */
 class Echo {
 public:

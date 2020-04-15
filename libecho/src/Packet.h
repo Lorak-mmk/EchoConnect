@@ -24,7 +24,7 @@ enum Flag : uint16_t {
                    resend them. */
     FIN = 1U << 3U, /**< Finish: used to inform that party is ending connection. */
     RST = 1U << 4U, /**< Reset: used to break the connection brutally. */
-    LPC = 1U << 5U,  /**< Last packet: informs that this is the last packet in a group of consecutive packets. */
+    LPC = 1U << 5U, /**< Last packet: informs that this is the last packet in a group of consecutive packets. */
     ACK2 = 1U << 6U /**< Acknowledgement 2: used to confirm receiving of packet with flag AC1. */
 };
 

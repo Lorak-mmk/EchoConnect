@@ -47,6 +47,19 @@ public:
     virtual void send(const std::vector<uint8_t> &buffer) = 0;
 
     /**
+     * @brief Sends given byte sequence and waits until sending finishes.
+     *
+     * Anyone can receive it, and there is no guarantee that received transmission will be correct.
+     * @param buffer    Bytes to send.
+     */
+    virtual void sendBlocking(const std::vector<uint8_t> &buffer) = 0;
+
+    /**
+     * @brief Waits until all sendings finish.
+     */
+    virtual void sendWait() = 0;
+
+    /**
      * @brief Waits for the signal, tries to read @p size bytes, fills @p buffer with received bytes, returns number of
      * read bytes.
      *

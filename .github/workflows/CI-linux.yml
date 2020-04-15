@@ -66,6 +66,7 @@ jobs:
       uses: DoozyX/clang-format-lint-action@v0.5
       with:
         source: './libecho'
+        exclue: './libecho/external'
         extensions: 'h,cpp,cc'
         clangFormatVersion: 9
 

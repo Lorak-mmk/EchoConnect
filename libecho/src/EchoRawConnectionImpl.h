@@ -22,6 +22,11 @@ public:
     void send(const std::vector<uint8_t> &buffer) override;
 
     /**
+     * @brief @see EchoRawConnection::send
+     */
+    void sendBlocking(const std::vector<uint8_t> &buffer) override;
+
+    /**
      * @brief @see EchoRawConnection::receiveFirst
      */
     int receiveFirst(uint8_t *buffer, int size) override;

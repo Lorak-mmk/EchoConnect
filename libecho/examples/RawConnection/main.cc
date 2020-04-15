@@ -1,25 +1,37 @@
 //#include "Echo.h"
 
-#include <iostream>
-#include <fstream>
 #include <Echo.h>
+#include <cstring>
+#include <fstream>
+#include <iostream>
 
 void printHelp(std::string name) {
-    std::cout << "Usage: " << name << "[-freq num1,num2] [-win num] send (data_bytes))\n";
-    std::cout << "Usage: " << name << "[-freq num1,num2] [-win num] receive bytes_number";
+    std::cout << "Usage: " << name << "[-freq low,high] [-win num] [-magLim num] send (data_bytes))\n";
+    std::cout << "Usage: " << name << "[-freq low,high] [-win num] [-magLim num] receive bytes_number\n";
+    std::cout << "-freq: Set frequency of 0 bit (low) and 1 bit (high)\n";
+    std::cout
+        << "-win: Set window size (time in which 1 bit will be transfered). Higher - less errors, slowe transmition\n";
+    std::cout
+        << "-magLim: Sensitivity of transmission beginning detection. Smaller - transmission may be detected too "
+           "early, higher - not at all."
+           "If message is transmitted loudly, set higher value, if your microphone is silent, set smaller value.\n";
     exit(1);
 }
 
 int main(int argc, char *argv[]) {
-    int freq1;
-    int freq2;
-    int winsize;
+    Echo::initEcho(argc, argv);
+
+    int freq1 = 14000;
+    int freq2 = 15000;
+    int winsize = 50;
+    int magLim = 80;
 
     std::string name = argv[0];
-    argv++; argc--;
+    argv++;
+    argc--;
 
-    if(argc > 0 && argv[0] == std::string("-freq")) {
-        if(argc == 1) {
+    if (argc > 0 && argv[0] == std::string("-freq")) {
+        if (argc == 1) {
             printHelp(name);
         }
         std::string arg = argv[1];
@@ -30,43 +42,64 @@ int main(int argc, char *argv[]) {
         freq1 = std::stoi(sfreq1);
         freq2 = std::stoi(sfreq2);
 
-        argv += 2;argc -= 2;
+        argv += 2;
+        argc -= 2;
     }
 
-    if(argc > 0 && argv[0] == std::string("-win")) {
-        if(argc == 1) {
-            printHelp(name);
-        }
+    if (argc > 1 && argv[0] == std::string("-win")) {
         winsize = std::stoi(argv[1]);
-
-        argv+= 2; argc-= 2;
+        argv += 2;
+        argc -= 2;
     }
 
-    if(argc == 0) {
+    if (argc > 1 && argv[0] == std::string("-magLim")) {
+        magLim = std::stoi(argv[1]);
+        argv += 2;
+        argc -= 2;
+    }
+
+    if (argc == 0) {
         printHelp(name);
     }
 
-    if(argv[0] == std::string("receive")) {
-        argv++; argc--;
+    if (argv[0] == std::string("receive")) {
+        argv++;
+        argc--;
 
-        if(argc == 0) {
+        if (argc == 0) {
             printHelp(name);
         }
         int bytes = std::stoi(argv[0]);
-        argv++; argc--;
+        argv++;
+        argc--;
 
-        // TODO: Receiving & writing;
-    } else if(argv[0] == std::string("send")){
-        argv++; argc--;
+        printf("Receiving %d bytes. Low frequency: %d, high frequency: %d, window size: %d, mag limit: %d\n", bytes,
+               freq1, freq2, winsize, magLim);
+        auto connection = EchoRawConnection::getBitEchoRawConnection(winsize, freq1, freq2, freq1, freq2, magLim);
+        auto *buf = new uint8_t[bytes];
+        connection->receive(buf, bytes);
+        for (int i = 0; i < bytes; i++) {
+            printf("%02hhx ", buf[i]);
+        }
+        delete connection;
 
-        if(argc == 0) {
+    } else if (argv[0] == std::string("send")) {
+        argv++;
+        argc--;
+
+        if (argc == 0) {
             printHelp(name);
         }
 
+        size_t length = strlen(argv[1]);
+        std::vector<uint8_t> data(argv[1], argv[1] + length);
+        printf("Sending %zu bytes. Low frequency: %d, high frequency: %d, window size: %d, mag limit: %d\n", length,
+               freq1, freq2, winsize, magLim);
+        auto connection = EchoRawConnection::getBitEchoRawConnection(winsize, freq1, freq2, freq1, freq2, magLim);
+        connection->send(data);
+        delete connection;
+        printf("Data sent succesfully!\n");
     } else {
         printHelp(name);
     }
-
 }
-
-

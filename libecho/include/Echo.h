@@ -2,7 +2,6 @@
 #define ECHOCONNECT_ECHO_H
 
 #include "EchoRawConnection.h"
-#include "QTInitializer.h"
 
 /**
  * @brief Public API for possibly neccessary libecho initialization. Also, includes other libecho API headers.
@@ -23,9 +22,7 @@ public:
      * @param a_argc    Program's argc from main().
      * @param a_argv    Program's argv from main().
      */
-    static void initEcho(int a_argc, char **a_argv) {
-        static QTInitializer init{a_argc, a_argv};
-    }
+    static void initEcho(int a_argc, char **a_argv);
 };
 
 #endif  // ECHOCONNECT_ECHO_H

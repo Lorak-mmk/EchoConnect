@@ -1,6 +1,4 @@
 #include "EchoRawConnection.h"
-#include "BitReceiver.h"
-#include "BitSender.h"
 #include "EchoRawConnectionImpl.h"
 
 EchoRawConnection *EchoRawConnection::getBitEchoRawConnection(int winSize, int receiveLoFreq, int receiveHiFreq,

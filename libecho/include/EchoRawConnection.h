@@ -31,6 +31,13 @@ public:
     static EchoRawConnection *getBitEchoRawConnection(int winSize, int receiveLoFreq, int receiveHiFreq, int sendLoFreq,
                                                       int sendHiFreq, int magLim);
 
+    virtual ~EchoRawConnection() = default;
+    EchoRawConnection() = default;
+    EchoRawConnection(const EchoRawConnection &other) = delete;
+    EchoRawConnection(EchoRawConnection &&other) noexcept = default;
+    EchoRawConnection &operator=(EchoRawConnection &other) = delete;
+    EchoRawConnection &operator=(EchoRawConnection &&other) noexcept = default;
+
     /**
      * @brief Sends given byte sequence.
      *

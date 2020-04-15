@@ -16,15 +16,15 @@ static constexpr size_t MAX_DATA_SIZE =
  * @brief Enum representing flags with which packet may be marked.
  */
 enum Flag : uint16_t {
-    SYN = 1 << 0, /**< Synchronization: used in connection initialization, only first send packet should have that flag
+    SYN = 1U << 0U, /**< Synchronization: used in connection initialization, only first send packet should have that flag
                      set. */
-    ACK = 1 << 1, /**< Acknowledgement: used to confirm something, ex. creating a connection or that packets were
+    ACK = 1U << 1U, /**< Acknowledgement: used to confirm something, ex. creating a connection or that packets were
                      received coffectly. */
-    DMD = 1 << 2, /**< Demand resend: used to inform that some packet from were incorrect or lost and there is need to
+    DMD = 1U << 2U, /**< Demand resend: used to inform that some packet from were incorrect or lost and there is need to
                      resend them. */
-    FIN = 1 << 3, /**< Finish: used to inform that party is ending connection. */
-    RST = 1 << 4, /**< Reset: used to break the connection brutally. */
-    LPC = 1 << 5  /**< Last packet: informs that this is the last packet in a group of consecutive packets. */
+    FIN = 1U << 3U, /**< Finish: used to inform that party is ending connection. */
+    RST = 1U << 4U, /**< Reset: used to break the connection brutally. */
+    LPC = 1U << 5U  /**< Last packet: informs that this is the last packet in a group of consecutive packets. */
 };
 
 /**
@@ -91,7 +91,7 @@ public:
      * @brief Indicates that CRC in packet is invalid.
      */
     class IncorrectCRC : public std::exception {
-        const char *what() const throw() {
+        [[nodiscard]] const char *what() const noexcept override {
             return "Incorrect package CRC";
         }
     };
@@ -100,7 +100,7 @@ public:
      * @brief Thrown when trying to deserialize packet from incorrect data.
      */
     class IncorrectFormat : public std::exception {
-        const char *what() const throw() {
+        [[nodiscard]] const char *what() const noexcept override {
             return "Incorrect package format";
         }
     };
@@ -109,20 +109,20 @@ public:
      * @brief Thrown when someone is trying to encapsulate to large data in packet.
      */
     class OversizedData : public std::exception {
-        const char *what() const throw() {
+        [[nodiscard]] const char *what() const noexcept override {
             return "Too large data";
         }
     };
 
 private:
-    Packet() {}
+    Packet() = default;
     uint32_t calculateCRC();
     void updateCRC();
     uint16_t flags = 0;        /**< Respresents flags set in packet. */
     uint16_t size = 0;         /**< Size of data encapsulated in packet. */
     uint16_t number = 0;       /**< Sequential number of packet. */
     std::vector<uint8_t> data; /**< Data encapsulated in packet. */
-    uint32_t crc32;            /**< Control sum CRC32 of packet. */
+    uint32_t crc32 = 0;        /**< Control sum CRC32 of packet. */
 
     friend class PacketBuilder;
 };
@@ -135,7 +135,7 @@ public:
     /**
      * @brief Initializes PacketBuilder instance.
      */
-    PacketBuilder() {}
+    PacketBuilder() = default;
 
     /**
      * @brief Puts data into packet.

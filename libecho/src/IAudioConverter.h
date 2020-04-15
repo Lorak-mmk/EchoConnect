@@ -19,7 +19,7 @@ public:
      * @param soundsPerByte How many sounds (units of encoded data) is needed to send a byte - useful when improving
      * performance.
      */
-    IAudioConverter(QAudioFormat inputFormat, QAudioFormat outputFormat, int windowSize, size_t soundsPerByte)
+    IAudioConverter(const QAudioFormat& inputFormat, const QAudioFormat& outputFormat, int windowSize, size_t soundsPerByte)
         : inputFormat(inputFormat), outputFormat(outputFormat), windowSize(windowSize) {
         encryptedByteSize = soundsPerByte * windowSize;
     }
@@ -27,7 +27,7 @@ public:
     /**
      * @brief Default object destructor.
      */
-    virtual ~IAudioConverter() {}
+    virtual ~IAudioConverter() = default;
 
     /**
      * @brief Encodes data to send into audio format.

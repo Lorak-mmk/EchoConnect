@@ -6,7 +6,7 @@
 
 class IReceiver {
 public:
-    IReceiver(QAudioFormat format, int win_size) : format(format), win_size(win_size) {
+    IReceiver(const QAudioFormat& format, int win_size) : format(format), win_size(win_size) {
         input = std::make_unique<AudioInput>(format);
         input->startStream();
     }

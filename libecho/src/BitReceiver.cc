@@ -12,7 +12,7 @@ static double mag(double re, double im) {
     return sqrt(re * re + im * im);
 }
 
-static double dft(int16_t *buffer, int win_size, double ratio) {
+static double dft(const int16_t *buffer, int win_size, double ratio) {
     double re = 0;
     double im = 0;
     double angle = 0;
@@ -28,7 +28,7 @@ static double dft(int16_t *buffer, int win_size, double ratio) {
     return mag(re, im) / static_cast<double>(win_size);
 }
 
-static void dftSlide(int16_t *buffer, int win_size, double ratio, double *out, int len) {
+static void dftSlide(const int16_t *buffer, int win_size, double ratio, double *out, int len) {
     double re = 0;
     double im = 0;
     double angle0 = 0;
@@ -81,12 +81,12 @@ BitReceiver::BitReceiver(int win_size, int lo_freq, int hi_freq, int mag_lim)
     sync_hi_out.reserve(2 * win_size);
 }
 
-int BitReceiver::getLoFrequency() {
-    return std::round(lo_ratio * SAMPLE_RATE);
+long BitReceiver::getLoFrequency() {
+    return std::lround(lo_ratio * SAMPLE_RATE);
 }
 
-int BitReceiver::getHiFrequency() {
-    return std::round(hi_ratio * SAMPLE_RATE);
+long BitReceiver::getHiFrequency() {
+    return std::lround(hi_ratio * SAMPLE_RATE);
 }
 
 void BitReceiver::setLoFrequency(int freq) {
@@ -108,7 +108,7 @@ void BitReceiver::readSamples(int16_t *buffer, int len) {
     }
 }
 
-int BitReceiver::stepShift(double *buffer, int size) {
+int BitReceiver::stepShift(const double *buffer, int size) {
     double sum = 0;
     double delta;
     double diff;
@@ -125,8 +125,9 @@ int BitReceiver::stepShift(double *buffer, int size) {
     for (int i = 0; i < size; i++) {
         sum += buffer[i + size];
         delta = buffer[i + size] - buffer[i];
-        if (delta < mag_lim)
+        if (delta < mag_lim) {
             continue;
+        }
 
         diff = sum - 0.5 * ((size + 1) * (buffer[i + size] + buffer[i]));
         diff = std::abs(diff);
@@ -140,9 +141,9 @@ int BitReceiver::stepShift(double *buffer, int size) {
     return res;
 }
 
-int BitReceiver::decodeBit(int16_t *window) {
-    double lo = dft(window, win_size, lo_ratio);
-    double hi = dft(window, win_size, hi_ratio);
+int BitReceiver::decodeBit(int16_t *windowBuffer) {
+    double lo = dft(windowBuffer, win_size, lo_ratio);
+    double hi = dft(windowBuffer, win_size, hi_ratio);
     return static_cast<int>(lo < hi);
 }
 
@@ -165,10 +166,12 @@ int BitReceiver::receiveFirstTwoBits() {
         }
         lo_shift = stepShift(sync_lo_out.data(), win_size);
         hi_shift = stepShift(sync_hi_out.data(), win_size);
-        if (lo_shift != -1)
+        if (lo_shift != -1) {
             shift = lo_shift;
-        if (hi_shift != -1)
+        }
+        if (hi_shift != -1) {
             shift = hi_shift;
+        }
     } while (shift == -1);
 
     qDebug() << "Message start detected!";

@@ -1,3 +1,4 @@
+#include <stdexcept>
 #include "HammingCode.h"
 
 
@@ -35,7 +36,7 @@ constexpr size_t HammingCode::encodedLength(size_t bytesCount) {
 
 constexpr size_t HammingCode::decodedLength(size_t bitCount) {
     if (bitCount % BITS_PER_BYTE) {
-        //TODO: Throw exception
+        throw std::invalid_argument("Bits number must be divisible by BITS_PER_BYTE");
     }
 
     return bitCount / BITS_PER_BYTE;

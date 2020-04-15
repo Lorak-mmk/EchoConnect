@@ -48,6 +48,7 @@ constexpr bool HammingCode::nthBit(uint8_t num, uint8_t idx) {
     return num >> idx & 1U;
 }
 
+// NOLINTNEXTLINE(readability-convert-member-functions-to-static)
 void HammingCode::encodeHalfByte(std::vector<bool> &dest, size_t start, uint8_t data) {
     start--;  // It's easier to think in 1-indexed array here;
     // Store data bits
@@ -62,6 +63,7 @@ void HammingCode::encodeHalfByte(std::vector<bool> &dest, size_t start, uint8_t 
     dest[start + 4] = dest[start + 5] ^ dest[start + 6] ^ dest[start + 7];
 }
 
+// NOLINTNEXTLINE(readability-convert-member-functions-to-static)
 void HammingCode::fixHalfByte(std::vector<bool> &data, size_t start) {
     start--;
     size_t fixidx = 0;
@@ -81,6 +83,7 @@ void HammingCode::fixHalfByte(std::vector<bool> &data, size_t start) {
     }
 }
 
+// NOLINTNEXTLINE(readability-convert-member-functions-to-static)
 uint8_t HammingCode::decodeHalfByte(const std::vector<bool> &data, size_t start_index) {
     start_index--;
     uint8_t result = 0;

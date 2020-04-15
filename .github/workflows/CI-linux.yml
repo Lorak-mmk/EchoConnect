@@ -43,6 +43,7 @@ jobs:
       uses: jurplel/install-qt-action@v2
       with:
         dir: ${{ env.DEPS_DIR }}
+        version: 5.12.7
     #    cached: ${{ steps.cache-deps.outputs.cache-hit }}
 
     - name: Download and build GoogleTest

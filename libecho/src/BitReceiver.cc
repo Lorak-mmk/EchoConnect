@@ -208,6 +208,7 @@ int BitReceiver::receiveFirst(uint8_t *buffer, int size) {
     bits[0] = first_two & 1;
     bits[1] = first_two & 2;
     receiveBits(bits, 2);
+    hamming.fixErrors(bits);
     std::vector<uint8_t> decoded = hamming.decode(bits);
     memcpy(buffer, decoded.data(), size);
 
@@ -221,6 +222,7 @@ int BitReceiver::receive(uint8_t *buffer, int size) {
     bits.resize(HammingCode::encodedLength(size));
 
     receiveBits(bits, 0);
+    hamming.fixErrors(bits);
     std::vector<uint8_t> decoded = hamming.decode(bits);
     memcpy(buffer, decoded.data(), size);
 

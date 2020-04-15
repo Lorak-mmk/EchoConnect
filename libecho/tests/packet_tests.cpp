@@ -222,6 +222,36 @@ TEST(tests_packet_builder, test_setFlag) {
     }
 }
 
+TEST(tests_packet_builder, test_unsetFlag) {
+    auto pb = PacketBuilder();
+
+    for (auto f : SET_FLAGS) {
+        pb.setFlag(f);
+    }
+
+    auto p = pb.getPacket();
+
+    for (auto f : SET_FLAGS) {
+        ASSERT_TRUE(p.isSet(f));
+    }
+    for (auto f : UNSET_FLAGS) {
+        ASSERT_FALSE(p.isSet(f));
+    }
+
+    for (auto f : SET_FLAGS) {
+        pb.unsetFlag(f);
+    }
+
+    p = pb.getPacket();
+
+    for (auto f : SET_FLAGS) {
+        ASSERT_FALSE(p.isSet(f));
+    }
+    for (auto f : UNSET_FLAGS) {
+        ASSERT_FALSE(p.isSet(f));
+    }
+}
+
 TEST(tests_packet_builder, test_setNumber) {
     auto pb = PacketBuilder().setNumber(NUM);
     auto p = pb.getPacket();

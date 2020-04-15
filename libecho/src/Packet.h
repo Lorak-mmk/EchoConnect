@@ -33,6 +33,11 @@ enum Flag : uint16_t {
 class Packet {
 public:
     /**
+     * @brief Constructs empty packet.
+     */
+    Packet() {}
+
+    /**
      * @brief Constructs (deserializes) a packet with only flags, size and number set from raw bytes.
      *
      * @param bytes             Raw bytes from which we build packet header.
@@ -88,6 +93,35 @@ public:
     const std::vector<uint8_t> &getData();
 
     /**
+     * @brief Sets sequential number of packet.
+     *
+     * @param num    Number to set.
+     */
+    void setNumber(uint16_t num);
+
+    /**
+     * @brief Marks packet with given flag.
+     *
+     * @param f Flag to set.
+     */
+    void setFlag(Flag f);
+
+    /**
+     * @brief Unmarks packet with given flag.
+     *
+     * @param f Flag to unset.
+     */
+    void unsetFlag(Flag f);
+
+    /**
+     * @brief Setter for data member.
+     *
+     * @param data              Data to encapsulate.
+     * @throws OversizedData    Throws when given @p data size exceeds MAX_DATA_SIZE.
+     */
+    void setData(const std::vector<uint8_t> &data);
+
+    /**
      * @brief Indicates that CRC in packet is invalid.
      */
     class IncorrectCRC : public std::exception {
@@ -115,7 +149,6 @@ public:
     };
 
 private:
-    Packet() = default;
     uint32_t calculateCRC();
     void updateCRC();
     uint16_t flags = 0;        /**< Respresents flags set in packet. */
@@ -153,6 +186,14 @@ public:
      * @return  Reference to itself.
      */
     PacketBuilder &setFlag(Flag f);
+
+    /**
+     * @brief Unmarks packet with given flag.
+     *
+     * @param f Flag to unset.
+     * @return  Reference to itself.
+     */
+    PacketBuilder &unsetFlag(Flag f);
 
     /**
      * @brief Sets sequential number of packet.

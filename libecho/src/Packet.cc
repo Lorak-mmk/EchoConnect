@@ -21,11 +21,8 @@ Packet Packet::loadHeaderFromBytes(const std::vector<uint8_t> &bytes) {
         throw IncorrectFormat();
     }
 
-    // NOLINTNEXTLINE(cppcoreguidelines-pro-bounds-pointer-arithmetic, cppcoreguidelines-pro-type-reinterpret-cast)
     p.flags = ntohs(reinterpret_cast<const uint16_t *>(bytes.data())[0]);
-    // NOLINTNEXTLINE(cppcoreguidelines-pro-bounds-pointer-arithmetic, cppcoreguidelines-pro-type-reinterpret-cast)
     p.size = ntohs(reinterpret_cast<const uint16_t *>(bytes.data())[1]);
-    // NOLINTNEXTLINE(cppcoreguidelines-pro-bounds-pointer-arithmetic, cppcoreguidelines-pro-type-reinterpret-cast)
     p.number = ntohs(reinterpret_cast<const uint16_t *>(bytes.data())[2]);
 
     return p;
@@ -46,7 +43,6 @@ Packet &Packet::loadCRCFromBytes(const std::vector<uint8_t> &bytes) {
         throw IncorrectFormat();
     }
 
-    // NOLINTNEXTLINE(cppcoreguidelines-pro-bounds-pointer-arithmetic, cppcoreguidelines-pro-type-reinterpret-cast)
     crc32 = ntohl(reinterpret_cast<const uint32_t *>(bytes.data())[0]);
 
     if (crc32 != calculateCRC()) {
@@ -59,8 +55,8 @@ Packet &Packet::loadCRCFromBytes(const std::vector<uint8_t> &bytes) {
 std::vector<uint8_t> Packet::toBytes() {
     std::vector<uint8_t> bytes;
     bytes.reserve(FRAME_SIZE + size);
-    converter<uint16_t> converter_u16;
-    converter<uint32_t> converter_u32;
+    converter<uint16_t> converter_u16 = {0};
+    converter<uint32_t> converter_u32 = {0};
 
     converter_u16.a = htons(flags);
     bytes.insert(bytes.end(), converter_u16.b, converter_u16.b + 2);

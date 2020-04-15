@@ -21,10 +21,15 @@ public:
      * @param format    Audio stream output format.
      * @param winSize   How much of bitrate we want to use to play sound in which unit data is encoded.
      */
-    ISender(QAudioFormat format, int winSize) : format(format), winSize(winSize) {
+    ISender(const QAudioFormat &format, int winSize) : format(format), winSize(winSize) {
         output = std::make_unique<AudioOutput>(format);
         output->startStream();
     }
+
+    ISender(const ISender &other) = delete;
+    ISender(ISender &&other) = default;
+    ISender &operator=(const ISender &other) = delete;
+    ISender &operator=(ISender &&other) = delete;
 
     /**
      * @brief Default object destructor.

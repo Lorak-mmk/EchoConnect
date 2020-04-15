@@ -10,17 +10,17 @@
 class BitReceiver : public IReceiver {
 public:
     BitReceiver(int win_size, int lo_freq, int hi_freq, int mag_lim);
-    virtual int receiveFirst(uint8_t *buffer, int size) override;
-    virtual int receive(uint8_t *buffer, int size) override;
-    int getLoFrequency();
-    int getHiFrequency();
+    int receiveFirst(uint8_t *buffer, int size) override;
+    int receive(uint8_t *buffer, int size) override;
+    long getLoFrequency();
+    long getHiFrequency();
     void setLoFrequency(int freq);
     void setHiFrequency(int freq);
 
 private:
     void readSamples(int16_t *buffer, int len);
-    int stepShift(double *buffer, int size);
-    int decodeBit(int16_t *window);
+    int stepShift(const double *buffer, int size);
+    int decodeBit(int16_t *windowBuffer);
     int receiveFirstTwoBits();
 	void receiveBits(std::vector<bool> &vec, int offset);
     void clearInput();  // TODO: i don't actually know if this is needed
@@ -31,9 +31,9 @@ private:
     std::vector<double> sync_lo_out;
     std::vector<double> sync_hi_out;
 
-    double lo_ratio;
-    double hi_ratio;
-    int mag_lim;
+    double lo_ratio = 0;
+    double hi_ratio = 0;
+    int mag_lim = 0;
 };
 
 #endif

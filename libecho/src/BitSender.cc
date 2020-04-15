@@ -42,7 +42,6 @@ std::vector<char> BitSender::encode(const std::vector<uint8_t> &data) {
         result.insert(result.end(), encodedByte.begin(), encodedByte.end());
     }
 
-    // NOLINTNEXTLINE(cppcoreguidelines-pro-bounds-pointer-arithmetic)
     return std::vector<char>(result.data(), result.data() + result.size());
 }
 

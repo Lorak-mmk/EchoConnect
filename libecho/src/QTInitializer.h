@@ -15,6 +15,11 @@ public:
      * @param a_argv    Program's argv from main().
      */
     QTInitializer(int a_argc, char **a_argv);
+    QTInitializer(const QTInitializer &other) = delete;
+    QTInitializer(QTInitializer &&other) = delete;
+    QTInitializer &operator=(const QTInitializer &other) = delete;
+    QTInitializer &operator=(QTInitializer &&other) = delete;
+
     ~QTInitializer();
 
 private:

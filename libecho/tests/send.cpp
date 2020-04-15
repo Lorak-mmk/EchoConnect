@@ -1,5 +1,3 @@
-#include <gtest/gtest.h>
-
 #include "Echo.h"
 #include "BitSender.h"
 #include "BitReceiver.h"
@@ -8,7 +6,6 @@
 #define S 50
 
 int main(int argc, char **argv) {
-    ::testing::InitGoogleTest(&argc, argv);
     Echo::initEcho(argc, argv);
 
     BitSender sender(S, 0, 0);

@@ -15,6 +15,7 @@ endif ()
 set(SRC_DIR "src" CACHE PATH "Source files path")
 set(API_DIR "include" CACHE PATH "Public API files path")
 set(SRC_FILES
+        ${SRC_DIR}/Echo.cc
         ${SRC_DIR}/EchoRawConnection.cc
         ${SRC_DIR}/EchoRawConnectionImpl.h
         ${SRC_DIR}/EchoRawConnectionImpl.cc
@@ -39,9 +40,7 @@ set(API_FILES
         ${API_DIR}/Echo.h
         ${API_DIR}/EchoRawConnection.h)
 
-include_directories(echo PRIVATE ${API_DIR})
-include_directories(echo PRIVATE ${SRC_DIR})
-include_directories(echo PRIVATE external/CRCpp/inc)
+include_directories(${API_DIR})
 
 add_library(echo SHARED "${SRC_FILES}")
 set_target_properties(echo
@@ -49,8 +48,12 @@ set_target_properties(echo
         VERSION ${PROJECT_VERSION} SOVERSION 0
         PUBLIC_HEADER "${API_FILES}")
 
+target_include_directories(echo PRIVATE ${SRC_DIR})
+target_include_directories(echo PRIVATE external/CRCpp/inc)
+
 target_link_libraries(echo Qt5::Multimedia)
 
 
 add_subdirectory(tests)
 add_subdirectory(docs)
+add_subdirectory(examples)

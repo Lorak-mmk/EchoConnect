@@ -5,8 +5,12 @@ find_package(GTest REQUIRED)
 include_directories(${GTEST_INCLUDE_DIRS})
 
 set(TEST_FILES
-        main.cpp
-        test_Packet.cpp)
+        main.cc
+        packet_tests.cc
+        ecc_tests.cc)
+
+include_directories("../src")
+include_directories("../external/CRCpp/inc")
 
 add_executable(${EXEC_NAME} ${TEST_FILES})
 add_executable(sendrecv sendrecv.cpp)

@@ -33,6 +33,16 @@ void BitSender::send(const std::vector<uint8_t> &buffer) {
     output->enqueueData(encoded.data(), encoded.size());
 }
 
+void BitSender::sendBlocking(const std::vector<uint8_t> &buffer) {
+    auto encoded = encode(buffer);
+    output->enqueueData(encoded.data(), encoded.size());
+    sendWait();
+}
+
+void BitSender::sendWait() {
+    output->waitForState(QAudio::State::IdleState);
+}
+
 std::vector<char> BitSender::encode(const std::vector<uint8_t> &data) {
     std::vector<SampleType> result;
     result.reserve(data.size() * winSize * SOUNDS_PER_BYTE);

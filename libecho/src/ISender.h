@@ -62,6 +62,19 @@ public:
      */
     virtual void send(const std::vector<uint8_t> &buffer) = 0;
 
+    /**
+     * @brief Sends given byte sequence and blocks untill sending finishes.
+     *
+     * Anyone can receive it, and there is no guarantee that received transmission will be correct.
+     * @param buffer    Bytes to send.
+     */
+    virtual void sendBlocking(const std::vector<uint8_t> &buffer) = 0;
+
+    /**
+     * @brief Waits until all sendings finish.
+     */
+    virtual void sendWait() = 0;
+
 protected:
     const QAudioFormat format;           /**< Audio stream output format. */
     std::unique_ptr<AudioOutput> output; /**< Output audio device. */

@@ -39,9 +39,7 @@ set(API_FILES
         ${API_DIR}/Echo.h
         ${API_DIR}/EchoRawConnection.h)
 
-include_directories(echo PRIVATE ${API_DIR})
-include_directories(echo PRIVATE ${SRC_DIR})
-include_directories(echo PRIVATE external/CRCpp/inc)
+include_directories(${API_DIR})
 
 add_library(echo SHARED "${SRC_FILES}")
 set_target_properties(echo
@@ -49,8 +47,12 @@ set_target_properties(echo
         VERSION ${PROJECT_VERSION} SOVERSION 0
         PUBLIC_HEADER "${API_FILES}")
 
+target_include_directories(echo PRIVATE ${SRC_DIR})
+target_include_directories(echo PRIVATE external/CRCpp/inc)
+
 target_link_libraries(echo Qt5::Multimedia)
 
 
 add_subdirectory(tests)
 add_subdirectory(docs)
+add_subdirectory(examples)

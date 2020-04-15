@@ -15,9 +15,7 @@ endif ()
 set(SRC_DIR "src" CACHE PATH "Source files path")
 set(API_DIR "include" CACHE PATH "Public API files path")
 set(SRC_FILES
-        ${SRC_DIR}/Echo.cc
-        ${SRC_DIR}/AudioFormatFactory.h
-        ${SRC_DIR}/AudioFormatFactory.cc
+        ${SRC_DIR}/EchoRawConnection.cc
         ${SRC_DIR}/AudioOutput.cc
         ${SRC_DIR}/AudioOutput.h
         ${SRC_DIR}/AudioInput.cc
@@ -27,8 +25,6 @@ set(SRC_FILES
         ${SRC_DIR}/ISender.h
         ${SRC_DIR}/BitSender.h
         ${SRC_DIR}/BitSender.cc
-        ${SRC_DIR}/IAudioConverter.h
-        ${SRC_DIR}/BitAudioConverter.h
         ${SRC_DIR}/IReceiver.h
         ${SRC_DIR}/BitReceiver.cc
         ${SRC_DIR}/BitReceiver.h
@@ -36,7 +32,9 @@ set(SRC_FILES
         ${SRC_DIR}/Packet.cc)
 
 set(API_FILES
-        ${API_DIR}/Echo.h)
+        ${API_DIR}/Echo.h
+        ${API_DIR}/EchoRawConnection.h
+        ${SRC_DIR}/QTInitializer.cc)
 
 include_directories(echo PRIVATE ${API_DIR})
 include_directories(echo PRIVATE ${SRC_DIR})

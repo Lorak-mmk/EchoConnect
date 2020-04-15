@@ -82,7 +82,7 @@ jobs:
 
     - name: Check with clang-tidy
       shell: bash
-      run: ./tools/clang-tidy.sh
+      run: $GITHUB_WORKSPACE/tools/clang-tidy.sh
 
     - name: Build
       working-directory: ${{runner.workspace}}/build

@@ -35,7 +35,7 @@ public:
     /**
      * @brief Constructs empty packet.
      */
-    Packet() {}
+    Packet() = default;
 
     /**
      * @brief Constructs (deserializes) a packet with only flags, size and number set from raw bytes.

@@ -17,9 +17,9 @@ public:
      * If program doesn't use QT (by using QT I mean creating QApplication),
      * it needs to call this method before using this library.
      * If program uses QT, calling this method is unnecessary.
-     * 
+     *
      * @warning This method must never be called before creating QApplication manually!
-     * 
+     *
      * @param a_argc    Program's argc from main().
      * @param a_argv    Program's argv from main().
      */

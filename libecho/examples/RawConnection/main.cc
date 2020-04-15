@@ -96,7 +96,7 @@ int main(int argc, char *argv[]) {
         printf("Sending %zu bytes. Low frequency: %d, high frequency: %d, window size: %d, mag limit: %d\n", length,
                freq1, freq2, winsize, magLim);
         auto connection = EchoRawConnection::getBitEchoRawConnection(winsize, freq1, freq2, freq1, freq2, magLim);
-        connection->send(data);
+        connection->sendBlocking(data);
         delete connection;
         printf("Data sent succesfully!\n");
     } else {

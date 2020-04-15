@@ -5,13 +5,13 @@
 TEST(test_Hamming, test_correct_byte) {
     HammingCode coder;
 
-    for(int i = 0; i < std::numeric_limits<uint8_t>::max(); i++) {
+    for (int i = 0; i < std::numeric_limits<uint8_t>::max(); i++) {
         std::vector<uint8_t> data{static_cast<unsigned char>(i)};
         auto encoded = coder.encode(data);
         auto encoded_orig = encoded;
 
         coder.fixErrors(encoded);
-        ASSERT_EQ(encoded_orig, encoded); // fixErros should be no-op here.
+        ASSERT_EQ(encoded_orig, encoded);  // fixErros should be no-op here.
 
         auto decoded = coder.decode(encoded);
         ASSERT_EQ(data, decoded);
@@ -21,12 +21,12 @@ TEST(test_Hamming, test_correct_byte) {
 TEST(test_Hamming, test_incorrect_byte) {
     HammingCode coder;
 
-    for(int i = 0; i < std::numeric_limits<uint8_t>::max(); i++) {
+    for (int i = 0; i < std::numeric_limits<uint8_t>::max(); i++) {
         std::vector<uint8_t> data{static_cast<unsigned char>(i)};
         auto encoded = coder.encode(data);
         auto encoded_orig = encoded;
 
-        for(size_t idx = 0; idx < encoded.size(); idx++) {
+        for (size_t idx = 0; idx < encoded.size(); idx++) {
             encoded[idx] = !encoded[idx];
             coder.fixErrors(encoded);
             ASSERT_EQ(encoded, encoded_orig);
@@ -39,7 +39,7 @@ TEST(test_Hamming, test_correct_message) {
     HammingCode coder;
 
     std::vector<uint8_t> data(length, 0);
-    for(size_t i = 0; i < length; i++) {
+    for (size_t i = 0; i < length; i++) {
         data[i] = i;
     }
 
@@ -58,14 +58,14 @@ TEST(test_Hamming, test_incorrect_message) {
     HammingCode coder;
 
     std::vector<uint8_t> data(length, 0);
-    for(size_t i = 0; i < length; i++) {
+    for (size_t i = 0; i < length; i++) {
         data[i] = i;
     }
 
     auto encoded = coder.encode(data);
     auto encoded_orig = encoded;
 
-    for(size_t i = 0; i < encoded.size(); i++) {
+    for (size_t i = 0; i < encoded.size(); i++) {
         encoded[i] = !encoded[i];
         coder.fixErrors(encoded);
         ASSERT_EQ(encoded_orig, encoded);

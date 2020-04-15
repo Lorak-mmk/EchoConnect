@@ -6,8 +6,7 @@ include_directories(${GTEST_INCLUDE_DIRS})
 
 set(TEST_FILES
         main.cpp
-        test_Packet.cpp
-        test_EchoRawConnection.cpp)
+        test_Packet.cpp)
 
 add_executable(${EXEC_NAME} ${TEST_FILES})
 add_test(NAME ${EXEC_NAME} COMMAND ${EXEC_NAME})

@@ -26,6 +26,11 @@ public:
         output->startStream();
     }
 
+    ISender(const ISender &other) = delete;
+    ISender(ISender &&other) = default;
+    ISender &operator=(const ISender &other) = delete;
+    ISender &operator=(ISender &&other) = delete;
+
     /**
      * @brief Default object destructor.
      */

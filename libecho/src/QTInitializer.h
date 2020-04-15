@@ -16,7 +16,7 @@ public:
      */
     QTInitializer(int a_argc, char **a_argv);
     QTInitializer(const QTInitializer &other) = delete;
-    QTInitializer(const QTInitializer &&other) = delete;
+    QTInitializer(QTInitializer &&other) = delete;
     QTInitializer &operator=(const QTInitializer &other) = delete;
     QTInitializer &operator=(QTInitializer &&other) = delete;
 

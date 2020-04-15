@@ -80,6 +80,7 @@ private:
      * @brief Used for sampling value of audio wave with passed @p frequency at @p time * π / sampleRate position.
      */
     T audio_wave(int frequency, int time) {
+        // NOLINTNEXTLINE(cppcoreguidelines-avoid-magic-numbers, readability-magic-numbers)
         return (std::sin(2.0 * M_PI * time * frequency / this->outputFormat.sampleRate()) + 1.0) *
                (1 << (this->outputFormat.sampleSize() - 2));
     }

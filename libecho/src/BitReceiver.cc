@@ -16,6 +16,7 @@ static double dft(const int16_t *buffer, int win_size, double ratio) {
     double re = 0;
     double im = 0;
     double angle = 0;
+    // NOLINTNEXTLINE(cppcoreguidelines-avoid-magic-numbers, readability-magic-numbers)
     double d_angle = 2.0 * M_PI * ratio;
 
     for (int i = 0; i < win_size; i++) {
@@ -33,6 +34,7 @@ static void dftSlide(const int16_t *buffer, int win_size, double ratio, double *
     double im = 0;
     double angle0 = 0;
     double angle1 = 0;
+    // NOLINTNEXTLINE(cppcoreguidelines-avoid-magic-numbers, readability-magic-numbers)
     double d_angle = 2.0 * M_PI * ratio;
 
     for (int i = 0; i < win_size; i++) {
@@ -101,7 +103,7 @@ void BitReceiver::readSamples(int16_t *buffer, int len) {
     int inc = 0;
     int bytes = len * 2;
     while (bytes > 0) {
-        int nread = input->readBytes((char *)buffer + inc, bytes);
+        int nread = input->readBytes(reinterpret_cast<char *>(buffer) + inc, bytes);
         inc += nread;
         bytes -= nread;
         input->waitForTick();
@@ -115,6 +117,7 @@ int BitReceiver::stepShift(const double *buffer, int size) {
     // TODO: this cutoff point is loosely dependent on the window size and the
     // volume and noisiness of the microphone. I don't think there's a reasonable
     // way to compute this, but who knows. For now it's just hardcoded.
+    // NOLINTNEXTLINE(cppcoreguidelines-avoid-magic-numbers, readability-magic-numbers)
     double diff_min = 10;
     int res = -1;
 
@@ -129,6 +132,7 @@ int BitReceiver::stepShift(const double *buffer, int size) {
             continue;
         }
 
+        // NOLINTNEXTLINE(cppcoreguidelines-avoid-magic-numbers, readability-magic-numbers)
         diff = sum - 0.5 * ((size + 1) * (buffer[i + size] + buffer[i]));
         diff = std::abs(diff);
         if (diff_min > diff) {

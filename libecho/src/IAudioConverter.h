@@ -25,6 +25,11 @@ public:
         encryptedByteSize = soundsPerByte * windowSize;
     }
 
+    IAudioConverter(const IAudioConverter &other) = default;
+    IAudioConverter(IAudioConverter &&other) noexcept = default;
+    IAudioConverter &operator=(const IAudioConverter &other) = default;
+    IAudioConverter &operator=(IAudioConverter &&other) noexcept = default;
+
     /**
      * @brief Default object destructor.
      */

@@ -6,8 +6,8 @@
 #include <iostream>
 
 void printHelp(std::string name) {
-    std::cout << "Usage: " << name << "[-freq low,high] [-win num] [-magLim num] send (data_bytes))\n";
-    std::cout << "Usage: " << name << "[-freq low,high] [-win num] [-magLim num] receive bytes_number\n";
+    std::cout << "Usage: " << name << " [-freq low,high] [-win num] [-magLim num] send (data_bytes))\n";
+    std::cout << "Usage: " << name << " [-freq low,high] [-win num] [-magLim num] receive bytes_number\n";
     std::cout << "-freq: Set frequency of 0 bit (low) and 1 bit (high)\n";
     std::cout
         << "-win: Set window size (time in which 1 bit will be transfered). Higher - less errors, slowe transmition\n";

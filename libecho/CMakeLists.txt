@@ -26,7 +26,7 @@ set(SRC_FILES
         ${SRC_DIR}/AudioStream.h
         ${SRC_DIR}/ISender.h
         ${SRC_DIR}/BitSender.h
-        ${SRC_DIR}/BitSender.cc)
+        ${SRC_DIR}/BitSender.cc
         ${SRC_DIR}/IAudioConverter.h
         ${SRC_DIR}/BitAudioConverter.h
         ${SRC_DIR}/IReceiver.h

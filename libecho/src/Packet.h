@@ -16,16 +16,16 @@ static constexpr size_t MAX_DATA_SIZE =
  * @brief Enum representing flags with which packet may be marked.
  */
 enum Flag : uint16_t {
-    SYN = 1 << 0, /**< Synchronization: used in connection initialization, only first send packet should have that flag
+    SYN = 1 << 0,   /**< Synchronization: used in connection initialization, only first send packet should have that flag
                      set. */
-    AC1 = 1 << 1, /**< Acknowledgement 1: used to confirm something, ex. creating a connection or that packets were
+    ACK1 = 1 << 1,  /**< Acknowledgement 1: used to confirm something, ex. creating a connection or that packets were
                      received coffectly. */
-    AC2 = 1 << 2, /**< Acknowledgement 2: used to confirm receiving of packet with flag AC1. */
-    DMD = 1 << 3, /**< Demand resend: used to inform that some packet from were incorrect or lost and there is need to
+    ACK2 = 1 << 2,  /**< Acknowledgement 2: used to confirm receiving of packet with flag AC1. */
+    DMD = 1 << 3,   /**< Demand resend: used to inform that some packet from were incorrect or lost and there is need to
                      resend them. */
-    FIN = 1 << 4, /**< Finish: used to inform that party is ending connection. */
-    RST = 1 << 5, /**< Reset: used to break the connection brutally. */
-    LPC = 1 << 6  /**< Last packet: informs that this is the last packet in a group of consecutive packets. */
+    FIN = 1 << 4,   /**< Finish: used to inform that party is ending connection. */
+    RST = 1 << 5,   /**< Reset: used to break the connection brutally. */
+    LPC = 1 << 6    /**< Last packet: informs that this is the last packet in a group of consecutive packets. */
 };
 
 /**

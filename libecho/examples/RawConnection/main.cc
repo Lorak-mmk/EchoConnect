@@ -87,12 +87,12 @@ int main(int argc, char *argv[]) {
         argv++;
         argc--;
 
-        if (argc == 0) {
+        if (argc < 1) {
             printHelp(name);
         }
 
-        size_t length = strlen(argv[1]);
-        std::vector<uint8_t> data(argv[1], argv[1] + length);
+        size_t length = strlen(argv[0]);
+        std::vector<uint8_t> data(argv[0], argv[0] + length);
         printf("Sending %zu bytes. Low frequency: %d, high frequency: %d, window size: %d, mag limit: %d\n", length,
                freq1, freq2, winsize, magLim);
         auto connection = EchoRawConnection::getBitEchoRawConnection(winsize, freq1, freq2, freq1, freq2, magLim);

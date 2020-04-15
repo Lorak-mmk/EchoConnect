@@ -16,6 +16,8 @@ set(SRC_DIR "src" CACHE PATH "Source files path")
 set(API_DIR "include" CACHE PATH "Public API files path")
 set(SRC_FILES
         ${SRC_DIR}/EchoRawConnection.cc
+        ${SRC_DIR}/EchoRawConnectionImpl.h
+        ${SRC_DIR}/EchoRawConnection.cc
         ${SRC_DIR}/AudioOutput.cc
         ${SRC_DIR}/AudioOutput.h
         ${SRC_DIR}/AudioInput.cc

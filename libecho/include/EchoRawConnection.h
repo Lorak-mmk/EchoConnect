@@ -28,8 +28,8 @@ public:
      * @param magLim        TODO: PawelA
      * @return              Desired EchoRawConnection object.
      */
-    static EchoRawConnection getBitEchoRawConnection(int winSize, int receiveLoFreq, int receiveHiFreq, int sendLoFreq,
-                                                     int sendHiFreq, int magLim);
+    static EchoRawConnection &getBitEchoRawConnection(int winSize, int receiveLoFreq, int receiveHiFreq, int sendLoFreq,
+                                                      int sendHiFreq, int magLim);
 
     /**
      * @brief Sends given byte sequence.
@@ -37,7 +37,7 @@ public:
      * Anyone can receive it, and there is no guarantee that received transmission will be correct.
      * @param buffer    Bytes to send.
      */
-    void send(const std::vector<uint8_t> &buffer);
+    virtual void send(const std::vector<uint8_t> &buffer) = 0;
 
     /**
      * @brief Waits for the signal, tries to read @p size bytes, fills @p buffer with received bytes, returns number of
@@ -49,7 +49,7 @@ public:
      * @param size      Size of data to read.
      * @return          Size of read data.
      */
-    int receiveFirst(uint8_t *buffer, int size);
+    virtual int receiveFirst(uint8_t *buffer, int size) = 0;
 
     /**
      * @brief Tries to read @p size bytes, fills @p buffer with received bytes, returns number of read bytes.
@@ -60,7 +60,7 @@ public:
      * @param size      Size of data to read.
      * @return          Size of read data.
      */
-    int receive(uint8_t *buffer, int size);
+    virtual int receive(uint8_t *buffer, int size) = 0;
 
 private:
     std::unique_ptr<IReceiver> receiver; /**< Receiver used by instance. */

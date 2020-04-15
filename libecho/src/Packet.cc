@@ -95,6 +95,31 @@ const std::vector<uint8_t> &Packet::getData() {
     return data;
 }
 
+void Packet::setNumber(uint16_t num) {
+    number = num;
+    updateCRC();
+}
+
+void Packet::setFlag(Flag f) {
+    flags |= f;
+    updateCRC();
+}
+
+void Packet::unsetFlag(Flag f) {
+    flags &= ~f;
+    updateCRC();
+}
+
+void Packet::setData(const std::vector<uint8_t> &data) {
+    if (data.size() > MAX_DATA_SIZE) {
+        throw Packet::OversizedData();
+    }
+
+    this->data = data;
+    size = data.size();
+    updateCRC();
+}
+
 uint32_t Packet::calculateCRC() {
     uint32_t result;
     result = CRC::Calculate(&flags, sizeof(flags), CRC::CRC_32());
@@ -120,6 +145,11 @@ PacketBuilder &PacketBuilder::setData(const std::vector<uint8_t> &data) {
 
 PacketBuilder &PacketBuilder::setFlag(Flag f) {
     pckt.flags |= f;
+    return *this;
+}
+
+PacketBuilder &PacketBuilder::unsetFlag(Flag f) {
+    pckt.flags &= ~f;
     return *this;
 }
 

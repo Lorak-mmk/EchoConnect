@@ -30,7 +30,7 @@ public:
      * @param lo    Frequency in which we encode bits of value 0.
      * @param hi    Frequency in which we encode bits of value 1.
      */
-    BitAudioConverter(QAudioFormat inputFormat, QAudioFormat outputFormat, int windowSize, int lo, int hi)
+    BitAudioConverter(const QAudioFormat &inputFormat, const QAudioFormat &outputFormat, int windowSize, int lo, int hi)
         : IAudioConverter<T>(inputFormat, outputFormat, windowSize, SOUNDS_PER_BYTE), loFreq(lo), hiFreq(hi) {}
 
     /**
@@ -56,7 +56,7 @@ private:
         std::vector<T> result;
         result.reserve(this->encryptedByteSize);
 
-        for (int i = 0; i < 8; i++) {
+        for (unsigned i = 0; i < CHAR_BIT * sizeof(data); i++) {
             int bit = (data >> i) & 1;
             int freq = (bit == 1) ? hiFreq : loFreq;
             for (int t = 0; t < this->windowSize; t++) {
@@ -80,6 +80,7 @@ private:
      * @brief Used for sampling value of audio wave with passed @p frequency at @p time * π / sampleRate position.
      */
     T audio_wave(int frequency, int time) {
+        // NOLINTNEXTLINE(cppcoreguidelines-avoid-magic-numbers, readability-magic-numbers)
         return (std::sin(2.0 * M_PI * time * frequency / this->outputFormat.sampleRate()) + 1.0) *
                (1 << (this->outputFormat.sampleSize() - 2));
     }

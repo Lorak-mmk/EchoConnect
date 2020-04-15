@@ -41,7 +41,6 @@ std::vector<char> BitSender::encode(const std::vector<uint8_t> &data) {
         result.insert(result.end(), encodedByte.begin(), encodedByte.end());
     }
 
-    // NOLINTNEXTLINE(cppcoreguidelines-pro-bounds-pointer-arithmetic)
     return std::vector<char>(result.data(), result.data() + result.size());
 }
 
@@ -50,7 +49,7 @@ std::vector<SampleType> BitSender::encodeByte(uint8_t data) {
     result.reserve(winSize * SOUNDS_PER_BYTE);
 
     // NOLINTNEXTLINE(cppcoreguidelines-avoid-magic-numbers, readability-magic-numbers)
-    for (int i = 0; i < 8; i++) {
+    for (unsigned int i = 0; i < CHAR_BIT * sizeof(data); i++) {
         int bit = (data >> i) & 1;
         int freq = (bit == 1) ? hiFreq : loFreq;
         for (int t = 0; t < winSize; t++) {

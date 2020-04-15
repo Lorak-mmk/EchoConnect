@@ -39,7 +39,6 @@ void Echo::send(const std::vector<uint8_t> &buffer) {
        to fill out the buffer so the pause in transmission won't happen. */
     output->enqueueData(encoded.data(), std::min(encoded.size(), atOnce));
     for (size_t i = atOnce; i < encoded.size(); i += atOnce) {
-        // NOLINTNEXTLINE(cppcoreguidelines-pro-bounds-pointer-arithmetic)
         output->enqueueData(encoded.data() + i, std::min(atOnce, encoded.size() - i));
         auto status = output->getStreamStatus();
         qDebug() << "Status: " << status.first << " " << status.second;
@@ -57,11 +56,9 @@ static double dft(const char *buffer, int samples, int sampleSize, double ratio)
     const double d_angle = 2.0 * M_PI * ratio;
 
     for (int i = 0; i < samples; i++) {
-        // NOLINTNEXTLINE(cppcoreguidelines-pro-type-reinterpret-cast)
         double val = *reinterpret_cast<const int16_t *>(buffer);
         re += val * std::cos(angle);
         im += val * std::sin(angle);
-        // NOLINTNEXTLINE(cppcoreguidelines-pro-bounds-pointer-arithmetic)
         buffer += (sampleSize / CHAR_BIT);
         angle += d_angle;
     }
@@ -72,7 +69,6 @@ static double dft(const char *buffer, int samples, int sampleSize, double ratio)
 void Echo::getbuff(int bytes, char *buffer) {
     int inc = 0;
     while (bytes > 0) {
-        // NOLINTNEXTLINE(cppcoreguidelines-pro-bounds-pointer-arithmetic)
         int nread = input->readBytes(buffer + inc, bytes);
         inc += nread;
         bytes -= nread;

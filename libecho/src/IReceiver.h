@@ -1,7 +1,10 @@
 #ifndef ECHOCONNECT_IRECEIVER_H
 #define ECHOCONNECT_IRECEIVER_H
 
+#include "AudioInput.h"
+
 #include <QtMultimedia/QAudioFormat>
+#include <cstdint>
 #include <memory>
 
 class IReceiver {

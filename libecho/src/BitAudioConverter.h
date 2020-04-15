@@ -30,7 +30,7 @@ public:
      * @param lo    Frequency in which we encode bits of value 0.
      * @param hi    Frequency in which we encode bits of value 1.
      */
-    BitAudioConverter(const QAudioFormat& inputFormat, const QAudioFormat& outputFormat, int windowSize, int lo, int hi)
+    BitAudioConverter(const QAudioFormat &inputFormat, const QAudioFormat &outputFormat, int windowSize, int lo, int hi)
         : IAudioConverter<T>(inputFormat, outputFormat, windowSize, SOUNDS_PER_BYTE), loFreq(lo), hiFreq(hi) {}
 
     /**

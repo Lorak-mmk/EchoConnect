@@ -87,8 +87,8 @@ public:
     using StatusType = std::pair<int, qint64>;
 
     AudioStream() = delete;
-    AudioStream(const AudioStream& other) = delete;
-    AudioStream(AudioStream&& other) noexcept = default;
+    AudioStream(const AudioStream &other) = delete;
+    AudioStream(AudioStream &&other) noexcept = default;
     AudioStream &operator=(AudioStream &other) = delete;
     AudioStream &operator=(AudioStream &&other) noexcept = default;
 

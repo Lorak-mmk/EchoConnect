@@ -22,9 +22,14 @@ public:
     void send(const std::vector<uint8_t> &buffer) override;
 
     /**
-     * @brief @see EchoRawConnection::send
+     * @brief @see EchoRawConnection::sendBlocking
      */
     void sendBlocking(const std::vector<uint8_t> &buffer) override;
+
+    /**
+     * @brief @see EchoRawConnection::sendWait
+     */
+    void sendWait() override;
 
     /**
      * @brief @see EchoRawConnection::receiveFirst

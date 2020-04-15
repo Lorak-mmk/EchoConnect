@@ -18,6 +18,10 @@ void EchoRawConnectionImpl::sendBlocking(const std::vector<uint8_t> &buffer) {
     sender->sendBlocking(buffer);
 }
 
+void EchoRawConnectionImpl::sendWait() {
+    sender->sendWait();
+}
+
 int EchoRawConnectionImpl::receiveFirst(uint8_t *buffer, int size) {
     return receiver->receiveFirst(buffer, size);
 }

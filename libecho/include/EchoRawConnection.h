@@ -48,6 +48,11 @@ public:
     virtual void sendBlocking(const std::vector<uint8_t> &buffer) = 0;
 
     /**
+     * @brief Waits until all sendings finish.
+     */
+    virtual void sendWait() = 0;
+
+    /**
      * @brief Waits for the signal, tries to read @p size bytes, fills @p buffer with received bytes, returns number of
      * read bytes.
      *

@@ -67,6 +67,11 @@ public:
      */
     void sendBlocking(const std::vector<uint8_t> &buffer) override;
 
+    /**
+     * @brief @see ISender::sendWait
+     */
+    void sendWait() override;
+
 private:
     int loFreq, hiFreq; /**< Frequencies used to encode/decode bits, respectively for 0 and 1 values. */
 

@@ -1,3 +1,5 @@
+![CI Linux](https://github.com/Lorak-mmk/EchoConnect/workflows/CI%20Linux/badge.svg)
+
 # EchoConnect
 
 Projekt ma docelowo umożliwiać łatwą komunikację pomiędzy komputerami nie wymagającą żadnych dodatkowych modułów (Bluetooth / WiFi), wykorzystując dźwięki o wysokiej częstotliwości. Stworzymy udokumentowany protokół transmisji wspierający korekcję błędów i sprawdzanie poprawności transmisji. Na jego podstawie zbudujemy mechanizm parowania komputerów (o podobnym mechanizmie działania jak w Bluetooth) umożliwiający przesyłanie plików lub tekstu między nimi. Całość zostanie opakowana w API udostępnione w formie biblioteki współdzielonej (.so / .dll). Oprócz tego stworzymy przykładowe aplikacje (CLI / QT) korzystające z tego API w celu zaprezentowania jego możliwości.
@@ -30,6 +32,12 @@ Projekt ma docelowo umożliwiać łatwą komunikację pomiędzy komputerami nie 
 -   Zarządzanie projektem: Github Projets
 -   Continuous Integration: Github Actions
 
+## Dokumentacja:
+Do zbudowania samemu (instrukcje poniżej).
+
+Dla najnowszego commita w branchu master dostępna zawsze na:
+
+https://codedocs.xyz/Lorak-mmk/EchoConnect/index.html
 
 ## Budowanie:
 ```shell script
@@ -41,9 +49,7 @@ cmake .. -DCMAKE_BUILD_TYPE=Release
 make
 
 # Testy
-make test
-# alternatywnie
-ctest
+GTEST_COLOR=1 make test CTEST_OUTPUT_ON_FAILURE=TRUE
 ```
 
 Pliki wyjściowe:

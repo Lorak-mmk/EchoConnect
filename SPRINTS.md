@@ -15,10 +15,10 @@
 -   Opracowanie protokołu - korekcja błędów, weryfikacja poprawności
 -   Przygotowanie CI
 -   Przygotowanie kodu do serializacji/deserializacji/budowania pakietów
--   Testy kodu pakietów
--   Implementacji korekcji błędów na najniższej warstwie transmisji
+-   Testy implementacji pakietów
+-   Implementacja korekcji błędów na najniższej warstwie transmisji
 -   Testy korekcji błędów
--   Opracowanie API niższej wartswy oraz protokołu, restrukturyzacja poprzedniego, tymczasowego kodu
+-   Opracowanie API niższej warstwy oraz protokołu, restrukturyzacja poprzedniego, tymczasowego kodu
 -   Lepszy sposób odbierania danych w niższej warstwie
 -   Przygotowanie prezentacji sprintu
 

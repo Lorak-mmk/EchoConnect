@@ -32,6 +32,7 @@
 -   Przygotowanie prezentacji sprintu
 
 **Sprint 4:  termin 20 V**
+
 -   Opracowanie wymagań dla obu aplikacji
 -   Implementacja i dokumentacja interfejsu tekstowego
 -   Przygotowanie prezentacji sprintu

@@ -29,7 +29,7 @@ public:
      * @return              Pointer to desired EchoRawConnection object.
      */
     static EchoRawConnection *getBitEchoRawConnection(int winSize, int receiveLoFreq, int receiveHiFreq, int sendLoFreq,
-                                                      int sendHiFreq, int magLim);
+                                                      int sendHiFreq, int leftLim, int rightLim);
 
     virtual ~EchoRawConnection() = default;
     EchoRawConnection() = default;

@@ -118,7 +118,7 @@ int BitReceiver::stepShift(const double *buffer, int size) {
     // TODO: this cutoff point is loosely dependent on the window size and the
     // volume and noisiness of the microphone. I don't think there's a reasonable
     // way to compute this, but who knows. For now it's just hardcoded.
-    double diff_min = 200;
+    double diff_min = 100;
     int res = -1;
 
     for (int i = 0; i < size; i++) {
@@ -229,7 +229,7 @@ int BitReceiver::receive(uint8_t *buffer, int size) {
     return size;
 }
 
-void BitReceiver::wait() {
+void BitReceiver::skip() {
     double lo, hi;
     do {
         readSamples(window.data(), win_size);

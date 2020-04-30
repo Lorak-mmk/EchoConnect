@@ -12,7 +12,7 @@ public:
     BitReceiver(int win_size, int lo_freq, int hi_freq, int left_lim, int right_lim);
     int receiveFirst(uint8_t *buffer, int size) override;
     int receive(uint8_t *buffer, int size) override;
-    void wait();
+    void skip();
     long getLoFrequency();
     long getHiFrequency();
     void setLoFrequency(int freq);

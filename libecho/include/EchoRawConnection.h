@@ -25,11 +25,12 @@ public:
      * @param receiveLoFreq Frequency used to decode bits of value 1 when receiving data.
      * @param sendLoFreq    Frequency used to encode bits of value 0 when sending data.
      * @param sendHiFreq    Frequency used to encode bits of value 1 when sending data.
-     * @param magLim        TODO: PawelA
+     * @param leftLim       Silence magnitude
+     * @param rightLim      Smaller of the 2 frequencies' magnitudes
      * @return              Pointer to desired EchoRawConnection object.
      */
     static EchoRawConnection *getBitEchoRawConnection(int winSize, int receiveLoFreq, int receiveHiFreq, int sendLoFreq,
-                                                      int sendHiFreq, int magLim);
+                                                      int sendHiFreq, int leftLim, int rightLim);
 
     virtual ~EchoRawConnection() = default;
     EchoRawConnection() = default;

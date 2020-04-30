@@ -9,7 +9,7 @@ int main(int argc, char **argv) {
     Echo::initEcho(argc, argv);
 
     BitSender sender(S, 0, 0);
-    BitReceiver receiver(S, 14000, 15000, 80);
+    BitReceiver receiver(S, 14000, 15000, 10, 80);
 
     uint8_t arr[N];
 

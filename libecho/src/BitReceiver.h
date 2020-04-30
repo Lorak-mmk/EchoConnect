@@ -9,9 +9,10 @@
 
 class BitReceiver : public IReceiver {
 public:
-    BitReceiver(int win_size, int lo_freq, int hi_freq, int mag_lim);
+    BitReceiver(int win_size, int lo_freq, int hi_freq, int left_lim, int right_lim);
     int receiveFirst(uint8_t *buffer, int size) override;
     int receive(uint8_t *buffer, int size) override;
+    void skip();
     long getLoFrequency();
     long getHiFrequency();
     void setLoFrequency(int freq);
@@ -33,7 +34,8 @@ private:
 
     double lo_ratio = 0;
     double hi_ratio = 0;
-    int mag_lim = 0;
+    int left_lim = 0;
+    int right_lim = 0;
 };
 
 #endif

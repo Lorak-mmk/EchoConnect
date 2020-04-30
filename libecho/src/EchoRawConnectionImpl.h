@@ -14,7 +14,7 @@ public:
      * @brief @see EchoRawConnection::getBitEchoRawConnection
      */
     static EchoRawConnectionImpl *getBitEchoRawConnection(int winSize, int receiveLoFreq, int receiveHiFreq,
-                                                          int sendLoFreq, int sendHiFreq, int magLim);
+                                                          int sendLoFreq, int sendHiFreq, int leftLim, int rightLim);
 
     /**
      * @brief @see EchoRawConnection::send

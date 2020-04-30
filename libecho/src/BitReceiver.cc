@@ -74,8 +74,8 @@ QAudioFormat BitReceiver::getInputFormat() {
     return format;
 }
 
-BitReceiver::BitReceiver(int win_size, int lo_freq, int hi_freq, int mag_lim)
-    : IReceiver(getInputFormat(), win_size), mag_lim(mag_lim) {
+BitReceiver::BitReceiver(int win_size, int lo_freq, int hi_freq, int left_lim, int right_lim)
+    : IReceiver(getInputFormat(), win_size), left_lim(left_lim), right_lim(right_lim) {
     setLoFrequency(lo_freq);
     setHiFrequency(hi_freq);
     window.reserve(win_size);
@@ -118,7 +118,7 @@ int BitReceiver::stepShift(const double *buffer, int size) {
     // TODO: this cutoff point is loosely dependent on the window size and the
     // volume and noisiness of the microphone. I don't think there's a reasonable
     // way to compute this, but who knows. For now it's just hardcoded.
-    double diff_min = 200;
+    double diff_min = 100;
     int res = -1;
 
     for (int i = 0; i < size; i++) {
@@ -128,7 +128,7 @@ int BitReceiver::stepShift(const double *buffer, int size) {
     for (int i = 0; i < size; i++) {
         sum += buffer[i + size];
         delta = buffer[i + size] - buffer[i];
-        if (delta < mag_lim) {
+        if (delta < right_lim) {
             continue;
         }
 
@@ -227,4 +227,13 @@ int BitReceiver::receive(uint8_t *buffer, int size) {
     memcpy(buffer, decoded.data(), size);
 
     return size;
+}
+
+void BitReceiver::skip() {
+    double lo, hi;
+    do {
+        readSamples(window.data(), win_size);
+        lo = dft(window.data(), win_size, lo_ratio);
+        hi = dft(window.data(), win_size, hi_ratio);
+    } while (lo > left_lim || hi > left_lim);
 }

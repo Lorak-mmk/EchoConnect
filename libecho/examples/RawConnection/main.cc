@@ -75,7 +75,7 @@ int main(int argc, char *argv[]) {
 
         printf("Receiving %d bytes. Low frequency: %d, high frequency: %d, window size: %d, mag limit: %d\n", bytes,
                freq1, freq2, winsize, magLim);
-        auto connection = EchoRawConnection::getBitEchoRawConnection(winsize, freq1, freq2, freq1, freq2, magLim);
+        auto connection = EchoRawConnection::getBitEchoRawConnection(winsize, freq1, freq2, freq1, freq2, 0, magLim);
         auto *buf = new uint8_t[bytes];
         connection->receive(buf, bytes);
         for (int i = 0; i < bytes; i++) {
@@ -95,7 +95,7 @@ int main(int argc, char *argv[]) {
         std::vector<uint8_t> data(argv[0], argv[0] + length);
         printf("Sending %zu bytes. Low frequency: %d, high frequency: %d, window size: %d, mag limit: %d\n", length,
                freq1, freq2, winsize, magLim);
-        auto connection = EchoRawConnection::getBitEchoRawConnection(winsize, freq1, freq2, freq1, freq2, magLim);
+        auto connection = EchoRawConnection::getBitEchoRawConnection(winsize, freq1, freq2, freq1, freq2, 0, magLim);
         connection->sendBlocking(data);
         delete connection;
         printf("Data sent succesfully!\n");

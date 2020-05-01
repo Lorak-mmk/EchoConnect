@@ -77,7 +77,7 @@ int main(int argc, char *argv[]) {
                freq1, freq2, winsize, magLim);
         auto connection = EchoRawConnection::getBitEchoRawConnection(winsize, freq1, freq2, freq1, freq2, 0, magLim);
         auto *buf = new uint8_t[bytes];
-        connection->receive(buf, bytes);
+        connection->receiveFirst(buf, bytes);
         for (int i = 0; i < bytes; i++) {
             printf("%02hhx ", buf[i]);
         }

@@ -2,8 +2,8 @@
 #include "BitSender.h"
 #include "Echo.h"
 
-#define N 1000
-#define S 50
+#define N 300
+#define S 44
 
 int main(int argc, char **argv) {
     Echo::initEcho(argc, argv);

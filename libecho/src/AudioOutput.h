@@ -24,7 +24,7 @@ public:
      * @param data  Byte array with data to play.
      * @param length    Length of @p data.
      */
-    void enqueueData(const char *data, int length);
+    void enqueueData(const char *data, int length, bool waitForStart = true);
 
     StatusType getStreamStatus() override;
 

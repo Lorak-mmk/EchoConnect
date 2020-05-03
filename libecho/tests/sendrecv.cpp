@@ -3,13 +3,16 @@
 #include "Echo.h"
 
 #define N 300
-#define S 44
+#define S 50
+
+#define LO 16000
+#define HI 18000
 
 int main(int argc, char **argv) {
     Echo::initEcho(argc, argv);
 
     BitSender sender(S, 0, 0);
-    BitReceiver receiver(S, 14000, 15000, 10, 80);
+    BitReceiver receiver(S, LO, HI, 10, 80);
 
     uint8_t arr[N];
 
@@ -18,8 +21,8 @@ int main(int argc, char **argv) {
         vec.push_back(0);
     sender.send(vec);
 
-    sender.setLoFreq(14000);
-    sender.setHiFreq(15000);
+    sender.setLoFreq(LO);
+    sender.setHiFreq(HI);
     vec.clear();
     for (int i = 0; i < N; i++)
         vec.push_back(rand());

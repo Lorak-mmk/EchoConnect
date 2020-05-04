@@ -40,20 +40,16 @@ public:
     EchoRawConnection &operator=(EchoRawConnection &&other) noexcept = default;
 
     /**
-     * @brief Sends given byte sequence.
-     *
-     * Anyone can receive it, and there is no guarantee that received transmission will be correct.
-     * @param buffer    Bytes to send.
+     * @brief Starts a message block
      */
-    virtual void send(const std::vector<uint8_t> &buffer) = 0;
+    virtual void sendStart() = 0;
 
     /**
-     * @brief Sends given byte sequence and waits until sending finishes.
+     * @brief Sends given byte sequence
      *
-     * Anyone can receive it, and there is no guarantee that received transmission will be correct.
      * @param buffer    Bytes to send.
      */
-    virtual void sendBlocking(const std::vector<uint8_t> &buffer) = 0;
+    virtual void send(uint8_t *buffer, int size) = 0;
 
     /**
      * @brief Waits until all sendings finish.
@@ -61,16 +57,14 @@ public:
     virtual void sendWait() = 0;
 
     /**
-     * @brief Waits for the signal, tries to read @p size bytes, fills @p buffer with received bytes, returns number of
-     * read bytes.
+     * @brief Waits for the start of the signal
      *
      * As the name states it should be called only once (first) per series of data receives.
-     * For now, there is no guarantee regarding correctness of transmission.
      * @param buffer    Where to write received bytes.
      * @param size      Size of data to read.
      * @return          Size of read data.
      */
-    virtual int receiveFirst(uint8_t *buffer, int size) = 0;
+    virtual void receiveStart() = 0;
 
     /**
      * @brief Tries to read @p size bytes, fills @p buffer with received bytes, returns number of read bytes.

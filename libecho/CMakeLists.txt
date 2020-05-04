@@ -28,9 +28,13 @@ set(SRC_FILES
         ${SRC_DIR}/ISender.h
         ${SRC_DIR}/BitSender.h
         ${SRC_DIR}/BitSender.cc
+        ${SRC_DIR}/BitSenderv2.h
+        ${SRC_DIR}/BitSenderv2.cc
         ${SRC_DIR}/IReceiver.h
         ${SRC_DIR}/BitReceiver.cc
         ${SRC_DIR}/BitReceiver.h
+        ${SRC_DIR}/BitReceiverv2.cc
+        ${SRC_DIR}/BitReceiverv2.h
         ${SRC_DIR}/Packet.h
         ${SRC_DIR}/Packet.cc
         ${SRC_DIR}/HammingCode.h

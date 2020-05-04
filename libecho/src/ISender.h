@@ -19,9 +19,9 @@ public:
      * Derived classes must call it.
      *
      * @param format    Audio stream output format.
-     * @param winSize   How much of bitrate we want to use to play sound in which unit data is encoded.
+     * @param win_size   How much of bitrate we want to use to play sound in which unit data is encoded.
      */
-    ISender(const QAudioFormat &format, int winSize) : format(format), winSize(winSize) {
+    ISender(const QAudioFormat &format, int win_size) : format(format), win_size(win_size) {
         output = std::make_unique<AudioOutput>(format);
         output->startStream();
     }
@@ -39,46 +39,29 @@ public:
     }
 
     /**
-     * @brief winSize member getter.
+     * @brief win_size member getter.
      */
     int getWindowSize() {
-        return winSize;
+        return win_size;
     }
 
     /**
-     * @brief winSize member setter.
+     * @brief win_size member setter.
      *
-     * @param newSize   New winSize value.
+     * @param newSize   New win_size value.
      */
     void setWindowSize(int newSize) {
-        winSize = newSize;
+        win_size = newSize;
     }
 
-    /**
-     * @brief Sends given byte sequence.
-     *
-     * Anyone can receive it, and there is no guarantee that received transmission will be correct.
-     * @param buffer    Bytes to send.
-     */
-    virtual void send(const std::vector<uint8_t> &buffer) = 0;
-
-    /**
-     * @brief Sends given byte sequence and blocks untill sending finishes.
-     *
-     * Anyone can receive it, and there is no guarantee that received transmission will be correct.
-     * @param buffer    Bytes to send.
-     */
-    virtual void sendBlocking(const std::vector<uint8_t> &buffer) = 0;
-
-    /**
-     * @brief Waits until all sendings finish.
-     */
-    virtual void sendWait() = 0;
+    virtual void start() = 0;
+    virtual void send(uint8_t *buffer, int size) = 0;
+    virtual void wait() = 0;
 
 protected:
     const QAudioFormat format;           /**< Audio stream output format. */
     std::unique_ptr<AudioOutput> output; /**< Output audio device. */
-    int winSize;                         /**< Says how much of bitrate we want to use
+    int win_size;                         /**< Says how much of bitrate we want to use
                                               to play sound in which unit od data is encoded. */
 };
 

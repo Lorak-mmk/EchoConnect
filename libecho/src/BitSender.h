@@ -56,21 +56,10 @@ public:
     void setHiFreq(int newFreq) {
         hiFreq = newFreq;
     }
-
-    /**
-     * @brief @see ISender::send
-     */
-    void send(const std::vector<uint8_t> &buffer) override;
-
-    /**
-     * @brief @see ISender::sendBlocking
-     */
-    void sendBlocking(const std::vector<uint8_t> &buffer) override;
-
-    /**
-     * @brief @see ISender::sendWait
-     */
-    void sendWait() override;
+    
+    virtual void start() override;
+    virtual void send(uint8_t *buffer, int size) override;
+    virtual void wait() override;
 
 private:
     int loFreq, hiFreq; /**< Frequencies used to encode/decode bits, respectively for 0 and 1 values. */

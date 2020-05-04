@@ -2,8 +2,8 @@
 #include "Echo.h"
 #include "AudioOutput.h"
 
-#define RISE 0.2
-#define FALL 0.2
+#define RISE 0.1
+#define FALL 0.1
 
 int main(int argc, char **argv) {
 	Echo::initEcho(argc, argv);

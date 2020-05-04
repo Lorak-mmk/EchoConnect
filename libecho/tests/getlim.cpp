@@ -1,11 +1,9 @@
 #include <math.h>
-
 #include "Echo.h"
 #include "AudioInput.h"
-	
-int16_t window[30000];
-double mags[20000];
 
+#define WINDOWS 1000
+	
 double mag(double re, double im) {
 	return sqrt(re * re + im * im);
 }
@@ -35,48 +33,20 @@ static void dft_slide(const int16_t *buffer, int win_size, double ratio, double 
     }
 }
 
-void step_shift(const double *buffer, int size, int lim) {
-    double sum = 0;
-    double delta;
-    double diff;
-    double diff_min = INFINITY;
-
-    for (int i = 0; i < size; i++) {
-        sum += buffer[i];
-    }
-
-    for (int i = 0; i < size; i++) {
-        sum += buffer[i + size];
-        delta = buffer[i + size] - buffer[i];
-        for (int j = 0; j < buffer[i]; j++)
-        	putchar('#');
-        putchar('\n');
-        //printf("%lf\n", delta);
-        if (delta < lim) {
-            continue;
-        }
-
-        diff = sum - 0.5 * ((size + 1) * (buffer[i + size] + buffer[i]));
-        diff = std::abs(diff) / size;
-        if (diff_min > diff) {
-            diff_min = diff;
-        }
-        sum -= buffer[i];
-    }
-	if (diff_min != INFINITY)
-		printf("%10.6lf\n", diff_min);
-}
-
 int main(int argc, char **argv) {
 	Echo::initEcho(argc, argv);
 
-	if (argc != 4) {
-		printf("usage: step <win_size> <freq> <lim>\n");
+	if (argc < 3) {
+		printf("usage: step <win_size> <freq> [skip]\n"
+		       "The skip parameter tells how many windows to skip.\n"
+		       "Eg. if your mic picks up the key you press to launch\n"
+		       "this program and messes up the waveform, a value of\n"
+		       "1000 should be fine. It is 0 by default\n");
 		return 1;
 	}
 	int win_size = atoi(argv[1]);
 	int freq = atoi(argv[2]);
-	int lim = atoi(argv[3]);
+	int skip = (argc == 3 ? 0 : atoi(argv[3]));
 
 	QAudioFormat fmt;
 	fmt.setByteOrder(QAudioFormat::LittleEndian);
@@ -88,26 +58,42 @@ int main(int argc, char **argv) {
 	AudioInput input(fmt);
 	input.startStream();
 
+	int16_t *samples = new int16_t[win_size * (WINDOWS + 1)];
+	double *mags = new double[win_size * WINDOWS];
 
-	while (1) {
+	for (int i = 0; i < skip; i++) {
 		int inc = 0;
 		int bytes = win_size * 2;
 		while (bytes > 0) {
-			int nread = input.readBytes((char *) (window + (2 * win_size)) + inc, bytes);
+			int nread = input.readBytes((char *) samples + inc, bytes);
 			inc += nread;
 			bytes -= nread;
 			input.waitForTick();
 		}
-
-		dft_slide(window, win_size, (double) freq / 44100, mags, 2 * win_size);
-		for (int i = 0; i < win_size; i++) {
-	        for (int j = 0; j < mags[i]; j++)
-	        	putchar('#');
-	        putchar('\n');
-        }
-
-		for (int i = 0; i < 2 * win_size; i++)
-			window[i] = window[i + win_size];
-		//step_shift(mags, win_size, lim);
 	}
+
+	int inc = 0;
+	int bytes = win_size * (WINDOWS + 1) * 2;
+	while (bytes > 0) {
+		int nread = input.readBytes((char *) samples + inc, bytes);
+		inc += nread;
+		bytes -= nread;
+		input.waitForTick();
+	}
+
+	dft_slide(samples, win_size, freq / 44100.0, mags, win_size * WINDOWS);
+
+	for (int i = 0; i < win_size * WINDOWS; i++) {
+		for (int j = 0; j < mags[i]; j++)
+			putchar('#');
+		putchar('\n');
+	}
+
+	std::sort(mags, mags + (win_size * WINDOWS));
+	printf(">>>>>>> the best lim seems to be %lf <<<<<<<\n", mags[win_size * WINDOWS / 2]);
+
+	delete[] samples;
+	delete[] mags;
+
+	return 0;
 }

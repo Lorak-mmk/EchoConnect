@@ -17,24 +17,24 @@ public:
                                                           int sendLoFreq, int sendHiFreq, int leftLim, int rightLim);
 
     /**
+     * @brief @see EchoRawConnection::start
+     */
+    void sendStart() override;
+
+    /**
      * @brief @see EchoRawConnection::send
      */
-    void send(const std::vector<uint8_t> &buffer) override;
+    void send(uint8_t *buffer, int size) override;
 
     /**
-     * @brief @see EchoRawConnection::sendBlocking
-     */
-    void sendBlocking(const std::vector<uint8_t> &buffer) override;
-
-    /**
-     * @brief @see EchoRawConnection::sendWait
+     * @brief @see EchoRawConnection::wait
      */
     void sendWait() override;
 
     /**
      * @brief @see EchoRawConnection::receiveFirst
      */
-    int receiveFirst(uint8_t *buffer, int size) override;
+    void receiveStart() override;
 
     /**
      * @brief @see EchoRawConnection::receive

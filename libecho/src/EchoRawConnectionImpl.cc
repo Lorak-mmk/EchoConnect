@@ -11,20 +11,20 @@ EchoRawConnectionImpl *EchoRawConnectionImpl::getBitEchoRawConnection(int winSiz
     return echorc;
 }
 
-void EchoRawConnectionImpl::send(const std::vector<uint8_t> &buffer) {
-    sender->send(buffer);
+void EchoRawConnectionImpl::sendStart() {
+    sender->start();
 }
 
-void EchoRawConnectionImpl::sendBlocking(const std::vector<uint8_t> &buffer) {
-    sender->sendBlocking(buffer);
+void EchoRawConnectionImpl::send(uint8_t *buffer, int size) {
+    sender->send(buffer, size);
 }
 
 void EchoRawConnectionImpl::sendWait() {
-    sender->sendWait();
+    sender->wait();
 }
 
-int EchoRawConnectionImpl::receiveFirst(uint8_t *buffer, int size) {
-    return receiver->receiveFirst(buffer, size);
+void EchoRawConnectionImpl::receiveStart() {
+    receiver->start();
 }
 
 int EchoRawConnectionImpl::receive(uint8_t *buffer, int size) {

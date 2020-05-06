@@ -37,10 +37,9 @@ void BitSenderv2::start() {
 void BitSenderv2::send(uint8_t *buffer, int size) {
     auto *out = new int16_t[size * win_size * 8];
     int16_t *out_end = out;
-    uint8_t byte;
 
     for (int i = 0; i < size; i++) {
-        byte = buffer[i];
+        uint8_t byte = buffer[i];
         for (int j = 0; j < 8; j++) {
             write_bit(out_end, byte & 1);
             out_end += win_size;

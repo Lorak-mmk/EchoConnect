@@ -29,8 +29,7 @@ public:
      * @param rightLim      Smaller of the 2 frequencies' magnitudes
      * @return              Pointer to desired EchoRawConnection object.
      */
-    static EchoRawConnection *getBitEchoRawConnection(int winSize, int receiveLoFreq, int receiveHiFreq, int sendLoFreq,
-                                                      int sendHiFreq, int leftLim, int rightLim);
+    static EchoRawConnection *getBitEchoRawConnection(int win_size, int send_freq, int recv_freq, int lim);
 
     virtual ~EchoRawConnection() = default;
     EchoRawConnection() = default;
@@ -58,11 +57,6 @@ public:
 
     /**
      * @brief Waits for the start of the signal
-     *
-     * As the name states it should be called only once (first) per series of data receives.
-     * @param buffer    Where to write received bytes.
-     * @param size      Size of data to read.
-     * @return          Size of read data.
      */
     virtual void receiveStart() = 0;
 

@@ -7,6 +7,7 @@
 #include "AudioInput.h"
 #include "IReceiver.h"
 
+// NOLINTNEXTLINE
 class BitReceiverv2 : public IReceiver {
 public:
     BitReceiverv2(int win_size, int freq, double lim);

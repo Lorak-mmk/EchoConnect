@@ -37,7 +37,7 @@ int main(int argc, char **argv) {
 	Echo::initEcho(argc, argv);
 
 	if (argc < 3) {
-		printf("usage: step <win_size> <freq> [skip]\n"
+		printf("usage: getlim <win_size> <freq> [skip]\n"
 		       "The skip parameter tells how many windows to skip.\n"
 		       "Eg. if your mic picks up the key you press to launch\n"
 		       "this program and messes up the waveform, a value of\n"

@@ -48,6 +48,7 @@ public:
      * @brief Sends given byte sequence
      *
      * @param buffer    Bytes to send.
+     * @param size      Size of buffer.
      */
     virtual void send(uint8_t *buffer, int size) = 0;
 

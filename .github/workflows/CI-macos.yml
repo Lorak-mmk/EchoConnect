@@ -1,4 +1,4 @@
-name: Build and test - Linux
+name: Build and test - MacOS
 
 on:
   push:
@@ -8,11 +8,11 @@ on:
 
 env:
   BUILD_TYPE: Debug
-  DEPS_DIR: /home/runner/work/EchoConnect/dependencies
+  DEPS_DIR: ${{ github.workspace }}/../dependencies
 
 jobs:
   build:
-    runs-on: ubuntu-latest
+    runs-on: macos-latest
 
     steps:
     - uses: actions/checkout@v2
@@ -32,9 +32,6 @@ jobs:
         dir: ${{ env.DEPS_DIR }}
         version: 5.12.7
         cached: ${{ steps.cache-deps.outputs.cache-hit }}
-
-    - name: Install PulseAudio, Doxygen
-      run: sudo apt-get install libpulse-dev doxygen graphviz
 
     - name: Create build folder
       run: cmake -E make_directory ${{ github.workspace }}/build

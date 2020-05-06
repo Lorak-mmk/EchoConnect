@@ -1,6 +1,8 @@
 #include "BitReceiverv2.h"
 #include <cmath>
-
+#ifndef M_PI
+#define M_PI 3.14159265358979323846
+#endif
 static const int SAMPLE_RATE = 44100;
 static const int SAMPLE_SIZE = 16;
 static const int CHANNEL_COUNT = 1;

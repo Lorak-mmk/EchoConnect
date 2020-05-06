@@ -2,6 +2,9 @@
 
 #include "AudioInput.h"
 #include "Echo.h"
+#ifndef M_PI
+#define M_PI 3.14159265358979323846
+#endif
 
 double mag(double re, double im) {
     return sqrt(re * re + im * im);

@@ -10,7 +10,7 @@ static constexpr size_t HEADER_SIZE = 6;                     /**< Size of packet
 static constexpr size_t CRC_SIZE = 4;                        /**< Size of control sum of packet in bytes. */
 static constexpr size_t FRAME_SIZE = HEADER_SIZE + CRC_SIZE; /**< Size of packet frame in bytes. */
 static constexpr size_t MAX_DATA_SIZE =
-    std::numeric_limits<uint16_t>::max(); /**< Maximum size of data send in packet in bytes. */
+    (std::numeric_limits<uint16_t>::max)(); /**< Maximum size of data send in packet in bytes. */
 
 /**
  * @brief Enum representing flags with which packet may be marked.
@@ -76,17 +76,17 @@ public:
      * @param f Checked flag.
      * @return  Returns @p true if given flag is set, otherwise @p false.
      */
-    bool isSet(Flag f);
+    [[nodiscard]] bool isSet(Flag f) const;
 
     /**
      * @brief Returns size of packet encapsulated data.
      */
-    uint16_t getSize();
+    [[nodiscard]] uint16_t getSize() const;
 
     /**
      * @brief Returns sequential number of packet.
      */
-    uint16_t getNumber();
+    [[nodiscard]] uint16_t getNumber() const;
 
     /**
      * @brief Returns data encapsulated in packet.

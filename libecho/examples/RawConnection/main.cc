@@ -1,13 +1,17 @@
 //#include "Echo.h"
-
+#define _GLIBCXX_USE_C99 1
 #include <Echo.h>
 #include <cstring>
-#include <fstream>
 #include <iostream>
+#include <string>
+
+long to_long(const std::string &s) {
+    return strtol(s.c_str(), NULL, 10);
+}
 
 void printHelp(std::string name) {
     std::cout << "Usage: " << name << " [-freq num] [-win num] [-lim num] send (data_bytes))\n";
-    std::cout << "Usage: " << name << " [-freq num] [-win num] [-lim num] receive bytes_number\n";
+    std::cout << "Usage: " << name << " [-freq num] [-win num] [-lim num] receive bytes_number\n\n\n";
     std::cout << "-freq: Set frequency\n";
     std::cout << "-win: Set window size (number of samples per bit). Higher - less errors, slowe transmition\n";
     std::cout
@@ -35,7 +39,7 @@ int main(int argc, char *argv[]) {
     }
 
     if (argc > 1 && argv[0] == std::string("-win")) {
-        winsize = std::stoi(argv[1]);
+        winsize = to_long(argv[1]);
         argv += 2;
         argc -= 2;
     }
@@ -57,7 +61,7 @@ int main(int argc, char *argv[]) {
         if (argc == 0) {
             printHelp(name);
         }
-        int bytes = std::stoi(argv[0]);
+        int bytes = to_long(argv[0]);
         argv++;
         argc--;
 

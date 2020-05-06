@@ -1,6 +1,9 @@
 #include "BitSenderv2.h"
 #include <cmath>
 #include <iostream>
+#ifndef M_PI
+#define M_PI 3.14159265358979323846
+#endif
 
 static const double RISE = 0.1;
 static const double FALL = 0.1;
@@ -37,10 +40,9 @@ void BitSenderv2::start() {
 void BitSenderv2::send(uint8_t *buffer, int size) {
     auto *out = new int16_t[size * win_size * 8];
     int16_t *out_end = out;
-    uint8_t byte;
 
     for (int i = 0; i < size; i++) {
-        byte = buffer[i];
+        uint8_t byte = buffer[i];
         for (int j = 0; j < 8; j++) {
             write_bit(out_end, byte & 1);
             out_end += win_size;

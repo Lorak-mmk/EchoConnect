@@ -1,6 +1,9 @@
 #include <math.h>
 #include "AudioInput.h"
 #include "Echo.h"
+#ifndef M_PI
+#define M_PI 3.14159265358979323846
+#endif
 
 #define WINDOWS 1000
 

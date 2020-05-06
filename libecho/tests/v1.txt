@@ -1,3 +1,4 @@
+This is a kinda tutorial for getting parameters for the old send/recv mechanism.
 BitReceiver(win_size, lo_freq, hi_freq, left_lim, right_lim)
 
 1. pick a window size, high frequency and low frequency

@@ -8,7 +8,7 @@
  * @brief Error correction codes using Hamming(7, 4) code.
  *
  * Explanation of algorithm can be found here: https://www.tutorialspoint.com/error-correcting-codes-hamming-codes
- * 
+ *
  * This class encodes every 4 bits of message using 7 bits, so after encoding it has about 175% length of original.
  * Error correction is capable of fixing 1 bit flip of those seven bits. So after dividing encoded message
  * into 7 bit parts, one bit can be wrong in every part, and HammingCode::fixError will fix all errors.

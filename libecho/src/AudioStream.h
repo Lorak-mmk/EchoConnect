@@ -117,7 +117,7 @@ public:
      *
      * Stops stream. Kills QThread and waits for it to end.
      */
-    virtual ~AudioStream() {
+    ~AudioStream() override {
         qDebug() << "Destroying" << qUtf8Printable(type(this));
         if (qStream->state() != QAudio::StoppedState) {
             stopStream();

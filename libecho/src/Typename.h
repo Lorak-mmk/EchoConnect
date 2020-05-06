@@ -11,8 +11,9 @@ inline QString demangle(const char *name) {
     int status = 0;
     QString result = "";
 
-    char *realname = abi::__cxa_demangle(name, NULL, NULL, &status);
-    realname == NULL ? result = name : result = realname;
+    char *realname = abi::__cxa_demangle(name, nullptr, nullptr, &status);
+    realname == nullptr ? result = name : result = realname;
+    // NOLINTNEXTLINE(cppcoreguidelines-no-malloc,-warnings-as-errors)
     free(realname);
 
     return result;

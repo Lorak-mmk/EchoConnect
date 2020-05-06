@@ -53,7 +53,7 @@ Data encapsulated in packet. Its size is limited to \f$2^{16}-11\f$ bytes becaus
 
 #### Control sum
 
-Packet checksum, to be more specific **CRC32** of other other packet components. Whenever transmitted packet is deserialized, if the control sum is invalid, the exception is raised. We are using [CRCpp](https://github.com/d-bahr/CRCpp/tree/51fbc35ef892e98abe91a51f7320749c929d72bd) library to calculate checksum.
+Packet checksum, to be more specific **CRC32** of all other packet components. Whenever transmitted packet is deserialized, if the control sum is invalid, the exception is raised. We are using [CRCpp](https://github.com/d-bahr/CRCpp/tree/51fbc35ef892e98abe91a51f7320749c929d72bd) library to calculate checksum.
 
 
 <br>

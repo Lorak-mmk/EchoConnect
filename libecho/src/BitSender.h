@@ -28,14 +28,14 @@ public:
     /**
      * @brief loFreq member getter.
      */
-    int getLoFreq() {
+    [[nodiscard]] int getLoFreq() const {
         return loFreq;
     }
 
     /**
      * @brief hiFreq member getter.
      */
-    int getHiFreq() {
+    [[nodiscard]] int getHiFreq() const {
         return hiFreq;
     }
 

@@ -16,7 +16,7 @@ void AudioOutput::enqueueData(const char *data, int length) {
 }
 
 void AudioOutput::tryWriteData() {
-    size_t bytesToWrite = std::min(qStream->bytesFree(), buffer.size());
+    int bytesToWrite = std::min(qStream->bytesFree(), buffer.size());
     if (bytesToWrite == 0) {
         return;
     }

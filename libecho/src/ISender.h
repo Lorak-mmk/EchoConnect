@@ -41,7 +41,7 @@ public:
     /**
      * @brief winSize member getter.
      */
-    int getWindowSize() {
+    [[nodiscard]] int getWindowSize() const {
         return winSize;
     }
 

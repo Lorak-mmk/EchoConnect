@@ -1,13 +1,17 @@
 //#include "Echo.h"
-
+#define _GLIBCXX_USE_C99 1
 #include <Echo.h>
-#include <cstring>
-#include <fstream>
+#include <cstdlib>
 #include <iostream>
+#include <string>
 
-void printHelp(std::string name) {
+long to_long(const std::string &s) {
+    return strtol(s.c_str(), NULL, 10);
+}
+
+void printHelp(const std::string &name) {
     std::cout << "Usage: " << name << " [-freq low,high] [-win num] [-magLim num] send (data_bytes))\n";
-    std::cout << "Usage: " << name << " [-freq low,high] [-win num] [-magLim num] receive bytes_number\n";
+    std::cout << "Usage: " << name << " [-freq low,high] [-win num] [-magLim num] receive bytes_number\n\n\n";
     std::cout << "-freq: Set frequency of 0 bit (low) and 1 bit (high)\n";
     std::cout
         << "-win: Set window size (time in which 1 bit will be transfered). Higher - less errors, slowe transmition\n";
@@ -21,10 +25,10 @@ void printHelp(std::string name) {
 int main(int argc, char *argv[]) {
     Echo::initEcho(argc, argv);
 
-    int freq1 = 14000;
-    int freq2 = 15000;
-    int winsize = 50;
-    int magLim = 80;
+    long freq1 = 14000;
+    long freq2 = 15000;
+    long winsize = 50;
+    long magLim = 80;
 
     std::string name = argv[0];
     argv++;
@@ -39,21 +43,21 @@ int main(int argc, char *argv[]) {
         arg.erase(0, arg.find(',') + 1);
         std::string sfreq2 = arg.substr(0, arg.find(','));
 
-        freq1 = std::stoi(sfreq1);
-        freq2 = std::stoi(sfreq2);
+        freq1 = to_long(sfreq1);
+        freq2 = to_long(sfreq2);
 
         argv += 2;
         argc -= 2;
     }
 
     if (argc > 1 && argv[0] == std::string("-win")) {
-        winsize = std::stoi(argv[1]);
+        winsize = to_long(argv[1]);
         argv += 2;
         argc -= 2;
     }
 
     if (argc > 1 && argv[0] == std::string("-magLim")) {
-        magLim = std::stoi(argv[1]);
+        magLim = to_long(argv[1]);
         argv += 2;
         argc -= 2;
     }
@@ -69,11 +73,11 @@ int main(int argc, char *argv[]) {
         if (argc == 0) {
             printHelp(name);
         }
-        int bytes = std::stoi(argv[0]);
+        int bytes = to_long(argv[0]);
         argv++;
         argc--;
 
-        printf("Receiving %d bytes. Low frequency: %d, high frequency: %d, window size: %d, mag limit: %d\n", bytes,
+        printf("Receiving %d bytes. Low frequency: %ld, high frequency: %ld, window size: %ld, mag limit: %ld\n", bytes,
                freq1, freq2, winsize, magLim);
         auto connection = EchoRawConnection::getBitEchoRawConnection(winsize, freq1, freq2, freq1, freq2, 0, magLim);
         auto *buf = new uint8_t[bytes];
@@ -91,9 +95,9 @@ int main(int argc, char *argv[]) {
             printHelp(name);
         }
 
-        size_t length = strlen(argv[0]);
+        size_t length = std::string(argv[0]).length();
         std::vector<uint8_t> data(argv[0], argv[0] + length);
-        printf("Sending %zu bytes. Low frequency: %d, high frequency: %d, window size: %d, mag limit: %d\n", length,
+        printf("Sending %zu bytes. Low frequency: %ld, high frequency: %ld, window size: %ld, mag limit: %ld\n", length,
                freq1, freq2, winsize, magLim);
         auto connection = EchoRawConnection::getBitEchoRawConnection(winsize, freq1, freq2, freq1, freq2, 0, magLim);
         connection->sendBlocking(data);

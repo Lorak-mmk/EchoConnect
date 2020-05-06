@@ -1,12 +1,16 @@
-cmake_minimum_required(VERSION 3.1.0)
+cmake_minimum_required(VERSION 3.11.0)
 
-SET(CMAKE_C_COMPILER clang)
-SET(CMAKE_CXX_COMPILER clang++)
 SET(CMAKE_CXX_STANDARD 17)
+SET(BUILD_SHARED_LIBS ON)
 
 project(EchoConnect VERSION 1)
 
-SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -Wextra -fno-strict-aliasing")
+if (MSVC)
+    add_compile_options(/W3)
+else()
+    add_compile_options(-Wall -Wextra -Werror -fno-strict-aliasing)
+endif()
+
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
 enable_testing()

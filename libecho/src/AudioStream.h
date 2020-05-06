@@ -185,10 +185,9 @@ public:
      * @return  Struct with current informations about stream.
      */
     AudioStreamInfo getStreamInfo() {
-        return {.bufferSize = qStream->bufferSize(),
-                .notifyInterval = qStream->notifyInterval(),
-                .periodSize = qStream->periodSize(),
-                .volume = qStream->volume()};
+        AudioStreamInfo info{qStream->bufferSize(), qStream->notifyInterval(), qStream->periodSize(),
+                             qStream->volume()};
+        return info;
     }
 
     /**

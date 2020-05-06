@@ -1,5 +1,8 @@
 #include "BitReceiver.h"
 #include <cmath>
+#ifndef M_PI
+#define M_PI 3.14159265358979323846
+#endif
 #include "HammingCode.h"
 
 static const int SAMPLE_RATE = 44100;
@@ -84,11 +87,11 @@ BitReceiver::BitReceiver(int win_size, int lo_freq, int hi_freq, int left_lim, i
     sync_hi_out.reserve(2 * win_size);
 }
 
-long BitReceiver::getLoFrequency() {
+long BitReceiver::getLoFrequency() const {
     return std::lround(lo_ratio * SAMPLE_RATE);
 }
 
-long BitReceiver::getHiFrequency() {
+long BitReceiver::getHiFrequency() const {
     return std::lround(hi_ratio * SAMPLE_RATE);
 }
 
@@ -111,29 +114,27 @@ void BitReceiver::readSamples(int16_t *buffer, int len) {
     }
 }
 
-int BitReceiver::stepShift(const double *buffer, int size) {
-    double sum = 0;
-    double delta;
-    double diff;
+int BitReceiver::stepShift(const double *buffer, int size) const {
     // TODO: this cutoff point is loosely dependent on the window size and the
     // volume and noisiness of the microphone. I don't think there's a reasonable
     // way to compute this, but who knows. For now it's just hardcoded.
     double diff_min = 100;
     int res = -1;
 
+    double sum = 0;
     for (int i = 0; i < size; i++) {
         sum += buffer[i];
     }
 
     for (int i = 0; i < size; i++) {
         sum += buffer[i + size];
-        delta = buffer[i + size] - buffer[i];
+        double delta = buffer[i + size] - buffer[i];
         if (delta < right_lim) {
             continue;
         }
 
         // NOLINTNEXTLINE(cppcoreguidelines-avoid-magic-numbers, readability-magic-numbers)
-        diff = sum - 0.5 * ((size + 1) * (buffer[i + size] + buffer[i]));
+        double diff = sum - 0.5 * ((size + 1) * (buffer[i + size] + buffer[i]));
         diff = std::abs(diff);
         if (diff_min > diff) {
             diff_min = diff;
@@ -230,7 +231,7 @@ int BitReceiver::receive(uint8_t *buffer, int size) {
 }
 
 void BitReceiver::skip() {
-    double lo, hi;
+    double lo = 0, hi = 0;
     do {
         readSamples(window.data(), win_size);
         lo = dft(window.data(), win_size, lo_ratio);

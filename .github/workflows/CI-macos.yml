@@ -1,9 +1,4 @@
-# This is a basic workflow to help you get started with Actions
-
-name: CI MacOS
-
-# Controls when the action will run. Triggers the workflow on push or pull request
-# events but only for the master branch
+name: Build and test - MacOS
 
 on:
   push:
@@ -12,89 +7,46 @@ on:
     branches: [ master ]
 
 env:
-  BUILD_TYPE: Release
-  DEPS_DIR: /home/runner/work/EchoConnect/dependencies
+  BUILD_TYPE: Debug
+  DEPS_DIR: ${{ github.workspace }}/../dependencies
 
-# A workflow run is made up of one or more jobs that can run sequentially or in parallel
 jobs:
-  # This workflow contains a single job called "build"
   build:
-    # The type of runner that the job will run on
     runs-on: macos-latest
 
-    # Steps represent a sequence of tasks that will be executed as part of the job
     steps:
-    # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
     - uses: actions/checkout@v2
       with:
         submodules: true
 
-    #- name: Cache dependencies
-    #  id: cache-deps
-    #  uses: actions/cache@v1
-    #  with:
-    #    path: ${{ env.DEPS_DIR }}
-    #    key: ${{ runner.os }}-dependencies
-
-    #- name: Install PulseAudio, Doxygen
-    #  run: sudo apt update && sudo apt-get install libpulse-dev doxygen graphviz clang-tidy-9
+    - name: Cache dependencies
+      id: cache-deps
+      uses: actions/cache@v1
+      with:
+        path: ${{ env.DEPS_DIR }}
+        key: ${{ runner.os }}-dependencies
 
     - name: Install QT
       uses: jurplel/install-qt-action@v2
       with:
         dir: ${{ env.DEPS_DIR }}
         version: 5.12.7
-    #    cached: ${{ steps.cache-deps.outputs.cache-hit }}
-
-    - name: Download and build GoogleTest
-    #  if: steps.cache-deps.outputs.cache-hit != 'true'
-      run: |
-        git clone https://github.com/google/googletest.git
-        cd googletest
-        mkdir build && cd build
-        cmake .. -DBUILD_SHARED_LIBS=ON -DINSTALL_GTEST=ON -DCMAKE_INSTALL_PREFIX:PATH=/usr
-        make -j8
-      working-directory: ${{ env.DEPS_DIR }}
-
-    - name: Install GoogleTest
-      run: |
-        cd googletest/build
-        sudo make install
-        sudo ldconfig
-      working-directory: ${{ env.DEPS_DIR }}
-
-    - name: Check code formatting with clang-format
-      uses: DoozyX/clang-format-lint-action@v0.5
-      with:
-        source: './libecho'
-        exclude: './libecho/external'
-        extensions: 'h,cpp,cc'
-        clangFormatVersion: 9
+        cached: ${{ steps.cache-deps.outputs.cache-hit }}
 
     - name: Create build folder
       run: cmake -E make_directory ${{ github.workspace }}/build
 
     - name: Configure CMake
-      # Use a bash shell so we can use the same syntax for environment variable
-      # access regardless of the host operating system
       shell: bash
       working-directory: ${{ github.workspace }}/build
-      # Note the current convention is to use the -S and -B options here to specify source
-      # and build directories, but this is only available with CMake 3.13 and higher.
-      # The CMake binaries on the Github Actions machines are (as of this writing) 3.12
       run: cmake ${{ github.workspace }} -DCMAKE_BUILD_TYPE=$BUILD_TYPE
-
-    - name: Check with clang-tidy
-      shell: bash
-      run: ${{ github.workspace }}/tools/clang-tidy.sh
 
     - name: Build
       working-directory: ${{ github.workspace }}/build
       shell: bash
-      # Execute the build.  You can specify a specific target with "--target <NAME>"
       run: cmake --build . --config $BUILD_TYPE
 
     - name: Run tests
       working-directory: ${{ github.workspace }}/build
       shell: bash
-      run: GTEST_COLOR=1 make test CTEST_OUTPUT_ON_FAILURE=TRUE
+      run: GTEST_COLOR=1 ctest -V CTEST_OUTPUT_ON_FAILURE=TRUE

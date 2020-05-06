@@ -12,15 +12,15 @@ Packets are essential when implementing the protocol, allow to encapsulate data 
 
 Packets in serialized form are structured as below:
 
-| element | size |
+| element | size in bytes |
 | :---: | :---: |
-| **header ⬎** | 6 bytes |
-| flags | 2 bytes |
-| packet size | 2 bytes |
-| sequential number | 2 bytes |
-| **transmitted data** | up to \f$2^{16}-11\f$ bytes |
-| **frame check sequence ⬎** | 4 bytes |
-| control sum | 4 bytes |
+| **header ⬎** | 6 |
+| flags | 2 |
+| packet size | 2 |
+| sequential number | 2 |
+| **transmitted data** | up to \f$2^{16}-11\f$ |
+| **frame check sequence ⬎** | 4 |
+| control sum | 4 |
 
 
 #### Flags

@@ -198,6 +198,7 @@ void BitReceiver::receiveBits(std::vector<bool> &vec, int offset) {
     }
 }
 
+/*
 int BitReceiver::receiveFirst(uint8_t *buffer, int size) {
     HammingCode hamming;
 
@@ -214,6 +215,9 @@ int BitReceiver::receiveFirst(uint8_t *buffer, int size) {
 
     return size;
 }
+*/
+
+void BitReceiver::start() {}
 
 int BitReceiver::receive(uint8_t *buffer, int size) {
     HammingCode hamming;
@@ -227,13 +231,4 @@ int BitReceiver::receive(uint8_t *buffer, int size) {
     memcpy(buffer, decoded.data(), size);
 
     return size;
-}
-
-void BitReceiver::skip() {
-    double lo, hi;
-    do {
-        readSamples(window.data(), win_size);
-        lo = dft(window.data(), win_size, lo_ratio);
-        hi = dft(window.data(), win_size, hi_ratio);
-    } while (lo > left_lim || hi > left_lim);
 }

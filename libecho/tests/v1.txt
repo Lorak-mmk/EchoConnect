@@ -1,0 +1,18 @@
+This is a kinda tutorial for getting parameters for the old send/recv mechanism.
+BitReceiver(win_size, lo_freq, hi_freq, left_lim, right_lim)
+
+1. pick a window size, high frequency and low frequency
+2. picking a left_lim:
+	- run [info win_size lo_freq], while [wave win_size hi_freq] is running
+	- run [info win_size hi_freq], while [wave win_size lo_freq] is running
+	- pick the larger one
+3. picking a right_lim:
+	- run [info win_size lo_freq], while [wave win_size lo_freq] is running
+	- run [info win_size hi_freq], while [wave win_size hi_freq] is running
+	- pick the smaller one
+4. picking a diff_min (BitReceiver.cc:121):
+	- run [step win_size lo_freq (right_lim-left_lim)/2]
+	- while it's listening, run [wave win_size lo_freq]
+	- between 2 and 4 numbers should appear, pick the smallest one
+	- do this a few times (you don't have to restart step), and pick the highest minimum
+	- do this for hi_freq too, and pick the larger one

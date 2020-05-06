@@ -23,7 +23,7 @@ public:
         input->stopStream();
     }
 
-    virtual int receiveFirst(uint8_t *buffer, int size) = 0;
+    virtual void start() = 0;
     virtual int receive(uint8_t *buffer, int size) = 0;
 
 protected:

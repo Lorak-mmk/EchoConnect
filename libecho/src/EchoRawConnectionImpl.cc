@@ -1,30 +1,30 @@
 #include "EchoRawConnectionImpl.h"
-#include "BitReceiver.h"
-#include "BitSender.h"
+#include "BitReceiverv2.h"
+#include "BitSenderv2.h"
 
-EchoRawConnectionImpl *EchoRawConnectionImpl::getBitEchoRawConnection(int winSize, int receiveLoFreq, int receiveHiFreq,
-                                                                      int sendLoFreq, int sendHiFreq, int leftLim,
-                                                                      int rightLim) {
+EchoRawConnectionImpl *EchoRawConnectionImpl::getBitEchoRawConnection(int win_size, int send_freq, int recv_freq,
+                                                                      int lim) {
     auto *echorc = new EchoRawConnectionImpl;
-    echorc->receiver = std::make_unique<BitReceiver>(winSize, receiveLoFreq, receiveHiFreq, leftLim, rightLim);
-    echorc->sender = std::make_unique<BitSender>(winSize, sendLoFreq, sendHiFreq);
+    echorc->sender = std::make_unique<BitSenderv2>(win_size, send_freq);
+    echorc->receiver = std::make_unique<BitReceiverv2>(win_size, recv_freq, lim);
+
     return echorc;
 }
 
-void EchoRawConnectionImpl::send(const std::vector<uint8_t> &buffer) {
-    sender->send(buffer);
+void EchoRawConnectionImpl::sendStart() {
+    sender->start();
 }
 
-void EchoRawConnectionImpl::sendBlocking(const std::vector<uint8_t> &buffer) {
-    sender->sendBlocking(buffer);
+void EchoRawConnectionImpl::send(uint8_t *buffer, int size) {
+    sender->send(buffer, size);
 }
 
 void EchoRawConnectionImpl::sendWait() {
-    sender->sendWait();
+    sender->wait();
 }
 
-int EchoRawConnectionImpl::receiveFirst(uint8_t *buffer, int size) {
-    return receiver->receiveFirst(buffer, size);
+void EchoRawConnectionImpl::receiveStart() {
+    receiver->start();
 }
 
 int EchoRawConnectionImpl::receive(uint8_t *buffer, int size) {

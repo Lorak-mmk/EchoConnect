@@ -4,7 +4,7 @@
 
 
 
-Below there is more details about how it works under the hood.
+Below there are more details about how it works under the hood.
 
 
 <br>

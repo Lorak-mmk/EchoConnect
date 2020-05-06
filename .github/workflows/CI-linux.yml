@@ -26,15 +26,15 @@ jobs:
         path: ${{ env.DEPS_DIR }}
         key: ${{ runner.os }}-dependencies
 
-    - name: Install PulseAudio, Doxygen
-      run: sudo apt update && sudo apt-get install libpulse-dev doxygen graphviz
-
     - name: Install QT
       uses: jurplel/install-qt-action@v2
       with:
         dir: ${{ env.DEPS_DIR }}
         version: 5.12.7
         cached: ${{ steps.cache-deps.outputs.cache-hit }}
+
+    - name: Install PulseAudio, Doxygen
+      run: sudo apt-get install libpulse-dev doxygen graphviz
 
     - name: Create build folder
       run: cmake -E make_directory ${{ github.workspace }}/build

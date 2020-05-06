@@ -9,8 +9,7 @@ void printHelp(std::string name) {
     std::cout << "Usage: " << name << " [-freq num] [-win num] [-lim num] send (data_bytes))\n";
     std::cout << "Usage: " << name << " [-freq num] [-win num] [-lim num] receive bytes_number\n";
     std::cout << "-freq: Set frequency\n";
-    std::cout
-        << "-win: Set window size (number of samples per bit). Higher - less errors, slowe transmition\n";
+    std::cout << "-win: Set window size (number of samples per bit). Higher - less errors, slowe transmition\n";
     std::cout
         << "-lim: Sensitivity of transmission beginning detection. Smaller - transmission may be detected too "
            "early, higher - not at all."

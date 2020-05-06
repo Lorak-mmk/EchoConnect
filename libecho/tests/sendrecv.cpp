@@ -3,8 +3,6 @@
 #include "Echo.h"
 
 #define N 300
-#define S 50
-#define F 18300
     
 uint8_t out[N];
 uint8_t in[N];
@@ -34,7 +32,7 @@ int main(int argc, char **argv) {
     sender.start();
     sender.send(out, N);
 
-	receiver.start();
+	  receiver.start();
     receiver.receive(in, N);
 
     int wrong = 0;

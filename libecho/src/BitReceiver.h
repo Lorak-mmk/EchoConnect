@@ -10,6 +10,7 @@
 class BitReceiver : public IReceiver {
 public:
     BitReceiver(int win_size, int lo_freq, int hi_freq, int left_lim, int right_lim);
+
     void start() override;
     int receive(uint8_t *buffer, int size) override;
 

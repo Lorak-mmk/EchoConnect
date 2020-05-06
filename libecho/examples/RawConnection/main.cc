@@ -6,11 +6,11 @@
 #include <iostream>
 
 void printHelp(std::string name) {
-    std::cout << "Usage: " << name << " [-freq low,high] [-win num] [-lim num] send (data_bytes))\n";
-    std::cout << "Usage: " << name << " [-freq low,high] [-win num] [-lim num] receive bytes_number\n";
-    std::cout << "-freq: Set frequency of 0 bit (low) and 1 bit (high)\n";
+    std::cout << "Usage: " << name << " [-freq num] [-win num] [-lim num] send (data_bytes))\n";
+    std::cout << "Usage: " << name << " [-freq num] [-win num] [-lim num] receive bytes_number\n";
+    std::cout << "-freq: Set frequency\n";
     std::cout
-        << "-win: Set window size (time in which 1 bit will be transfered). Higher - less errors, slowe transmition\n";
+        << "-win: Set window size (number of samples per bit). Higher - less errors, slowe transmition\n";
     std::cout
         << "-lim: Sensitivity of transmission beginning detection. Smaller - transmission may be detected too "
            "early, higher - not at all."

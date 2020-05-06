@@ -69,7 +69,7 @@ private:
     /**
      * @brief Return bit number @p idx of binary representation of @p num.
      *
-     * Bit number is LSB, number 7 is MSB (Least/Most significant bit)
+     * Bit number 1 is LSB, number 7 is MSB (Least/Most significant bit)
      * @param num   Number to extract bit from.
      * @param idx   Index of bit to return.
      * @return      bit number @p idx of @p num.

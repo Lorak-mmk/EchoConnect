@@ -56,7 +56,7 @@ public:
     void setHiFreq(int newFreq) {
         hiFreq = newFreq;
     }
-    
+
     virtual void start() override;
     virtual void send(uint8_t *buffer, int size) override;
     virtual void wait() override;

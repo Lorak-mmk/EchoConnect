@@ -1,10 +1,10 @@
 #include <math.h>
 
-#include "Echo.h"
 #include "AudioInput.h"
-	
+#include "Echo.h"
+
 double mag(double re, double im) {
-	return sqrt(re * re + im * im);
+    return sqrt(re * re + im * im);
 }
 
 static void dft_slide(const int16_t *buffer, int win_size, double ratio, double *out, int len) {
@@ -33,45 +33,45 @@ static void dft_slide(const int16_t *buffer, int win_size, double ratio, double 
 }
 
 int main(int argc, char **argv) {
-	Echo::initEcho(argc, argv);
+    Echo::initEcho(argc, argv);
 
-	if (argc != 3) {
-		printf("usage: step <win_size> <freq>\n");
-		return 1;
-	}
-	int win_size = atoi(argv[1]);
-	int freq = atoi(argv[2]);
+    if (argc != 3) {
+        printf("usage: step <win_size> <freq>\n");
+        return 1;
+    }
+    int win_size = atoi(argv[1]);
+    int freq = atoi(argv[2]);
 
-	int16_t *dwindow = new int16_t[2 * win_size];
-	double *mags = new double[win_size];
+    int16_t *dwindow = new int16_t[2 * win_size];
+    double *mags = new double[win_size];
 
-	QAudioFormat fmt;
-	fmt.setByteOrder(QAudioFormat::LittleEndian);
+    QAudioFormat fmt;
+    fmt.setByteOrder(QAudioFormat::LittleEndian);
     fmt.setChannelCount(1);
     fmt.setCodec("audio/pcm");
     fmt.setSampleRate(44100);
     fmt.setSampleSize(16);
     fmt.setSampleType(QAudioFormat::SignedInt);
-	AudioInput input(fmt);
-	input.startStream();
+    AudioInput input(fmt);
+    input.startStream();
 
-	while (1) {
-		int inc = 0;
-		int bytes = win_size * 2;
-		while (bytes > 0) {
-			int nread = input.readBytes((char *) (dwindow + win_size) + inc, bytes);
-			inc += nread;
-			bytes -= nread;
-		}
-
-		dft_slide(dwindow, win_size, (double) freq / 44100, mags, win_size);
-		for (int i = 0; i < win_size; i++) {
-	        for (int j = 0; j < mags[i]; j++)
-	        	putchar('#');
-	        putchar('\n');
+    while (1) {
+        int inc = 0;
+        int bytes = win_size * 2;
+        while (bytes > 0) {
+            int nread = input.readBytes((char *)(dwindow + win_size) + inc, bytes);
+            inc += nread;
+            bytes -= nread;
         }
 
-		for (int i = 0; i < win_size; i++)
-			dwindow[i] = dwindow[i + win_size];
-	}
+        dft_slide(dwindow, win_size, (double)freq / 44100, mags, win_size);
+        for (int i = 0; i < win_size; i++) {
+            for (int j = 0; j < mags[i]; j++)
+                putchar('#');
+            putchar('\n');
+        }
+
+        for (int i = 0; i < win_size; i++)
+            dwindow[i] = dwindow[i + win_size];
+    }
 }

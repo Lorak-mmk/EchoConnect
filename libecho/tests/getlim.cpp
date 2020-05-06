@@ -1,11 +1,11 @@
 #include <math.h>
-#include "Echo.h"
 #include "AudioInput.h"
+#include "Echo.h"
 
 #define WINDOWS 1000
-	
+
 double mag(double re, double im) {
-	return sqrt(re * re + im * im);
+    return sqrt(re * re + im * im);
 }
 
 static void dft_slide(const int16_t *buffer, int win_size, double ratio, double *out, int len) {
@@ -34,66 +34,67 @@ static void dft_slide(const int16_t *buffer, int win_size, double ratio, double 
 }
 
 int main(int argc, char **argv) {
-	Echo::initEcho(argc, argv);
+    Echo::initEcho(argc, argv);
 
-	if (argc < 3) {
-		printf("usage: getlim <win_size> <freq> [skip]\n"
-		       "The skip parameter tells how many windows to skip.\n"
-		       "Eg. if your mic picks up the key you press to launch\n"
-		       "this program and messes up the waveform, a value of\n"
-		       "1000 should be fine. It is 0 by default\n");
-		return 1;
-	}
-	int win_size = atoi(argv[1]);
-	int freq = atoi(argv[2]);
-	int skip = (argc == 3 ? 0 : atoi(argv[3]));
+    if (argc < 3) {
+        printf(
+            "usage: getlim <win_size> <freq> [skip]\n"
+            "The skip parameter tells how many windows to skip.\n"
+            "Eg. if your mic picks up the key you press to launch\n"
+            "this program and messes up the waveform, a value of\n"
+            "1000 should be fine. It is 0 by default\n");
+        return 1;
+    }
+    int win_size = atoi(argv[1]);
+    int freq = atoi(argv[2]);
+    int skip = (argc == 3 ? 0 : atoi(argv[3]));
 
-	QAudioFormat fmt;
-	fmt.setByteOrder(QAudioFormat::LittleEndian);
+    QAudioFormat fmt;
+    fmt.setByteOrder(QAudioFormat::LittleEndian);
     fmt.setChannelCount(1);
     fmt.setCodec("audio/pcm");
     fmt.setSampleRate(44100);
     fmt.setSampleSize(16);
     fmt.setSampleType(QAudioFormat::SignedInt);
-	AudioInput input(fmt);
-	input.startStream();
+    AudioInput input(fmt);
+    input.startStream();
 
-	int16_t *samples = new int16_t[win_size * (WINDOWS + 1)];
-	double *mags = new double[win_size * WINDOWS];
+    int16_t *samples = new int16_t[win_size * (WINDOWS + 1)];
+    double *mags = new double[win_size * WINDOWS];
 
-	for (int i = 0; i < skip; i++) {
-		int inc = 0;
-		int bytes = win_size * 2;
-		while (bytes > 0) {
-			int nread = input.readBytes((char *) samples + inc, bytes);
-			inc += nread;
-			bytes -= nread;
-			input.waitForTick();
-		}
-	}
+    for (int i = 0; i < skip; i++) {
+        int inc = 0;
+        int bytes = win_size * 2;
+        while (bytes > 0) {
+            int nread = input.readBytes((char *)samples + inc, bytes);
+            inc += nread;
+            bytes -= nread;
+            input.waitForTick();
+        }
+    }
 
-	int inc = 0;
-	int bytes = win_size * (WINDOWS + 1) * 2;
-	while (bytes > 0) {
-		int nread = input.readBytes((char *) samples + inc, bytes);
-		inc += nread;
-		bytes -= nread;
-		input.waitForTick();
-	}
+    int inc = 0;
+    int bytes = win_size * (WINDOWS + 1) * 2;
+    while (bytes > 0) {
+        int nread = input.readBytes((char *)samples + inc, bytes);
+        inc += nread;
+        bytes -= nread;
+        input.waitForTick();
+    }
 
-	dft_slide(samples, win_size, freq / 44100.0, mags, win_size * WINDOWS);
+    dft_slide(samples, win_size, freq / 44100.0, mags, win_size * WINDOWS);
 
-	for (int i = 0; i < win_size * WINDOWS; i++) {
-		for (int j = 0; j < mags[i]; j++)
-			putchar('#');
-		putchar('\n');
-	}
+    for (int i = 0; i < win_size * WINDOWS; i++) {
+        for (int j = 0; j < mags[i]; j++)
+            putchar('#');
+        putchar('\n');
+    }
 
-	std::sort(mags, mags + (win_size * WINDOWS));
-	printf(">>>>>>> the best lim seems to be %lf <<<<<<<\n", mags[win_size * WINDOWS / 2]);
+    std::sort(mags, mags + (win_size * WINDOWS));
+    printf(">>>>>>> the best lim seems to be %lf <<<<<<<\n", mags[win_size * WINDOWS / 2]);
 
-	delete[] samples;
-	delete[] mags;
+    delete[] samples;
+    delete[] mags;
 
-	return 0;
+    return 0;
 }

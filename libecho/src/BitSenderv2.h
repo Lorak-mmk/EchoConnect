@@ -32,11 +32,11 @@ public:
     void wait() override;
 
 private:
-	int counter = 0;
-	double amp = 0;
-	int freq;
+    int counter = 0;
+    double amp = 0;
+    int freq;
 
-	void write_bit(int16_t *out, uint8_t bit);
+    void write_bit(int16_t *out, uint8_t bit);
     /**
      * @brief Creates instance of QAudioFormat with with predefined setting. Parameters are set in .cc file.
      */

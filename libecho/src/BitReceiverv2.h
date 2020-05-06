@@ -14,14 +14,15 @@ public:
     void start() override;
     int receive(uint8_t *buffer, int size) override;
 
-	uint8_t *dbg = NULL;
+    uint8_t *dbg = NULL;
+
 private:
-	void fetch(int len);
-	uint8_t read_bit();
+    void fetch(int len);
+    uint8_t read_bit();
     static QAudioFormat getInputFormat();
 
-	int16_t *dwindow;
-	double *mags;
+    int16_t *dwindow;
+    double *mags;
 
     double freq_ratio = 0;
     double lim = 0;

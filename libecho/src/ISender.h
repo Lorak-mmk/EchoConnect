@@ -61,8 +61,8 @@ public:
 protected:
     const QAudioFormat format;           /**< Audio stream output format. */
     std::unique_ptr<AudioOutput> output; /**< Output audio device. */
-    int win_size;                         /**< Says how much of bitrate we want to use
-                                              to play sound in which unit od data is encoded. */
+    int win_size;                        /**< Says how much of bitrate we want to use
+                                             to play sound in which unit od data is encoded. */
 };
 
 #endif  // ECHOCONNECT_I_SENDER_H

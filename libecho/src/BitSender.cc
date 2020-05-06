@@ -31,7 +31,7 @@ QAudioFormat BitSender::getOutputFormat() {
 void BitSender::start() {}
 
 void BitSender::send(uint8_t *buffer, int size) {
-	std::vector<uint8_t> vec(buffer, buffer + size);
+    std::vector<uint8_t> vec(buffer, buffer + size);
     auto encoded = encode(vec);
     output->enqueueData(encoded.data(), encoded.size());
 }

@@ -62,8 +62,8 @@ int main(int argc, char *argv[]) {
         argv++;
         argc--;
 
-        //printf("Receiving %d bytes. Low frequency: %d, high frequency: %d, window size: %d, mag limit: %d\n", bytes,
-               //freq1, freq2, winsize, lim);
+        // printf("Receiving %d bytes. Low frequency: %d, high frequency: %d, window size: %d, mag limit: %d\n", bytes,
+        // freq1, freq2, winsize, lim);
         auto connection = EchoRawConnection::getBitEchoRawConnection(winsize, freq, freq, lim);
         auto *buf = new uint8_t[bytes];
         connection->receiveStart();
@@ -82,10 +82,10 @@ int main(int argc, char *argv[]) {
             printHelp(name);
         }
 
-        //printf("Sending %zu bytes. Low frequency: %d, high frequency: %d, window size: %d, mag limit: %d\n", length,
-               //freq1, freq2, winsize, magLim);
+        // printf("Sending %zu bytes. Low frequency: %d, high frequency: %d, window size: %d, mag limit: %d\n", length,
+        // freq1, freq2, winsize, magLim);
         auto connection = EchoRawConnection::getBitEchoRawConnection(winsize, freq, freq, lim);
-        connection->send((uint8_t *) argv[0], strlen(argv[0]));
+        connection->send((uint8_t *)argv[0], strlen(argv[0]));
         connection->sendWait();
         delete connection;
 

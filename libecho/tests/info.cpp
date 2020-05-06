@@ -1,11 +1,11 @@
 #include <math.h>
-#include "Echo.h"
 #include "AudioInput.h"
+#include "Echo.h"
 
 #define WINDOWS 1000
-	
+
 double mag(double re, double im) {
-	return sqrt(re * re + im * im);
+    return sqrt(re * re + im * im);
 }
 
 static double dft(const int16_t *buffer, int win_size, double ratio) {
@@ -25,51 +25,52 @@ static double dft(const int16_t *buffer, int win_size, double ratio) {
 }
 
 int main(int argc, char **argv) {
-	Echo::initEcho(argc, argv);
+    Echo::initEcho(argc, argv);
 
-	if (argc != 3) {
-		printf("usage: info <win_size> <freq>\n");
-		return 1;
-	}
+    if (argc != 3) {
+        printf("usage: info <win_size> <freq>\n");
+        return 1;
+    }
 
-	int win_size = atoi(argv[1]);
-	int freq = atoi(argv[2]);
+    int win_size = atoi(argv[1]);
+    int freq = atoi(argv[2]);
 
-	int16_t *window = new int16_t[win_size];
+    int16_t *window = new int16_t[win_size];
 
-	QAudioFormat fmt;
-	fmt.setByteOrder(QAudioFormat::LittleEndian);
+    QAudioFormat fmt;
+    fmt.setByteOrder(QAudioFormat::LittleEndian);
     fmt.setChannelCount(1);
     fmt.setCodec("audio/pcm");
     fmt.setSampleRate(44100);
     fmt.setSampleSize(16);
     fmt.setSampleType(QAudioFormat::SignedInt);
-	AudioInput input(fmt);
-	input.startStream();
+    AudioInput input(fmt);
+    input.startStream();
 
+    while (1) {
+        double sum = 0;
+        double min = INFINITY;
+        double max = 0;
 
-	while (1) {
-		double sum = 0;
-		double min = INFINITY;
-		double max = 0;
-
-		for (int i = 0; i < WINDOWS; i++) {
-			int inc = 0;
-			int bytes = win_size * 2;
-			while (bytes > 0) {
-				int nread = input.readBytes((char *) window + inc, bytes);
-				inc += nread;
-				bytes -= nread;
-				input.waitForTick();
-			}
-			double m = dft(window, win_size, (double) freq / 44100);
-			sum += m;
-			if (min > m) min = m;
-			if (max < m) max = m;
-		}
-		printf("avg: %lf\n", sum / WINDOWS);
-		printf("min: %lf\n", min);
-		printf("max: %lf\n", max);
-		printf("\n");
-	}
+        for (int i = 0; i < WINDOWS; i++) {
+            int inc = 0;
+            int bytes = win_size * 2;
+            while (bytes > 0) {
+                int nread = input.readBytes((char *)window + inc, bytes);
+                inc += nread;
+                bytes -= nread;
+                input.waitForTick();
+            }
+            double m = dft(window, win_size, (double)freq / 44100);
+            sum += m;
+            if (min > m)
+                min = m;
+            if (max < m)
+                max = m;
+        }
+        printf("avg: %lf\n", sum / WINDOWS);
+        printf("min: %lf\n", min);
+        printf("max: %lf\n", max);
+        printf("\n");
+    }
 }

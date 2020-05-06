@@ -57,9 +57,9 @@ public:
         hiFreq = newFreq;
     }
 
-    virtual void start() override;
-    virtual void send(uint8_t *buffer, int size) override;
-    virtual void wait() override;
+    void start() override;
+    void send(uint8_t *buffer, int size) override;
+    void wait() override;
 
 private:
     int loFreq, hiFreq; /**< Frequencies used to encode/decode bits, respectively for 0 and 1 values. */

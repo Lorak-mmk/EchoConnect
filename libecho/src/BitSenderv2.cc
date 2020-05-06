@@ -2,8 +2,8 @@
 #include <cmath>
 #include <iostream>
 
-#define RISE 0.1
-#define FALL 0.1
+static const double RISE = 0.1;
+static const double FALL = 0.1;
 
 static const QAudioFormat::Endian OUTPUT_BYTEORDER = QAudioFormat::LittleEndian;
 static const int OUTPUT_CHANNEL_COUNT = 1;
@@ -26,16 +26,16 @@ QAudioFormat BitSenderv2::getOutputFormat() {
 }
 
 void BitSenderv2::start() {
-    int16_t *out = new int16_t[win_size * 3];
+    auto *out = new int16_t[win_size * 3];
     write_bit(out, 1);
     write_bit(out + win_size, 0);
     write_bit(out + win_size + win_size, 0);
-    output->enqueueData((char *)out, win_size * 6);
+    output->enqueueData(reinterpret_cast<char *>(out), win_size * 6);
     delete[] out;
 }
 
 void BitSenderv2::send(uint8_t *buffer, int size) {
-    int16_t *out = new int16_t[size * win_size * 8];
+    auto *out = new int16_t[size * win_size * 8];
     int16_t *out_end = out;
     uint8_t byte;
 
@@ -48,7 +48,7 @@ void BitSenderv2::send(uint8_t *buffer, int size) {
         }
     }
 
-    output->enqueueData((char *)out, size * win_size * 16);
+    output->enqueueData(reinterpret_cast<char *>(out), size * win_size * 16);
     delete[] out;
 }
 
@@ -63,12 +63,14 @@ void BitSenderv2::write_bit(int16_t *out, uint8_t bit) {
 
         if (bit) {
             amp += RISE;
-            if (amp >= 1.0)
+            if (amp >= 1.0) {
                 amp = 1.0;
+            }
         } else {
             amp -= FALL;
-            if (amp <= 0.0)
+            if (amp <= 0.0) {
                 amp = 0.0;
+            }
         }
     }
 }

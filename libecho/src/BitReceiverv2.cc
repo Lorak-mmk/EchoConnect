@@ -90,8 +90,9 @@ void BitReceiverv2::fetch(int len) {
     int inc = 2 * (2 * win_size - len);
     int bytes = len * 2;
 
-    for (int i = 0; i < 2 * win_size - len; i++)
+    for (int i = 0; i < 2 * win_size - len; i++) {
         dwindow[i] = dwindow[i + len];
+    }
 
     while (bytes > 0) {
         int nread = input->readBytes(reinterpret_cast<char *>(dwindow) + inc, bytes);
@@ -121,8 +122,9 @@ void BitReceiverv2::start() {
             if (mags[i] > lim) {
                 streak++;
             } else {
-                if (win_size / 2 < streak && streak < win_size * 2)
+                if (win_size / 2 < streak && streak < win_size * 2) {
                     offset = i + win_size + (win_size - streak) / 2;
+                }
                 streak = 0;
             }
         }
@@ -162,8 +164,9 @@ uint8_t BitReceiverv2::read_bit() {
         if (res != ((*dbg >> seq) & 1)) {
             printf("should be %hhu\n", !res);
             for (int i = 0; i < win_size; i++) {
-                for (int j = 0; j < mags[i]; j++)
+                for (int j = 0; j < mags[i]; j++) {
                     putchar(j == (int)lim ? '|' : '#');
+                }
                 putchar('\n');
             }
             putchar('\n');

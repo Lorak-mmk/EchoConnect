@@ -8,7 +8,7 @@ project(EchoConnect VERSION 1)
 if (MSVC)
     add_compile_options(/W3)
 else()
-    add_compile_options(-Wall -Wextra -Werror -fno-strict-aliasing)
+    add_compile_options(-Wall -Wextra -fno-strict-aliasing)
 endif()
 
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)

@@ -36,7 +36,7 @@ private:
 
     double lo_ratio = 0;
     double hi_ratio = 0;
-    [[ maybe_unused ]] int left_lim = 0;
+    int left_lim = 0;
     int right_lim = 0;
 };
 

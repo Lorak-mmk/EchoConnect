@@ -1,6 +1,9 @@
 #include "BitSenderv2.h"
 #include <cmath>
 #include <iostream>
+#ifndef M_PI
+#define M_PI 3.14159265358979323846
+#endif
 
 static const double RISE = 0.1;
 static const double FALL = 0.1;

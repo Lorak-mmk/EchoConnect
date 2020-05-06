@@ -1,38 +1,48 @@
-#include "BitReceiver.h"
-#include "BitSender.h"
+#include "BitReceiverv2.h"
+#include "BitSenderv2.h"
 #include "Echo.h"
 
-#define N 1000
-#define S 50
+#define N 300
+
+uint8_t out[N];
+uint8_t in[N];
 
 int main(int argc, char **argv) {
     Echo::initEcho(argc, argv);
 
-    BitSender sender(S, 0, 0);
-    BitReceiver receiver(S, 14000, 15000, 10, 80);
+    if (argc < 4) {
+        printf(
+            "usage: sendrecv <win_size> <freq> <lim> [dbg]\n"
+            "The dbg parameter is for reporting parts of the waveform\n"
+            "that were received incorrectly. If you wish to enable it,\n"
+            "just put any text there.\n");
+        return 1;
+    }
+    int win_size = atoi(argv[1]);
+    int freq = atoi(argv[2]);
+    int lim = atoi(argv[3]);
 
-    uint8_t arr[N];
+    BitSenderv2 sender(win_size, freq);
+    BitReceiverv2 receiver(win_size, freq, lim);
 
-    std::vector<uint8_t> vec;
-    for (int i = 0; i < 40; i++)
-        vec.push_back(0);
-    sender.send(vec);
+    if (argc > 4)
+        receiver.dbg = out;
 
-    sender.setLoFreq(14000);
-    sender.setHiFreq(15000);
-    vec.clear();
+    sender.send(out, 40);
     for (int i = 0; i < N; i++)
-        vec.push_back(rand());
-    sender.send(vec);
+        out[i] = i;
+    sender.start();
+    sender.send(out, N);
 
-    receiver.receiveFirst(arr, N);
+    receiver.start();
+    receiver.receive(in, N);
 
     int wrong = 0;
     for (int i = 0; i < N; i++) {
-        if (arr[i] == vec[i]) {
-            printf("%02hhx ", arr[i]);
+        if (in[i] == out[i]) {
+            printf("%02hhx ", in[i]);
         } else {
-            printf("\x1b[31m%02hhx\x1b[m ", arr[i]);
+            printf("\x1b[31m%02hhx\x1b[m ", in[i]);
             wrong++;
         }
     }

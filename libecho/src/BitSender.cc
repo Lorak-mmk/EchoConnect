@@ -6,12 +6,12 @@
 #define M_PI 3.14159265358979323846
 #endif
 
-const QAudioFormat::Endian OUTPUT_BYTEORDER = QAudioFormat::LittleEndian;
-const int OUTPUT_CHANNEL_COUNT = 1;
-const char *OUTPUT_CODEC = "audio/pcm";
-const int OUTPUT_SAMPLERATE = 44100;
-const int OUTPUT_SAMPLESIZE = 8;
-const QAudioFormat::SampleType OUTPUT_SAMPLETYPE = QAudioFormat::UnSignedInt;
+static const QAudioFormat::Endian OUTPUT_BYTEORDER = QAudioFormat::LittleEndian;
+static const int OUTPUT_CHANNEL_COUNT = 1;
+static const char *OUTPUT_CODEC = "audio/pcm";
+static const int OUTPUT_SAMPLERATE = 44100;
+static const int OUTPUT_SAMPLESIZE = 8;
+static const QAudioFormat::SampleType OUTPUT_SAMPLETYPE = QAudioFormat::UnSignedInt;
 /* ^ QAudioFormat settings we use while sending audio. */
 
 /* v States the number of sounds we need to play to encode a byte of data. */
@@ -30,24 +30,21 @@ QAudioFormat BitSender::getOutputFormat() {
     return result;
 }
 
-void BitSender::send(const std::vector<uint8_t> &buffer) {
-    auto encoded = encode(buffer);
+void BitSender::start() {}
+
+void BitSender::send(uint8_t *buffer, int size) {
+    std::vector<uint8_t> vec(buffer, buffer + size);
+    auto encoded = encode(vec);
     output->enqueueData(encoded.data(), encoded.size());
 }
 
-void BitSender::sendBlocking(const std::vector<uint8_t> &buffer) {
-    auto encoded = encode(buffer);
-    output->enqueueData(encoded.data(), encoded.size());
-    sendWait();
-}
-
-void BitSender::sendWait() {
+void BitSender::wait() {
     output->waitForState(QAudio::State::IdleState);
 }
 
 std::vector<char> BitSender::encode(const std::vector<uint8_t> &data) {
     std::vector<SampleType> result;
-    result.reserve(data.size() * winSize * SOUNDS_PER_BYTE);
+    result.reserve(data.size() * win_size * SOUNDS_PER_BYTE);
 
     for (auto byte : data) {
         auto encodedByte = encodeByte(byte);
@@ -59,7 +56,7 @@ std::vector<char> BitSender::encode(const std::vector<uint8_t> &data) {
 
 std::vector<SampleType> BitSender::encodeByte(uint8_t data) {
     std::vector<SampleType> result;
-    result.reserve(winSize * SOUNDS_PER_BYTE);
+    result.reserve(win_size * SOUNDS_PER_BYTE);
 
     HammingCode hamming;
     std::vector<uint8_t> data_vec = {data};  // TODO: this is really slow
@@ -68,7 +65,7 @@ std::vector<SampleType> BitSender::encodeByte(uint8_t data) {
     // NOLINTNEXTLINE(cppcoreguidelines-avoid-magic-numbers, readability-magic-numbers)
     for (bool bit : hammingEnc) {
         int freq = (bit == 1) ? hiFreq : loFreq;
-        for (int t = 0; t < winSize; t++) {
+        for (int t = 0; t < win_size; t++) {
             result.emplace_back(audioWave(freq, t));
         }
     }

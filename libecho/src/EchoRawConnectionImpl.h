@@ -13,28 +13,28 @@ public:
     /**
      * @brief @see EchoRawConnection::getBitEchoRawConnection
      */
-    static EchoRawConnectionImpl *getBitEchoRawConnection(int winSize, int receiveLoFreq, int receiveHiFreq,
-                                                          int sendLoFreq, int sendHiFreq, int leftLim, int rightLim);
+
+    static EchoRawConnectionImpl *getBitEchoRawConnection(int win_size, int send_freq, int recv_freq, int lim);
+
+    /**
+     * @brief @see EchoRawConnection::start
+     */
+    void sendStart() override;
 
     /**
      * @brief @see EchoRawConnection::send
      */
-    void send(const std::vector<uint8_t> &buffer) override;
+    void send(uint8_t *buffer, int size) override;
 
     /**
-     * @brief @see EchoRawConnection::sendBlocking
-     */
-    void sendBlocking(const std::vector<uint8_t> &buffer) override;
-
-    /**
-     * @brief @see EchoRawConnection::sendWait
+     * @brief @see EchoRawConnection::wait
      */
     void sendWait() override;
 
     /**
      * @brief @see EchoRawConnection::receiveFirst
      */
-    int receiveFirst(uint8_t *buffer, int size) override;
+    void receiveStart() override;
 
     /**
      * @brief @see EchoRawConnection::receive

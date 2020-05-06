@@ -1,6 +1,8 @@
 #ifndef ECHOCONNECT_AUDIOSTREAM_H
 #define ECHOCONNECT_AUDIOSTREAM_H
 
+#include "Typename.h"
+
 #include <QDebug>
 #include <QtCore/QThread>
 #include <QtMultimedia/QAudio>
@@ -9,6 +11,7 @@
 #include <chrono>
 #include <condition_variable>
 #include <mutex>
+#include <typeinfo>
 
 /**
  * @brief Struct representing basic parameters of AudioStream.
@@ -102,7 +105,7 @@ public:
     explicit AudioStream(const QAudioFormat &format) : format(format) {
         std::unique_lock<std::mutex> lock(mutex);
 
-        qDebug() << "Constructing AudioStream. Thread:" << QThread::thread();
+        qDebug() << "Constructing" << qUtf8Printable(type(this));
         this->moveToThread(this);
         QThread::start();
 
@@ -115,8 +118,10 @@ public:
      * Stops stream. Kills QThread and waits for it to end.
      */
     ~AudioStream() override {
-        qDebug() << "Destroying AudioStream";
-        stopStream();
+        qDebug() << "Destroying" << qUtf8Printable(type(this));
+        if (qStream->state() != QAudio::StoppedState) {
+            stopStream();
+        }
         this->quit();
         this->wait();
         delete qStream;
@@ -129,7 +134,7 @@ public:
         std::unique_lock<std::mutex> lock(mutex);
 
         bool success = QMetaObject().invokeMethod(this, "startStream_slot");
-        qDebug() << "Calling startStream:" << (success ? "success" : "failed");
+        qDebug() << qUtf8Printable(type(this)) << ": calling startStream. Success:" << (success ? "success" : "failed");
 
         sync.wait(lock);
     }
@@ -141,7 +146,7 @@ public:
         std::unique_lock<std::mutex> lock(mutex);
 
         bool success = QMetaObject().invokeMethod(this, "stopStream_slot");
-        qDebug() << "Calling startStream:" << (success ? "success" : "failed");
+        qDebug() << qUtf8Printable(type(this)) << ": calling stopStream:" << (success ? "success" : "failed");
 
         sync.wait(lock);
     }
@@ -236,7 +241,7 @@ private:
     void run() override {
         std::unique_lock<std::mutex> lock(mutex);
 
-        qDebug() << "Running thread " << thread();
+        qDebug() << qUtf8Printable(type(this)) << ": running thread " << thread();
 
         qStream = new StreamType(format, this);
         connect(qStream, &StreamType::stateChanged, this, &AudioStream<StreamType>::handleStateChanged_slot);
@@ -262,20 +267,22 @@ private:
      * @param newState  Current state of qStream.
      */
     void handleStateChanged_slot(QAudio::State newState) override {
-        qDebug() << "State changed signal received. New state: " << newState;
+        qDebug() << qUtf8Printable(type(this)) << ": state changed signal received. New state: " << newState;
         forState.notify_all();
     };
 
     void startStream_slot() override {
         std::unique_lock<std::mutex> lock(mutex);
 
-        qDebug() << "Starting stream from thread" << thread();
+        qDebug() << qUtf8Printable(type(this)) << ": starting stream";
         qDevice = qStream->start();
 
         auto info = getStreamInfo();
-        qDebug("\tBuffer size: %d\n\tPeriod size: %d\n\tNotify interval: %d\n\tVolume: %lf\n\t", info.bufferSize,
-               info.periodSize, info.notifyInterval, info.volume);
-
+        qDebug() << "\n"
+                 << qUtf8Printable(type(this)) << "started:"
+                 << "\n\tError " << qStream->error() << "\n\tBuffer size:" << info.bufferSize
+                 << "\n\tPeriod size:" << info.periodSize << "\n\tNotify interval:" << info.notifyInterval
+                 << "\n\tVolume:" << info.volume;
         lock.unlock();
         sync.notify_all();
     }
@@ -283,7 +290,7 @@ private:
     void stopStream_slot() override {
         std::unique_lock<std::mutex> lock(mutex);
 
-        qDebug() << "Stopping stream from thread" << thread();
+        qDebug() << qUtf8Printable(type(this)) << ": stopping stream";
         qStream->stop();
         qDevice = nullptr;
 

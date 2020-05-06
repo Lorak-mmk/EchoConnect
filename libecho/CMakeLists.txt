@@ -11,6 +11,8 @@ if (CMAKE_VERSION VERSION_LESS "3.7.0")
     set(CMAKE_INCLUDE_CURRENT_DIR ON)
 endif ()
 
+set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} -DQT_NO_DEBUG_OUTPUT -DQT_NO_INFO_OUTPUT")
+
 
 set(SRC_DIR "src" CACHE PATH "Source files path")
 set(API_DIR "include" CACHE PATH "Public API files path")
@@ -34,7 +36,8 @@ set(SRC_FILES
         ${SRC_DIR}/Packet.h
         ${SRC_DIR}/Packet.cc
         ${SRC_DIR}/HammingCode.h
-        ${SRC_DIR}/HammingCode.cc)
+        ${SRC_DIR}/HammingCode.cc
+        ${SRC_DIR}/Typename.h)
 
 set(API_FILES
         ${API_DIR}/Echo.h

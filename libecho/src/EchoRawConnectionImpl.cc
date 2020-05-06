@@ -7,6 +7,7 @@ EchoRawConnectionImpl *EchoRawConnectionImpl::getBitEchoRawConnection(int win_si
     auto *echorc = new EchoRawConnectionImpl;
     echorc->sender = std::make_unique<BitSenderv2>(win_size, send_freq);
     echorc->receiver = std::make_unique<BitReceiverv2>(win_size, recv_freq, lim);
+
     return echorc;
 }
 

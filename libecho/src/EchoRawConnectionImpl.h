@@ -13,6 +13,7 @@ public:
     /**
      * @brief @see EchoRawConnection::getBitEchoRawConnection
      */
+
     static EchoRawConnectionImpl *getBitEchoRawConnection(int win_size, int send_freq, int recv_freq, int lim);
 
     /**

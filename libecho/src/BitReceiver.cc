@@ -232,3 +232,12 @@ int BitReceiver::receive(uint8_t *buffer, int size) {
 
     return size;
 }
+
+void BitReceiver::skip() {
+    double lo, hi;
+    do {
+        readSamples(window.data(), win_size);
+        lo = dft(window.data(), win_size, lo_ratio);
+        hi = dft(window.data(), win_size, hi_ratio);
+    } while (lo > left_lim || hi > left_lim);
+}

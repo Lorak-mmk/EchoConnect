@@ -105,7 +105,7 @@ public:
     explicit AudioStream(const QAudioFormat &format) : format(format) {
         std::unique_lock<std::mutex> lock(mutex);
 
-        qDebug()<< "Constructing" << qUtf8Printable(type(this));
+        qDebug() << "Constructing" << qUtf8Printable(type(this));
         this->moveToThread(this);
         QThread::start();
 
@@ -119,7 +119,7 @@ public:
      */
     virtual ~AudioStream() {
         qDebug() << "Destroying" << qUtf8Printable(type(this));
-        if(qStream->state() != QAudio::StoppedState) {
+        if (qStream->state() != QAudio::StoppedState) {
             stopStream();
         }
         this->quit();
@@ -278,12 +278,11 @@ private:
         qDevice = qStream->start();
 
         auto info = getStreamInfo();
-        qDebug() << "\n" << qUtf8Printable(type(this)) << "started:"
-                 << "\n\tError "            << qStream->error()
-                 << "\n\tBuffer size:"      <<  info.bufferSize
-                 << "\n\tPeriod size:"      << info.periodSize
-                 << "\n\tNotify interval:"  << info.notifyInterval
-                 << "\n\tVolume:"           << info.volume;
+        qDebug() << "\n"
+                 << qUtf8Printable(type(this)) << "started:"
+                 << "\n\tError " << qStream->error() << "\n\tBuffer size:" << info.bufferSize
+                 << "\n\tPeriod size:" << info.periodSize << "\n\tNotify interval:" << info.notifyInterval
+                 << "\n\tVolume:" << info.volume;
         lock.unlock();
         sync.notify_all();
     }

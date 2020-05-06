@@ -1,8 +1,8 @@
 #ifndef ECHOCONNECT_TYPENAME_H
 #define ECHOCONNECT_TYPENAME_H
 
-#include <QString>
 #include <QMetaEnum>
+#include <QString>
 
 #if (__GNUC__ && __cplusplus && __GNUC__ >= 3)
 #include <cxxabi.h>
@@ -24,15 +24,13 @@ inline QString demangle(const char *name) {
 #endif
 
 template <class T>
-QString type(const T& t) {
-
+QString type(const T &t) {
     return demangle(typeid(t).name());
 }
 
-template<typename QEnum>
-std::string EnumName (const QEnum value)
-{
+template <typename QEnum>
+std::string EnumName(const QEnum value) {
     return std::string(QMetaEnum::fromType<QEnum>().valueToKey(value));
 }
 
-#endif // ECHOCONNECT_TYPENAME_H
+#endif  // ECHOCONNECT_TYPENAME_H

@@ -14,7 +14,7 @@ void AudioOutput::enqueueData(const char *data, int length, bool waitForStart) {
     bool is_runnig = qStream->state() == QAudio::ActiveState;
     buffer.append(data, length);
     tryWriteData();
-    if(!is_runnig && waitForStart) {
+    if (!is_runnig && waitForStart) {
         waitForState(QAudio::ActiveState);
     }
 }

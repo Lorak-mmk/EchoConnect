@@ -11,10 +11,10 @@ AudioOutput::AudioOutput(const QAudioFormat &format) : AudioStream(format) {
 void AudioOutput::enqueueData(const char *data, int length, bool waitForStart) {
     qDebug() << qUtf8Printable(type(this)) << ": queueing" << length << "bytes to play";
     std::lock_guard<std::mutex> lock(mutex);
-    bool is_runnig = qStream->state() == QAudio::ActiveState;
+    bool is_running = qStream->state() == QAudio::ActiveState;
     buffer.append(data, length);
     tryWriteData();
-    if (!is_runnig && waitForStart) {
+    if (!is_running && waitForStart) {
         waitForState(QAudio::ActiveState);
     }
 }

@@ -122,8 +122,7 @@ public:
      */
     void setData(const std::vector<uint8_t> &data);
     
-    class PacketException : public std::exception {
-    };
+    class PacketException : public std::exception {};
 
     /**
      * @brief Indicates that CRC in packet is invalid.

@@ -117,7 +117,7 @@ void BitReceiverv2::fetch(int len) {
 void BitReceiverv2::start(std::chrono::duration<double> timeout) {
     int streak = 0;
     int offset = -1;
-    
+
     auto start = std::chrono::system_clock::now();
 
     while (offset < 0) {

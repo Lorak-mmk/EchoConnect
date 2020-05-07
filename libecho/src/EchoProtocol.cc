@@ -1,6 +1,6 @@
 #include "EchoProtocol.h"
-#include <cassert>
 #include <QDebug>
+#include <cassert>
 
 using namespace std::chrono_literals;
 
@@ -11,8 +11,8 @@ EchoProtocol::EchoProtocol(int winsize, int send_freq, int recv_freq, int lim) {
     big_win_size = static_cast<double>(winsize) / 44100 * (PACKET_SIZE + 10) * 12s;
     buffer = new uint8_t[2 * PACKET_SIZE];
     closed = false;
-    connection = std::unique_ptr<EchoRawConnection>(EchoRawConnection::getBitEchoRawConnection(
-        winsize, send_freq, recv_freq, lim));
+    connection = std::unique_ptr<EchoRawConnection>(
+        EchoRawConnection::getBitEchoRawConnection(winsize, send_freq, recv_freq, lim));
     thr[0] = thr[1] = nullptr;
     is_connected = false;
     status = 0;
@@ -27,17 +27,18 @@ EchoProtocol::~EchoProtocol() {
 void EchoProtocol::listen() {
     qDebug() << "listen";
     is_connected = false;
-    thr[0] = new std::thread{ &EchoProtocol::receivingThread, this, true };
-    while (!is_connected) {}
-    thr[1] = new std::thread{ &EchoProtocol::sendingThread, this, false };
+    thr[0] = new std::thread{&EchoProtocol::receivingThread, this, true};
+    while (!is_connected) {
+    }
+    thr[1] = new std::thread{&EchoProtocol::sendingThread, this, false};
     qDebug() << "(listen) connected successfully";
 }
 
 void EchoProtocol::connect() {
     qDebug() << "connect";
-    thr[1] = new std::thread{ &EchoProtocol::sendingThread, this, true };
+    thr[1] = new std::thread{&EchoProtocol::sendingThread, this, true};
     std::this_thread::sleep_for(big_win_size);
-    thr[0] = new std::thread{ &EchoProtocol::receivingThread, this, false };
+    thr[0] = new std::thread{&EchoProtocol::receivingThread, this, false};
     qDebug() << "connected successfully";
 }
 
@@ -85,7 +86,7 @@ size_t EchoProtocol::write(const void *buf, size_t count) {
 size_t EchoProtocol::read(void *buf, size_t count, size_t timeout) {
     size_t pos = 0;
     std::unique_lock<std::mutex> lock(m_recv);
-    if (cv_recv.wait_for(lock, timeout * 1s, [&]{ return !buffer_recv.empty(); })) {
+    if (cv_recv.wait_for(lock, timeout * 1s, [&] { return !buffer_recv.empty(); })) {
         while (pos < count && !buffer_recv.empty()) {
             reinterpret_cast<uint8_t *>(buf)[pos++] = buffer_recv.front();
             buffer_recv.pop();
@@ -136,7 +137,7 @@ void EchoProtocol::sendingThread(bool b) {
             }
             std::vector<uint8_t> vec = lastPacket.toBytes();
             auto debug = qDebug();
-            for (auto x: vec) {
+            for (auto x : vec) {
                 debug << x;
             }
             connection->send(vec.data(), vec.size());
@@ -168,8 +169,8 @@ void EchoProtocol::receivingThread(bool b) {
             qDebug() << "Received" << bytes << "bytes, expected" << CRC_SIZE;
             p.loadCRCFromBytes(std::vector<uint8_t>(buffer, buffer + bytes));
             std::vector<uint8_t> vec = p.getData();
-            if (p.isSet(Flag::ACK1) || (p.getSize() == 0 && 
-                !p.isSet(Flag::SYN) && !p.isSet(Flag::DMD) && !p.isSet(Flag::FIN))) {
+            if (p.isSet(Flag::ACK1) ||
+                (p.getSize() == 0 && !p.isSet(Flag::SYN) && !p.isSet(Flag::DMD) && !p.isSet(Flag::FIN))) {
                 status = 0;
                 qDebug() << "received ACK or empty packet";
             } else if (p.isSet(Flag::DMD)) {
@@ -177,8 +178,8 @@ void EchoProtocol::receivingThread(bool b) {
                 qDebug() << "received demand resend";
             } else {
                 qDebug() << "ACK1:" << (int)p.isSet(Flag::ACK1) << "size:" << p.getSize()
-                  << "SYN:"<<(int)p.isSet(Flag::SYN)<< "DMD:"<<(int)p.isSet(Flag::DMD)
-                  << "FIN:"<<(int)p.isSet(Flag::FIN);
+                         << "SYN:"<<(int)p.isSet(Flag::SYN)<< "DMD:"<<(int)p.isSet(Flag::DMD)
+                         << "FIN:"<<(int)p.isSet(Flag::FIN);
                 if (b) {
                     assert(p.isSet(Flag::SYN));
                     qDebug() << "received SYN";
@@ -190,7 +191,7 @@ void EchoProtocol::receivingThread(bool b) {
                 }
                 if (lastPacketAcked < p.getNumber()) {
                     std::unique_lock<std::mutex> lock(m_recv);
-                    for (auto i: vec) {
+                    for (auto i : vec) {
                         buffer_recv.push(i);
                     }
                     lastPacketAcked = p.getNumber();
@@ -204,7 +205,7 @@ void EchoProtocol::receivingThread(bool b) {
         } catch (Packet::PacketException &e) {
             qDebug() << e.what() << "– received corrupted packet";
             auto debug = qDebug();
-            for (auto x: rec) {
+            for (auto x : rec) {
                 debug << x;
             }
             status = 3;

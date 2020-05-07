@@ -36,7 +36,7 @@ void EchoProtocol::connect() {
 
 void EchoProtocol::close() {
     qDebug() << "close";
-    status = 4;
+    status = CLOSED;
     closed = true;
     if (thr[0] != nullptr) {
         thr[0]->join();
@@ -93,11 +93,11 @@ void EchoProtocol::sendingThread(bool b) {
         auto start = std::chrono::system_clock::now();
         qDebug() << "Send start; status =" << status;
         connection->sendStart();
-        if (status == 4) {
+        if (status == CLOSED) {
             std::vector<uint8_t> vec = PacketBuilder().setFlag(Flag::FIN).getPacket().toBytes();
             connection->send(vec.data(), vec.size());
             qDebug() << "sent FIN";
-        } else if (status == 3) {
+        } else if (status == CORRUPTED) {
             std::vector<uint8_t> vec = PacketBuilder().setFlag(Flag::DMD).getPacket().toBytes();
             connection->send(vec.data(), vec.size());
             qDebug() << "sent DMD";
@@ -106,7 +106,7 @@ void EchoProtocol::sendingThread(bool b) {
                 lastPacket = PacketBuilder().setNumber(++number).setFlag(Flag::SYN).getPacket();
                 b = false;
                 qDebug() << "sent SYN, size" << lastPacket.getSize();
-            } else if (status == 0) {
+            } else if (status == READY) {
                 if (closed && buffer_send.empty()) {
                     thr[1]->detach();
                     thr[1] = nullptr;
@@ -120,10 +120,9 @@ void EchoProtocol::sendingThread(bool b) {
                     qDebug() << "sent data, size" << lastPacket.getSize();
                 }
                 cv_send.notify_one();
-            } else if (status == 1) {
+            } else if (status == PLEASE_ACK) {
                 lastPacket = PacketBuilder().setNumber(number).setFlag(Flag::ACK1).getPacket();
                 qDebug() << "sent ACK, size" << lastPacket.getSize();
-                assert(!lastPacket.isSet(Flag::SYN));
             } else {
                 qDebug() << "retransmitted last packet, size" << lastPacket.getSize();
             }
@@ -145,25 +144,32 @@ void EchoProtocol::receivingThread(bool b) {
         try {
             qDebug() << "receive start; status =" << status;
             connection->receiveStart(big_win_size * 4);
+
+            // receiving packet header
             int bytes = connection->receive(buffer, HEADER_SIZE);
             rec.insert(rec.end(), buffer, buffer + bytes);
             qDebug() << "Received" << bytes << "bytes, expected" << HEADER_SIZE;
             Packet p = Packet::loadHeaderFromBytes(std::vector<uint8_t>(buffer, buffer + bytes));
+
+            // receiving data
             bytes = connection->receive(buffer, p.getSize());
             rec.insert(rec.end(), buffer, buffer + bytes);
             qDebug() << "Received" << bytes << "bytes, expected" << p.getSize();
             p.loadDataFromBytes(std::vector<uint8_t>(buffer, buffer + bytes));
+
+            // receiving CRC
             bytes = connection->receive(buffer, CRC_SIZE);
             rec.insert(rec.end(), buffer, buffer + bytes);
             qDebug() << "Received" << bytes << "bytes, expected" << CRC_SIZE;
             p.loadCRCFromBytes(std::vector<uint8_t>(buffer, buffer + bytes));
+
             std::vector<uint8_t> vec = p.getData();
             if (p.isSet(Flag::ACK1) ||
                 (p.getSize() == 0 && !p.isSet(Flag::SYN) && !p.isSet(Flag::DMD) && !p.isSet(Flag::FIN))) {
-                status = 0;
+                status = READY;
                 qDebug() << "received ACK or empty packet";
             } else if (p.isSet(Flag::DMD)) {
-                status = 2;
+                status = PLEASE_RESEND;
                 qDebug() << "received demand resend";
             } else {
                 qDebug() << "ACK1:" << (int)p.isSet(Flag::ACK1) << "size:" << p.getSize()
@@ -185,16 +191,16 @@ void EchoProtocol::receivingThread(bool b) {
                     }
                     lastPacketAcked = p.getNumber();
                 }
-                status = 1;
+                status = PLEASE_ACK;
             }
         } catch (std::runtime_error &e) {
             qDebug() << e.what();
             closed = true;
-            status = 0;
+            status = READY;
         } catch (Packet::PacketException &e) {
             qDebug() << e.what() << "-- received corrupted packet";
             qDebug() << rec;
-            status = 3;
+            status = CORRUPTED;
         }
         qDebug() << "receive end";
         auto end = std::chrono::system_clock::now();

@@ -12,6 +12,8 @@
 #include <queue>
 #include <thread>
 
+enum Status { READY, PLEASE_ACK, PLEASE_RESEND, CORRUPTED, CLOSED };
+
 class EchoProtocol {
 public:
     EchoProtocol(int winsize, int send_freq, int recv_freq, int lim);
@@ -31,7 +33,7 @@ public:
 
 private:
     std::atomic<bool> closed = false, is_connected = false;
-    std::atomic<int> status = 0;
+    std::atomic<Status> status = READY;
     uint16_t number = 0, lastPacketAcked = 0;
 
     std::mutex m_send, m_recv;

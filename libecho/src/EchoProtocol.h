@@ -31,13 +31,6 @@ public:
     size_t read(void *buf, size_t count, size_t timeout);
     size_t write(const void *buf, size_t count);
 
-    class ConnectionBroken : public std::exception {
-    public:
-        [[nodiscard]] const char *what() const noexcept override {
-            return "connnection broken";
-        }
-    };
-
 private:
     std::atomic<bool> closed = false, is_connected = false, send_joined = false;
     std::atomic<Status> status = READY;

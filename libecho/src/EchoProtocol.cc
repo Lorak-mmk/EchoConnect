@@ -1,4 +1,6 @@
 #include "EchoProtocol.h"
+#include "IReceiver.h"
+
 #include <QDebug>
 #include <cassert>
 
@@ -66,7 +68,7 @@ size_t EchoProtocol::write(const void *buf, size_t count) {
         qDebug() << "write starting at position" << pos << "/" << count;
         {
             if (closed) {
-                throw EchoProtocol::ConnectionBroken{};
+                throw IReceiver::ConnectionBroken{};
             }
             std::unique_lock<std::mutex> lock(m_send);
             size_t copied_bytes = std::min(PACKET_SIZE - buffer_send.size(), count - pos);
@@ -94,7 +96,7 @@ size_t EchoProtocol::read(void *buf, size_t count, size_t timeout) {
         }
         return pos;
     }
-    throw EchoProtocol::ConnectionBroken{};
+    throw IReceiver::ConnectionBroken{};
 }
 
 void EchoProtocol::sendingThread(bool first) {
@@ -204,7 +206,7 @@ void EchoProtocol::receivingThread(bool first) {
                 }
                 status = PLEASE_ACK;
             }
-        } catch (EchoProtocol::ConnectionBroken &e) {
+        } catch (IReceiver::ConnectionBroken &e) {
             qDebug() << e.what();
             closed = true;
             status = READY;

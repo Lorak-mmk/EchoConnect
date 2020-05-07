@@ -27,6 +27,13 @@ public:
     virtual void start(std::chrono::duration<double> timeout) = 0;
     virtual int receive(uint8_t *buffer, int size) = 0;
 
+    class ConnectionBroken : public std::exception {
+    public:
+        [[nodiscard]] const char *what() const noexcept override {
+            return "connnection broken";
+        }
+    };
+
 protected:
     QAudioFormat format;
     std::unique_ptr<AudioInput> input;

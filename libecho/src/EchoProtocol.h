@@ -30,21 +30,21 @@ public:
     size_t write(const void *buf, size_t count);
 
 private:
+    std::atomic<bool> closed = false, is_connected = false;
+    std::atomic<int> status = 0;
+    uint16_t number = 0, lastPacketAcked = 0;
+
+    std::mutex m_send, m_recv;
+    std::condition_variable cv_send, cv_recv;
+    std::thread *thr[2] = {nullptr, nullptr};
+
     std::unique_ptr<EchoRawConnection> connection;
     std::chrono::duration<double> big_win_size;
 
     std::vector<uint8_t> buffer_send;
     std::queue<uint8_t> buffer_recv;
     uint8_t *buffer;
-    size_t lastPacketAcked;
 
-    std::mutex m_send, m_recv;
-    std::condition_variable cv_send, cv_recv;
-    std::thread *thr[2];
-
-    std::atomic<bool> closed, is_connected;
-    std::atomic<int> status;
-    uint16_t number;
     Packet lastPacket;
 
     void sendingThread(bool b);

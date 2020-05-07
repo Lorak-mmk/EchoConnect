@@ -43,12 +43,18 @@ void EchoProtocol::close() {
     closed = true;
     if (thr[0] != nullptr) {
         thr[0]->join();
-        delete thr[0];
     }
-    if (thr[1] != nullptr) {
+    {
+        std::unique_lock<std::mutex> lock(m_thread);
+        if (thr[1] != nullptr) {
+            send_joined = true;
+        }
+    }
+    if (send_joined) {
         thr[1]->join();
-        delete thr[1];
     }
+    delete thr[0];
+    delete thr[1];
     thr[0] = thr[1] = nullptr;
     qDebug() << "close successfully finished";
 }
@@ -111,9 +117,11 @@ void EchoProtocol::sendingThread(bool first) {
                 qDebug() << "sent SYN, size" << lastPacket.getSize();
             } else if (status == READY) {
                 if (closed && buffer_send.empty()) {
-                    thr[1]->detach();
-                    thr[1] = nullptr;
-                    close();
+                    std::unique_lock<std::mutex> lock(m_thread);
+                    if (!send_joined) {
+                        thr[1]->detach();
+                        thr[1] = nullptr;
+                    }
                     return;
                 }
                 {

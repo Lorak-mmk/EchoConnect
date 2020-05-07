@@ -1,4 +1,5 @@
 #include "BitReceiverv2.h"
+#include "EchoProtocol.h"
 #include <cmath>
 #ifndef M_PI
 #define M_PI 3.14159265358979323846
@@ -133,7 +134,7 @@ void BitReceiverv2::start(std::chrono::duration<double> timeout) {
             }
         }
         if (std::chrono::system_clock::now() - start > timeout) {
-            throw std::runtime_error("connection broken");
+            throw EchoProtocol::ConnectionBroken{};
         }
     }
 

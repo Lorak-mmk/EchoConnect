@@ -15,7 +15,7 @@ int main(int argc, char *argv[]) {
         pos += p.read(buf + pos, 30 - pos, 10);
         pos += p.read(buf + pos, 30 - pos, 10);
         p.close();
-    } catch (std::runtime_error &e) {
+    } catch (std::exception &e) {
         puts(e.what());
     }
     puts(buf);

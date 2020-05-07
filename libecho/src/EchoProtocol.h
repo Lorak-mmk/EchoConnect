@@ -39,11 +39,11 @@ public:
     };
 
 private:
-    std::atomic<bool> closed = false, is_connected = false;
+    std::atomic<bool> closed = false, is_connected = false, send_joined = false;
     std::atomic<Status> status = READY;
     uint16_t number = 0, lastPacketAcked = 0;
 
-    std::mutex m_send, m_recv;
+    std::mutex m_send, m_recv, m_thread;
     std::condition_variable cv_send, cv_recv, cv_listen;
     std::thread *thr[2] = {nullptr, nullptr};
 

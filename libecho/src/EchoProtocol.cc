@@ -136,10 +136,7 @@ void EchoProtocol::sendingThread(bool b) {
                 qDebug() << "retransmitted last packet, size" << lastPacket.getSize();
             }
             std::vector<uint8_t> vec = lastPacket.toBytes();
-            auto debug = qDebug();
-            for (auto x : vec) {
-                debug << x;
-            }
+            qDebug() << vec;
             connection->send(vec.data(), vec.size());
         }
         connection->sendWait();
@@ -203,11 +200,8 @@ void EchoProtocol::receivingThread(bool b) {
             closed = true;
             status = 0;
         } catch (Packet::PacketException &e) {
-            qDebug() << e.what() << "– received corrupted packet";
-            auto debug = qDebug();
-            for (auto x : rec) {
-                debug << x;
-            }
+            qDebug() << e.what() << "-- received corrupted packet";
+            qDebug() << rec;
             status = 3;
         }
         qDebug() << "receive end";

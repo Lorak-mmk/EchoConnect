@@ -14,14 +14,15 @@ public:
     void start(std::chrono::duration<double> timeout) override;
     int receive(uint8_t *buffer, int size) override;
 
-    long getLoFrequency();
-    long getHiFrequency();
+    [[nodiscard]] long getLoFrequency() const;
+    [[nodiscard]] long getHiFrequency() const;
+
     void setLoFrequency(int freq);
     void setHiFrequency(int freq);
 
 private:
     void readSamples(int16_t *buffer, int len);
-    int stepShift(const double *buffer, int size);
+    int stepShift(const double *buffer, int size) const;
     int decodeBit(int16_t *windowBuffer);
     int receiveFirstTwoBits();
     void receiveBits(std::vector<bool> &vec, int offset);

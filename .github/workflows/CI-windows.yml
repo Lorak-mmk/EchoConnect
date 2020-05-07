@@ -1,4 +1,4 @@
-name: Build and test - Linux
+name: Build - Windows
 
 on:
   push:
@@ -8,11 +8,11 @@ on:
 
 env:
   BUILD_TYPE: Debug
-  DEPS_DIR: /home/runner/work/EchoConnect/dependencies
+  DEPS_DIR: ${{ github.workspace }}/../dependencies
 
 jobs:
   build:
-    runs-on: ubuntu-latest
+    runs-on: windows-latest
 
     steps:
     - uses: actions/checkout@v2
@@ -33,23 +33,26 @@ jobs:
         version: 5.12.7
         cached: ${{ steps.cache-deps.outputs.cache-hit }}
 
-    - name: Install PulseAudio, Doxygen
-      run: sudo apt-get install libpulse-dev doxygen graphviz
-
     - name: Create build folder
       run: cmake -E make_directory ${{ github.workspace }}/build
 
     - name: Configure CMake
       shell: bash
       working-directory: ${{ github.workspace }}/build
-      run: cmake ${{ github.workspace }} -DCMAKE_BUILD_TYPE=$BUILD_TYPE
+      run: cmake .. -DCMAKE_BUILD_TYPE=$BUILD_TYPE
 
     - name: Build
       working-directory: ${{ github.workspace }}/build
       shell: bash
       run: cmake --build . --config $BUILD_TYPE
 
-    - name: Run tests
+    - name: Copy GTest DLL to tests folder (temporary workaround, hopefully)
       working-directory: ${{ github.workspace }}/build
       shell: bash
-      run: GTEST_COLOR=1 ctest -V CTEST_OUTPUT_ON_FAILURE=TRUE
+      run: cp D:/a/EchoConnect/EchoConnect/build/bin/Debug/gtestd.dll ./libecho/tests/Debug/
+
+    #- name: Run tests
+    #  working-directory: ${{ github.workspace }}/build
+    #  shell: bash
+    #  #run: ctest -C Debug -VV --output-on-failure
+    #  run: ls ./libecho/tests/Debug/ && ./libecho/tests/Debug/libecho_test.exe

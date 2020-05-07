@@ -1,8 +1,6 @@
 project(libecho VERSION 0.1)
 
-
 find_package(Qt5 COMPONENTS Multimedia REQUIRED)
-
 
 set(CMAKE_AUTOMOC ON)
 set(CMAKE_AUTORCC ON)
@@ -11,7 +9,13 @@ if (CMAKE_VERSION VERSION_LESS "3.7.0")
     set(CMAKE_INCLUDE_CURRENT_DIR ON)
 endif ()
 
-set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} -DQT_NO_DEBUG_OUTPUT -DQT_NO_INFO_OUTPUT")
+if (CMAKE_BUILD_TYPE MATCHES "^[Rr]elease")
+    if (MSVC)
+        add_compile_options(/W3 /DQT_NO_DEBUG_OUTPUT /DQT_NO_INFO_OUTPUT)
+    else()
+        add_compile_options(-DQT_NO_DEBUG_OUTPUT -DQT_NO_INFO_OUTPUT)
+    endif()
+endif ()
 
 
 set(SRC_DIR "src" CACHE PATH "Source files path")
@@ -56,11 +60,17 @@ set_target_properties(echo
         PROPERTIES
         VERSION ${PROJECT_VERSION} SOVERSION 0
         PUBLIC_HEADER "${API_FILES}")
+set_target_properties(echo PROPERTIES ENABLE_EXPORTS 1)
+set_target_properties(echo PROPERTIES WINDOWS_EXPORT_ALL_SYMBOLS 1)
+
 
 target_include_directories(echo PRIVATE ${SRC_DIR})
 target_include_directories(echo PRIVATE external/CRCpp/inc)
 
 target_link_libraries(echo Qt5::Multimedia)
+if(WIN32)
+    target_link_libraries(echo ws2_32)
+endif()
 
 
 add_subdirectory(tests)

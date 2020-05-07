@@ -1,7 +1,6 @@
 #include <gtest/gtest.h>
 #include <algorithm>
 #include <cstdint>
-#include <string>
 #include <vector>
 
 #ifdef _WIN32
@@ -13,7 +12,7 @@
 #include "CRC.h"
 #include "Packet.h"
 
-uint16_t SIZE = 3, NUM = 2137;
+uint16_t MESSAGE_SIZE = 3, NUM = 2137;
 
 const std::vector<Flag> SET_FLAGS{Flag::ACK1, Flag::DMD, Flag::LPC}, UNSET_FLAGS{Flag::SYN, Flag::FIN, Flag::RST};
 
@@ -35,7 +34,7 @@ std::vector<uint8_t> calc_crc32(std::vector<uint8_t> v) {
 
 TEST(tests_packet, test_loadHeaderFromBytes) {
     auto p = Packet::loadHeaderFromBytes(header);
-    ASSERT_EQ(SIZE, p.getSize());
+    ASSERT_EQ(MESSAGE_SIZE, p.getSize());
     ASSERT_EQ(NUM, p.getNumber());
 
     for (auto f : SET_FLAGS) {
@@ -51,13 +50,12 @@ TEST(tests_packet, test_incorrect_loadHeaderFromBytes) {
 }
 
 TEST(tests_packet, test_loadDataFromBytes) {
-    uint8_t t[] = {13, 4, 55};
     auto p = Packet::loadHeaderFromBytes(header);
     p.loadDataFromBytes(data);
-    auto data = p.getData();
-    ASSERT_EQ(data.size(), 3);
+    auto localData = p.getData();
+    ASSERT_EQ(localData.size(), 3);
     for (size_t i = 0; i < 3; i++) {
-        ASSERT_EQ(t[i], data[i]);
+        ASSERT_EQ(data[i], localData[i]);
     }
 }
 
@@ -258,10 +256,10 @@ TEST(tests_packet_builder, test_setNumber) {
 
     ASSERT_EQ(p.getNumber(), NUM);
 
-    pb.setNumber(SIZE);
+    pb.setNumber(MESSAGE_SIZE);
     p = pb.getPacket();
 
-    ASSERT_EQ(p.getNumber(), SIZE);
+    ASSERT_EQ(p.getNumber(), MESSAGE_SIZE);
 }
 
 TEST(tests_packet_builder, test_getPacket) {
@@ -274,8 +272,8 @@ TEST(tests_packet_builder, test_getPacket) {
     auto d = p.getData();
 
     ASSERT_EQ(p.getNumber(), NUM);
-    ASSERT_EQ(p.getSize(), SIZE);
-    for (size_t i = 0; i < SIZE; i++) {
+    ASSERT_EQ(p.getSize(), MESSAGE_SIZE);
+    for (size_t i = 0; i < MESSAGE_SIZE; i++) {
         ASSERT_EQ(d[i], data[i]);
     }
 

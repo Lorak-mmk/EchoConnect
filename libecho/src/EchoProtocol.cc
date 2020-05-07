@@ -24,7 +24,7 @@ void EchoProtocol::listen() {
     thr[0] = new std::thread{&EchoProtocol::receivingThread, this, true};
     std::mutex m;
     std::unique_lock<std::mutex> lock(m);
-    cv_listen.wait(lock, [&] { return is_connected; });
+    cv_listen.wait(lock, [&] { return static_cast<bool>(is_connected); });
     thr[1] = new std::thread{&EchoProtocol::sendingThread, this, false};
     qDebug() << "(listen) connected successfully";
 }

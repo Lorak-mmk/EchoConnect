@@ -4,8 +4,8 @@
 #include "AudioInput.h"
 
 #include <QtMultimedia/QAudioFormat>
-#include <cstdint>
 #include <chrono>
+#include <cstdint>
 #include <memory>
 
 class IReceiver {

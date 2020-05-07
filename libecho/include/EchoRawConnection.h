@@ -1,8 +1,8 @@
 #ifndef ECHOCONNECT_ECHO_RAW_CONNECTION_H
 #define ECHOCONNECT_ECHO_RAW_CONNECTION_H
 
-#include <cstdint>
 #include <chrono>
+#include <cstdint>
 #include <memory>
 #include <vector>
 

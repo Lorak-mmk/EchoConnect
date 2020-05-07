@@ -122,6 +122,9 @@ public:
      */
     void setData(const std::vector<uint8_t> &data);
 
+    /**
+     * @brief Base class for exceptions thrown at packet construction.
+     */
     class PacketException : public std::exception {};
 
     /**

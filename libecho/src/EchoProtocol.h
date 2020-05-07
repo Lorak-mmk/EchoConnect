@@ -1,5 +1,5 @@
-#ifndef ECHOCONNECT_ECHOPROTOCOL_H
-#define ECHOCONNECT_ECHOPROTOCOL_H
+#ifndef ECHOCONNECT_ECHO_PROTOCOL_H
+#define ECHOCONNECT_ECHO_PROTOCOL_H
 
 #include "EchoRawConnection.h"
 #include "Packet.h"
@@ -16,6 +16,11 @@ enum Status { READY, PLEASE_ACK, PLEASE_RESEND, CORRUPTED, CLOSED };
 
 class EchoProtocol {
 public:
+    /**
+     * Constructs an EchoProtocol object, which can be used for sending
+     * and receiving data, providing their correctness.
+     * There should exist at most one EchoProtocol object at a time.
+     */
     EchoProtocol(int winsize, int send_freq, int recv_freq, int lim);
     ~EchoProtocol();
 
@@ -24,11 +29,32 @@ public:
     EchoProtocol &operator=(const EchoProtocol &other) = delete;
     EchoProtocol &operator=(EchoProtocol &&other) = delete;
 
+    /**
+     * @brief Waits for signal start from the other computer.
+     */
     void listen();
+
+    /**
+     * @brief Connects with another computer, which should be waiting for signal.
+     */
     void connect();
+
+    /**
+     * @brief Closes a connection.
+     */
     void close();
 
+    /**
+     * Reads at most count bytes from audio input.
+     * Can receive 0 bytes, but if it doesn't receive any signal for timeout seconds,
+     * it throws an exception.
+     */
     size_t read(void *buf, size_t count, size_t timeout);
+
+    /**
+     * Writes count bytes to audio output.
+     * Can throw an exception when sent data isn't being confirmed.
+     */
     size_t write(const void *buf, size_t count);
 
 private:
@@ -61,9 +87,9 @@ private:
      * @brief Thread receiving data
      *
      * @param first       boolean value that indicates if this thread
-     *                    is being started first (before receiving thread)
+     *                    is being started first (before sending thread)
      */
     void receivingThread(bool first);
 };
 
-#endif  // ECHOCONNECT_ECHOPROTOCOL_H
+#endif  // ECHOCONNECT_ECHO_PROTOCOL_H

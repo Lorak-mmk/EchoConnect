@@ -6,7 +6,7 @@ int main(int argc, char *argv[]) {
 
     EchoProtocol p(150, 16000, 14000, 1187);
     p.connect();
-    p.write("dupadupadupa", 12);
-    p.write("kocham anime", 12);
+    p.write("abcdefghijkl", 12);
+    p.write("mmmmmmmmmmmm", 12);
     p.close();
 }

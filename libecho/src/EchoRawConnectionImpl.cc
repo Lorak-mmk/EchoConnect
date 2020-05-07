@@ -23,8 +23,8 @@ void EchoRawConnectionImpl::sendWait() {
     sender->wait();
 }
 
-void EchoRawConnectionImpl::receiveStart() {
-    receiver->start();
+void EchoRawConnectionImpl::receiveStart(std::chrono::duration<double> timeout) {
+    receiver->start(timeout);
 }
 
 int EchoRawConnectionImpl::receive(uint8_t *buffer, int size) {

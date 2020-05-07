@@ -25,6 +25,8 @@ set(SRC_FILES
         ${SRC_DIR}/EchoRawConnection.cc
         ${SRC_DIR}/EchoRawConnectionImpl.h
         ${SRC_DIR}/EchoRawConnectionImpl.cc
+        ${SRC_DIR}/EchoProtocol.h
+        ${SRC_DIR}/EchoProtocol.cc
         ${SRC_DIR}/AudioOutput.cc
         ${SRC_DIR}/AudioOutput.h
         ${SRC_DIR}/AudioInput.cc

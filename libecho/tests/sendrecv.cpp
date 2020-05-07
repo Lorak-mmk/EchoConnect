@@ -4,6 +4,8 @@
 
 #define N 300
 
+using namespace std::chrono_literals;
+
 uint8_t out[N];
 uint8_t in[N];
 
@@ -34,7 +36,7 @@ int main(int argc, char **argv) {
     sender.start();
     sender.send(out, N);
 
-    receiver.start();
+    receiver.start(30s);
     receiver.receive(in, N);
 
     int wrong = 0;

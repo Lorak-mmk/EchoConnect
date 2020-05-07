@@ -12,7 +12,7 @@ class BitReceiverv2 : public IReceiver {
 public:
     BitReceiverv2(int win_size, int freq, double lim);
     ~BitReceiverv2() override;
-    void start() override;
+    void start(std::chrono::duration<double> timeout) override;
     int receive(uint8_t *buffer, int size) override;
 
     uint8_t *dbg = nullptr;

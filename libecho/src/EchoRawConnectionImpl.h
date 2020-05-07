@@ -34,7 +34,7 @@ public:
     /**
      * @brief @see EchoRawConnection::receiveFirst
      */
-    void receiveStart() override;
+    void receiveStart(std::chrono::duration<double> timeout) override;
 
     /**
      * @brief @see EchoRawConnection::receive

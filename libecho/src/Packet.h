@@ -123,9 +123,14 @@ public:
     void setData(const std::vector<uint8_t> &data);
 
     /**
+     * @brief Base class for exceptions thrown at packet construction.
+     */
+    class PacketException : public std::exception {};
+
+    /**
      * @brief Indicates that CRC in packet is invalid.
      */
-    class IncorrectCRC : public std::exception {
+    class IncorrectCRC : public PacketException {
         [[nodiscard]] const char *what() const noexcept override {
             return "Incorrect package CRC";
         }
@@ -134,7 +139,7 @@ public:
     /**
      * @brief Thrown when trying to deserialize packet from incorrect data.
      */
-    class IncorrectFormat : public std::exception {
+    class IncorrectFormat : public PacketException {
         [[nodiscard]] const char *what() const noexcept override {
             return "Incorrect package format";
         }
@@ -143,7 +148,7 @@ public:
     /**
      * @brief Thrown when someone is trying to encapsulate to large data in packet.
      */
-    class OversizedData : public std::exception {
+    class OversizedData : public PacketException {
         [[nodiscard]] const char *what() const noexcept override {
             return "Too large data";
         }

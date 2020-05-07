@@ -1,5 +1,7 @@
 #include "BitReceiverv2.h"
+
 #include <cmath>
+
 #ifndef M_PI
 #define M_PI 3.14159265358979323846
 #endif
@@ -114,9 +116,11 @@ void BitReceiverv2::fetch(int len) {
     */
 }
 
-void BitReceiverv2::start() {
+void BitReceiverv2::start(std::chrono::duration<double> timeout) {
     int streak = 0;
     int offset = -1;
+
+    auto start = std::chrono::system_clock::now();
 
     while (offset < 0) {
         fetch(win_size);
@@ -129,6 +133,9 @@ void BitReceiverv2::start() {
                 }
                 streak = 0;
             }
+        }
+        if (std::chrono::system_clock::now() - start > timeout) {
+            throw IReceiver::ConnectionBroken{};
         }
     }
 

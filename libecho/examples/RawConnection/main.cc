@@ -1,9 +1,12 @@
 //#include "Echo.h"
 #define _GLIBCXX_USE_C99 1
 #include <Echo.h>
+#include <chrono>
 #include <cstring>
 #include <iostream>
 #include <string>
+
+using namespace std::chrono_literals;
 
 long to_long(const std::string &s) {
     return strtol(s.c_str(), NULL, 10);
@@ -68,7 +71,7 @@ int main(int argc, char *argv[]) {
         auto connection = EchoRawConnection::getBitEchoRawConnection(winsize, freq, freq, lim);
 
         auto *buf = new uint8_t[bytes];
-        connection->receiveStart();
+        connection->receiveStart(20s);
         connection->receive(buf, bytes);
         for (int i = 0; i < bytes; i++) {
             printf("%02hhx ", buf[i]);

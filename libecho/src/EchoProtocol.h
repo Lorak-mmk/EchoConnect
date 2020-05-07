@@ -9,7 +9,7 @@
 #include <condition_variable>
 #include <memory>
 #include <mutex>
-#include <queue>
+#include <deque>
 #include <thread>
 
 enum Status { READY, PLEASE_ACK, PLEASE_RESEND, CORRUPTED, CLOSED };
@@ -44,7 +44,7 @@ private:
     std::chrono::duration<double> big_win_size;
 
     std::vector<uint8_t> buffer_send;
-    std::queue<uint8_t> buffer_recv;
+    std::deque<uint8_t> buffer_recv;
     uint8_t *buffer;
 
     Packet lastPacket;

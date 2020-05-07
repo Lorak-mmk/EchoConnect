@@ -83,14 +83,12 @@ size_t EchoProtocol::write(const void *buf, size_t count) {
 }
 
 size_t EchoProtocol::read(void *buf, size_t count, size_t timeout) {
-    size_t pos = 0;
     std::unique_lock<std::mutex> lock(m_recv);
     if (cv_recv.wait_for(lock, timeout * 1s, [&] { return !buffer_recv.empty(); })) {
-        while (pos < count && !buffer_recv.empty()) {
-            static_cast<uint8_t *>(buf)[pos++] = buffer_recv.front();
-            buffer_recv.pop();
-        }
-        return pos;
+        size_t bytes = std::min(buffer_recv.size(), count);
+        std::copy(static_cast<uint8_t *>(buf), static_cast<uint8_t *>(buf) + bytes, buffer_recv.begin());
+        buffer_recv.erase(buffer_recv.begin(), buffer_recv.begin() + bytes);
+        return bytes;
     }
     throw IReceiver::ConnectionBroken{};
 }
@@ -199,9 +197,7 @@ void EchoProtocol::receivingThread(bool first) {
                 }
                 if (lastPacketAcked < p.getNumber()) {
                     std::unique_lock<std::mutex> lock(m_recv);
-                    for (auto i : vec) {
-                        buffer_recv.push(i);
-                    }
+                    buffer_recv.insert(buffer_recv.end(), vec.begin(), vec.end());
                     lastPacketAcked = p.getNumber();
                 }
                 status = PLEASE_ACK;

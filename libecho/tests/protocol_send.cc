@@ -1,5 +1,5 @@
-#include "EchoProtocol.h"
 #include "Echo.h"
+#include "EchoProtocol.h"
 
 int main(int argc, char *argv[]) {
     Echo::initEcho(argc, argv);

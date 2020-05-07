@@ -1,6 +1,6 @@
-#include "Packet.h"
-#include <cstring>
 #include <cstdio>
+#include <cstring>
+#include "Packet.h"
 
 int main(int argc, char *argv[]) {
     std::vector<uint8_t> bytes1 = PacketBuilder().setFlag(Flag::SYN).getPacket().toBytes();

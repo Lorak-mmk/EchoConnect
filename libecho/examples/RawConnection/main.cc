@@ -1,10 +1,11 @@
 //#include "Echo.h"
 
 #include <Echo.h>
-#include <cstring>
 #include <chrono>
+#include <cstring>
 #include <fstream>
 #include <iostream>
+#include <string>
 
 using namespace std::chrono_literals;
 

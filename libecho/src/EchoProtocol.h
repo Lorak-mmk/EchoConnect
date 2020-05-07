@@ -70,7 +70,7 @@ private:
      * @param first       boolean value that indicates if this thread
      *                    is being started first (before receiving thread)
      */
-    void receivingThread(bool b);
+    void receivingThread(bool first);
 };
 
 #endif  // ECHOCONNECT_ECHOPROTOCOL_H

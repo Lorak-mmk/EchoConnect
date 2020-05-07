@@ -1,8 +1,27 @@
 set(EXEC_NAME libecho_test)
 set(CMAKE_EXPORT_COMPILE_COMMANDS OFF)
 
-find_package(GTest REQUIRED)
-include_directories(${GTEST_INCLUDE_DIRS})
+set(GTEST_VERSION 1.10.0 CACHE STRING "Google test version")
+################################
+# GTest
+################################
+find_package(GTest)
+if(GTest_FOUND)
+    include_directories(${GTEST_INCLUDE_DIRS})
+else()
+    include(FetchContent)
+    FetchContent_Declare(googletest
+            GIT_REPOSITORY https://github.com/google/googletest.git
+            GIT_TAG release-${GTEST_VERSION})
+
+    FetchContent_GetProperties(googletest)
+    if(NOT googletest_POPULATED)
+        FetchContent_Populate(googletest)
+        add_subdirectory(${googletest_SOURCE_DIR} ${googletest_BINARY_DIR})
+    endif()
+
+    FetchContent_MakeAvailable(googletest)
+endif()
 
 set(TEST_FILES
         main.cc
@@ -24,7 +43,11 @@ add_executable(protocol_send protocol_send.cc)
 add_executable(protocol_recv protocol_recv.cc)
 add_executable(packet_my_test packet_my_test.cc)
 
+target_link_libraries(${EXEC_NAME} echo gtest gtest_main)
+target_link_libraries(sendrecv echo)
+
 add_test(NAME ${EXEC_NAME} COMMAND ${EXEC_NAME})
+
 
 target_link_libraries(${EXEC_NAME} echo ${GTEST_BOTH_LIBRARIES})
 target_link_libraries(sendrecv echo)

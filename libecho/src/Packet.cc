@@ -75,15 +75,15 @@ std::vector<uint8_t> Packet::toBytes() {
     return bytes;
 }
 
-bool Packet::isSet(Flag f) {
+bool Packet::isSet(Flag f) const {
     return (flags & f) != 0;
 }
 
-uint16_t Packet::getSize() {
+uint16_t Packet::getSize() const {
     return size;
 }
 
-uint16_t Packet::getNumber() {
+uint16_t Packet::getNumber() const {
     return number;
 }
 
@@ -106,19 +106,18 @@ void Packet::unsetFlag(Flag f) {
     updateCRC();
 }
 
-void Packet::setData(const std::vector<uint8_t> &data) {
+void Packet::setData(const std::vector<uint8_t> &newData) {
     if (data.size() > MAX_DATA_SIZE) {
         throw Packet::OversizedData();
     }
 
-    this->data = data;
+    this->data = newData;
     size = data.size();
     updateCRC();
 }
 
 uint32_t Packet::calculateCRC() {
-    uint32_t result;
-    result = CRC::Calculate(&flags, sizeof(flags), CRC::CRC_32());
+    uint32_t result = CRC::Calculate(&flags, sizeof(flags), CRC::CRC_32());
     result = CRC::Calculate(&size, sizeof(size), CRC::CRC_32(), result);
     result = CRC::Calculate(&number, sizeof(number), CRC::CRC_32(), result);
     result = CRC::Calculate(data.data(), data.size(), CRC::CRC_32(), result);

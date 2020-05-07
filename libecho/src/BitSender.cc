@@ -2,7 +2,9 @@
 #include "HammingCode.h"
 
 #include <cmath>
-#include <iostream>
+#ifndef M_PI
+#define M_PI 3.14159265358979323846
+#endif
 
 static const QAudioFormat::Endian OUTPUT_BYTEORDER = QAudioFormat::LittleEndian;
 static const int OUTPUT_CHANNEL_COUNT = 1;

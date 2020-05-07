@@ -40,7 +40,7 @@ private:
 
     std::mutex m_send, m_recv;
     std::condition_variable cv_send, cv_recv;
-    std::thread *thr[3];
+    std::thread *thr[2];
 
     std::atomic<bool> closed, is_connected;
     std::atomic<int> status;

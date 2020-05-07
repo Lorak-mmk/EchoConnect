@@ -38,7 +38,7 @@ private:
     std::thread *thr[3];
 
     std::atomic<bool> closed, is_connected;
-    std::atomic<int> needs_response;
+    std::atomic<int> status;
     uint16_t number;
     Packet lastPacket;
     

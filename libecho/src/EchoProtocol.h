@@ -44,7 +44,7 @@ private:
     uint16_t number = 0, lastPacketAcked = 0;
 
     std::mutex m_send, m_recv;
-    std::condition_variable cv_send, cv_recv;
+    std::condition_variable cv_send, cv_recv, cv_listen;
     std::thread *thr[2] = {nullptr, nullptr};
 
     std::unique_ptr<EchoRawConnection> connection;

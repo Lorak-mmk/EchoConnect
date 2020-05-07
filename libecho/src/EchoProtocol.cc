@@ -62,7 +62,7 @@ size_t EchoProtocol::write(const void *buf, size_t count) {
             std::unique_lock<std::mutex> lock(m_send);
             size_t copied_bytes = std::min(PACKET_SIZE - buffer_send.size(), count - pos);
             buffer_send.insert(buffer_send.end(), reinterpret_cast<const uint8_t *>(buf) + pos,
-                reinterpret_cast<const uint8_t *>(buf) + pos + copied_bytes);
+                               reinterpret_cast<const uint8_t *>(buf) + pos + copied_bytes);
             pos += copied_bytes;
             while (buffer_send.size() == PACKET_SIZE) {
                 cv_send.wait(lock);

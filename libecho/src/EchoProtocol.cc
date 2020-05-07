@@ -24,9 +24,7 @@ void EchoProtocol::listen() {
     thr[0] = new std::thread{&EchoProtocol::receivingThread, this, true};
     std::mutex m;
     std::unique_lock<std::mutex> lock(m);
-    while (!is_connected) {
-        cv_listen.wait(lock);
-    }
+    cv_listen.wait(lock, [&] { return is_connected; });
     thr[1] = new std::thread{&EchoProtocol::sendingThread, this, false};
     qDebug() << "(listen) connected successfully";
 }
@@ -75,9 +73,7 @@ size_t EchoProtocol::write(const void *buf, size_t count) {
             buffer_send.insert(buffer_send.end(), reinterpret_cast<const uint8_t *>(buf) + pos,
                                reinterpret_cast<const uint8_t *>(buf) + pos + copied_bytes);
             pos += copied_bytes;
-            while (buffer_send.size() == PACKET_SIZE) {
-                cv_send.wait(lock);
-            }
+            cv_send.wait(lock, [&] { return buffer_send.size() != PACKET_SIZE; });
         }
         qDebug() << "write ending at position" << pos << "/" << count;
         cv_send.notify_one();

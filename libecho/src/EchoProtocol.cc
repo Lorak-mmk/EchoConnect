@@ -70,8 +70,8 @@ size_t EchoProtocol::write(const void *buf, size_t count) {
             }
             std::unique_lock<std::mutex> lock(m_send);
             size_t copied_bytes = std::min(PACKET_SIZE - buffer_send.size(), count - pos);
-            buffer_send.insert(buffer_send.end(), reinterpret_cast<const uint8_t *>(buf) + pos,
-                               reinterpret_cast<const uint8_t *>(buf) + pos + copied_bytes);
+            buffer_send.insert(buffer_send.end(), static_cast<const uint8_t *>(buf) + pos,
+                               static_cast<const uint8_t *>(buf) + pos + copied_bytes);
             pos += copied_bytes;
             cv_send.wait(lock, [&] { return buffer_send.size() != PACKET_SIZE; });
         }
@@ -87,7 +87,7 @@ size_t EchoProtocol::read(void *buf, size_t count, size_t timeout) {
     std::unique_lock<std::mutex> lock(m_recv);
     if (cv_recv.wait_for(lock, timeout * 1s, [&] { return !buffer_recv.empty(); })) {
         while (pos < count && !buffer_recv.empty()) {
-            reinterpret_cast<uint8_t *>(buf)[pos++] = buffer_recv.front();
+            static_cast<uint8_t *>(buf)[pos++] = buffer_recv.front();
             buffer_recv.pop();
         }
         return pos;
@@ -101,11 +101,11 @@ void EchoProtocol::sendingThread(bool first) {
         qDebug() << "Send start; status =" << status;
         connection->sendStart();
         if (status == CLOSED) {
-            std::vector<uint8_t> vec = PacketBuilder().setFlag(Flag::FIN).getPacket().toBytes();
+            std::vector<uint8_t> vec = PacketBuilder().setFlag(Flag::FIN).getBytes();
             connection->send(vec.data(), vec.size());
             qDebug() << "sent FIN";
         } else if (status == CORRUPTED) {
-            std::vector<uint8_t> vec = PacketBuilder().setFlag(Flag::DMD).getPacket().toBytes();
+            std::vector<uint8_t> vec = PacketBuilder().setFlag(Flag::DMD).getBytes();
             connection->send(vec.data(), vec.size());
             qDebug() << "sent DMD";
         } else {
@@ -115,6 +115,10 @@ void EchoProtocol::sendingThread(bool first) {
                 qDebug() << "sent SYN, size" << lastPacket.getSize();
             } else if (status == READY) {
                 if (closed && buffer_send.empty()) {
+                    std::vector<uint8_t> vec = PacketBuilder().setFlag(Flag::FIN).getBytes();
+                    qDebug() << "sent FIN" << vec;
+                    connection->send(vec.data(), vec.size());
+                    connection->sendWait();
                     std::unique_lock<std::mutex> lock(m_thread);
                     if (!send_joined) {
                         thr[1]->detach();

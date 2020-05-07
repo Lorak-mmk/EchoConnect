@@ -88,7 +88,7 @@ size_t EchoProtocol::read(void *buf, size_t count, size_t timeout) {
     throw EchoProtocol::ConnectionBroken{};
 }
 
-void EchoProtocol::sendingThread(bool b) {
+void EchoProtocol::sendingThread(bool first) {
     while (true) {
         auto start = std::chrono::system_clock::now();
         qDebug() << "Send start; status =" << status;
@@ -102,9 +102,9 @@ void EchoProtocol::sendingThread(bool b) {
             connection->send(vec.data(), vec.size());
             qDebug() << "sent DMD";
         } else {
-            if (b) {
+            if (first) {
                 lastPacket = PacketBuilder().setNumber(++number).setFlag(Flag::SYN).getPacket();
-                b = false;
+                first = false;
                 qDebug() << "sent SYN, size" << lastPacket.getSize();
             } else if (status == READY) {
                 if (closed && buffer_send.empty()) {
@@ -137,7 +137,7 @@ void EchoProtocol::sendingThread(bool b) {
     }
 }
 
-void EchoProtocol::receivingThread(bool b) {
+void EchoProtocol::receivingThread(bool first) {
     while (!closed) {
         auto start = std::chrono::system_clock::now();
         std::vector<uint8_t> rec;
@@ -175,7 +175,7 @@ void EchoProtocol::receivingThread(bool b) {
                 qDebug() << "ACK1:" << (int)p.isSet(Flag::ACK1) << "size:" << p.getSize()
                          << "SYN:" << (int)p.isSet(Flag::SYN) << "DMD:" << (int)p.isSet(Flag::DMD)
                          << "FIN:" << (int)p.isSet(Flag::FIN);
-                if (b) {
+                if (first) {
                     assert(p.isSet(Flag::SYN));
                     qDebug() << "received SYN";
                 } else if (p.isSet(Flag::FIN)) {
@@ -205,9 +205,9 @@ void EchoProtocol::receivingThread(bool b) {
         qDebug() << "receive end";
         auto end = std::chrono::system_clock::now();
         std::this_thread::sleep_for(2 * big_win_size + start - end);
-        if (b) {
+        if (first) {
             is_connected = true;
-            b = false;
+            first = false;
         }
     }
 }

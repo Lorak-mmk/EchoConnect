@@ -56,8 +56,20 @@ private:
 
     Packet lastPacket;
 
-    void sendingThread(bool b);
+    /**
+     * @brief Thread sending data
+     *
+     * @param first       boolean value that indicates if this thread
+     *                    is being started first (before receiving thread)
+     */
+    void sendingThread(bool first);
 
+    /**
+     * @brief Thread receiving data
+     *
+     * @param first       boolean value that indicates if this thread
+     *                    is being started first (before receiving thread)
+     */
     void receivingThread(bool b);
 };
 

@@ -14,7 +14,6 @@
 
 enum Status { READY, PLEASE_ACK, PLEASE_RESEND, CORRUPTED, CLOSED };
 
-
 class EchoProtocol {
 public:
     EchoProtocol(int winsize, int send_freq, int recv_freq, int lim);
@@ -33,6 +32,7 @@ public:
     size_t write(const void *buf, size_t count);
 
     class ConnectionBroken : public std::exception {
+    public:
         [[nodiscard]] const char *what() const noexcept override {
             return "connnection broken";
         }

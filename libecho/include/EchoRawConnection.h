@@ -2,6 +2,7 @@
 #define ECHOCONNECT_ECHO_RAW_CONNECTION_H
 
 #include <cstdint>
+#include <chrono>
 #include <memory>
 #include <vector>
 
@@ -60,7 +61,7 @@ public:
     /**
      * @brief Waits for the start of the signal
      */
-    virtual void receiveStart() = 0;
+    virtual void receiveStart(std::chrono::duration<double> timeout) = 0;
 
     /**
      * @brief Tries to read @p size bytes, fills @p buffer with received bytes, returns number of read bytes.

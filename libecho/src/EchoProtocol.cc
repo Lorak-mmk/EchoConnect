@@ -4,6 +4,8 @@
 
 using namespace std::chrono_literals;
 
+static constexpr size_t PACKET_SIZE = 50;
+
 EchoProtocol::EchoProtocol(int winsize, int send_freq, int recv_freq, int lim) {
     big_win_size = static_cast<double>(winsize) / 44100 * (PACKET_SIZE + 10) * 12s;
     buffer = new uint8_t[2 * PACKET_SIZE];
@@ -31,7 +33,7 @@ void EchoProtocol::listen() {
 void EchoProtocol::connect() {
     qDebug() << "connect";
     thr[1] = new std::thread{ &EchoProtocol::sendingThread, this, true };
-    std::this_thread::sleep_for(big_win_size * 0.9);
+    std::this_thread::sleep_for(big_win_size);
     thr[0] = new std::thread{ &EchoProtocol::receivingThread, this, false };
     qDebug() << "connected successfully";
 }
@@ -39,7 +41,6 @@ void EchoProtocol::connect() {
 void EchoProtocol::close() {
     qDebug() << "close";
     status = 4;
-    std::this_thread::sleep_for(2 * big_win_size);
     closed = true;
     if (thr[0] != nullptr) thr[0]->join();
     if (thr[1] != nullptr) thr[1]->join();
@@ -85,8 +86,9 @@ size_t EchoProtocol::read(void *buf, size_t count, size_t timeout) {
 }
 
 void EchoProtocol::sendingThread(bool b) {
-    while (!closed) {
+    while (true) {
         auto start = std::chrono::system_clock::now();
+        qDebug() << "Send start; status =" << status;
         connection->sendStart();
         if (status == 4) {
             std::vector<uint8_t> vec = PacketBuilder().setFlag(Flag::FIN).getPacket().toBytes();
@@ -102,6 +104,12 @@ void EchoProtocol::sendingThread(bool b) {
                 b = false;
                 qDebug() << "sent SYN, size" << lastPacket.getSize();
             } else if (status == 0) {
+                if (closed && buffer_send.empty()) {
+                    thr[1]->detach();
+                    thr[1] = nullptr;
+                    close();
+                    return;
+                }
                 {
                     std::unique_lock<std::mutex> lock(m_send);
                     lastPacket = PacketBuilder().setData(buffer_send).setNumber(++number).getPacket();
@@ -122,8 +130,9 @@ void EchoProtocol::sendingThread(bool b) {
             connection->send(vec.data(), vec.size());
         }
         connection->sendWait();
+        qDebug() << "Send end";
         auto end = std::chrono::system_clock::now();
-        std::this_thread::sleep_for(big_win_size + start - end);
+        std::this_thread::sleep_for(2 * big_win_size + start - end);
     }
 }
 
@@ -132,7 +141,8 @@ void EchoProtocol::receivingThread(bool b) {
         auto start = std::chrono::system_clock::now();
         std::vector<uint8_t> rec;
         try {
-            connection->receiveStart();
+            qDebug() << "receive start; status =" << status;
+            connection->receiveStart(big_win_size * 4);
             int bytes = connection->receive(buffer, HEADER_SIZE);
             rec.insert(rec.end(), buffer, buffer + bytes);
             qDebug() << "Received" << bytes << "bytes, expected" << HEADER_SIZE;
@@ -173,14 +183,19 @@ void EchoProtocol::receivingThread(bool b) {
                 }
                 status = 1;
             }
-        } catch (std::exception &e) {
+        } catch (std::runtime_error &e) {
+            qDebug() << e.what();
+            closed = true;
+            status = 0;
+        } catch (Packet::PacketException &e) {
             qDebug() << e.what() << "– received corrupted packet";
             auto debug = qDebug();
             for (size_t i = 0; i < rec.size(); ++i) debug << rec[i];
             status = 3;
         }
+        qDebug() << "receive end";
         auto end = std::chrono::system_clock::now();
-        std::this_thread::sleep_for(big_win_size + start - end);
+        std::this_thread::sleep_for(2 * big_win_size + start - end);
         if (b) {
             is_connected = true;
             b = false;

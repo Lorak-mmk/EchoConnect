@@ -12,8 +12,6 @@
 #include <memory>
 #include <chrono>
 
-static constexpr size_t PACKET_SIZE = 200;
-
 class EchoProtocol {
 public:
     EchoProtocol(int winsize, int send_freq, int recv_freq, int lim);

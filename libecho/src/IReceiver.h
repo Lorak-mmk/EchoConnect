@@ -5,6 +5,7 @@
 
 #include <QtMultimedia/QAudioFormat>
 #include <cstdint>
+#include <chrono>
 #include <memory>
 
 class IReceiver {
@@ -23,7 +24,7 @@ public:
         input->stopStream();
     }
 
-    virtual void start() = 0;
+    virtual void start(std::chrono::duration<double> timeout) = 0;
     virtual int receive(uint8_t *buffer, int size) = 0;
 
 protected:

@@ -16,9 +16,17 @@ class EchoProtocol {
 public:
     EchoProtocol(int winsize, int send_freq, int recv_freq, int lim);
     ~EchoProtocol();
+    
+    EchoProtocol(const EchoProtocol &other) = delete;
+    EchoProtocol(EchoProtocol &&other) = delete;
+    EchoProtocol &operator=(const EchoProtocol &other) = delete;
+    EchoProtocol &operator=(EchoProtocol &&other) = delete;
+    
+    
     void listen();
     void connect();
     void close();
+    
     size_t read(void *buf, size_t count, size_t timeout);
     size_t write(const void *buf, size_t count);
 

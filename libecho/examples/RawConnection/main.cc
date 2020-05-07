@@ -2,8 +2,11 @@
 
 #include <Echo.h>
 #include <cstring>
+#include <chrono>
 #include <fstream>
 #include <iostream>
+
+using namespace std::chrono_literals;
 
 void printHelp(std::string name) {
     std::cout << "Usage: " << name << " [-freq num] [-win num] [-lim num] send (data_bytes))\n";
@@ -64,7 +67,7 @@ int main(int argc, char *argv[]) {
         auto connection = EchoRawConnection::getBitEchoRawConnection(winsize, freq, freq, lim);
 
         auto *buf = new uint8_t[bytes];
-        connection->receiveStart();
+        connection->receiveStart(20s);
         connection->receive(buf, bytes);
         for (int i = 0; i < bytes; i++) {
             printf("%02hhx ", buf[i]);

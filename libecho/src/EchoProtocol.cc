@@ -6,6 +6,7 @@ using namespace std::chrono_literals;
 
 static constexpr size_t PACKET_SIZE = 50;
 
+// NOLINTNEXTLINE(cppcoreguidelines-pro-type-member-init)
 EchoProtocol::EchoProtocol(int winsize, int send_freq, int recv_freq, int lim) {
     big_win_size = static_cast<double>(winsize) / 44100 * (PACKET_SIZE + 10) * 12s;
     buffer = new uint8_t[2 * PACKET_SIZE];
@@ -13,6 +14,8 @@ EchoProtocol::EchoProtocol(int winsize, int send_freq, int recv_freq, int lim) {
     connection = std::unique_ptr<EchoRawConnection>(EchoRawConnection::getBitEchoRawConnection(
         winsize, send_freq, recv_freq, lim));
     thr[0] = thr[1] = nullptr;
+    is_connected = false;
+    status = 0;
     lastPacketAcked = 0;
     number = 0;
 }
@@ -25,7 +28,7 @@ void EchoProtocol::listen() {
     qDebug() << "listen";
     is_connected = false;
     thr[0] = new std::thread{ &EchoProtocol::receivingThread, this, true };
-    while (!is_connected);
+    while (!is_connected) {}
     thr[1] = new std::thread{ &EchoProtocol::sendingThread, this, false };
     qDebug() << "(listen) connected successfully";
 }
@@ -42,10 +45,14 @@ void EchoProtocol::close() {
     qDebug() << "close";
     status = 4;
     closed = true;
-    if (thr[0] != nullptr) thr[0]->join();
-    if (thr[1] != nullptr) thr[1]->join();
-    delete thr[0];
-    delete thr[1];
+    if (thr[0] != nullptr) {
+        thr[0]->join();
+        delete thr[0];
+    }
+    if (thr[1] != nullptr) {
+        thr[1]->join();
+        delete thr[1];
+    }
     thr[0] = thr[1] = nullptr;
     qDebug() << "close successfully finished";
 }
@@ -56,13 +63,17 @@ size_t EchoProtocol::write(const void *buf, size_t count) {
     while (pos < count) {
         qDebug() << "write starting at position" << pos << "/" << count;
         {
-            if (closed) throw std::runtime_error("connection is already closed");
+            if (closed) {
+                throw std::runtime_error("connection is already closed");
+            }
             std::unique_lock<std::mutex> lock(m_send);
             while (pos < count && buffer_send.size() < PACKET_SIZE) {
                 buffer_send.push_back(reinterpret_cast<const uint8_t *>(buf)[pos]);
                 pos++;
             }
-            while (buffer_send.size() == PACKET_SIZE) cv_send.wait(lock);
+            while (buffer_send.size() == PACKET_SIZE) {
+                cv_send.wait(lock);
+            }
         }
         qDebug() << "write ending at position" << pos << "/" << count;
         cv_send.notify_one();
@@ -80,9 +91,8 @@ size_t EchoProtocol::read(void *buf, size_t count, size_t timeout) {
             buffer_recv.pop();
         }
         return pos;
-    } else {
-        throw std::runtime_error("connection broken");
     }
+    throw std::runtime_error("connection broken");
 }
 
 void EchoProtocol::sendingThread(bool b) {
@@ -126,7 +136,9 @@ void EchoProtocol::sendingThread(bool b) {
             }
             std::vector<uint8_t> vec = lastPacket.toBytes();
             auto debug = qDebug();
-            for (size_t i = 0; i < vec.size(); ++i) debug << vec[i];
+            for (auto x: vec) {
+                debug << x;
+            }
             connection->send(vec.data(), vec.size());
         }
         connection->sendWait();
@@ -178,7 +190,9 @@ void EchoProtocol::receivingThread(bool b) {
                 }
                 if (lastPacketAcked < p.getNumber()) {
                     std::unique_lock<std::mutex> lock(m_recv);
-                    for (auto i: vec) buffer_recv.push(i);
+                    for (auto i: vec) {
+                        buffer_recv.push(i);
+                    }
                     lastPacketAcked = p.getNumber();
                 }
                 status = 1;
@@ -190,7 +204,9 @@ void EchoProtocol::receivingThread(bool b) {
         } catch (Packet::PacketException &e) {
             qDebug() << e.what() << "– received corrupted packet";
             auto debug = qDebug();
-            for (size_t i = 0; i < rec.size(); ++i) debug << rec[i];
+            for (auto x: rec) {
+                debug << x;
+            }
             status = 3;
         }
         qDebug() << "receive end";

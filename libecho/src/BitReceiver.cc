@@ -217,7 +217,7 @@ int BitReceiver::receiveFirst(uint8_t *buffer, int size) {
 }
 */
 
-void BitReceiver::start(std::chrono::duration<double> timeout) {}
+void BitReceiver::start(std::chrono::duration<double> timeout __attribute__((unused))) {}
 
 int BitReceiver::receive(uint8_t *buffer, int size) {
     HammingCode hamming;

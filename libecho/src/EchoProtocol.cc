@@ -57,7 +57,7 @@ size_t EchoProtocol::write(const void *buf, size_t count) {
         qDebug() << "write starting at position" << pos << "/" << count;
         {
             if (closed) {
-                throw std::runtime_error("connection is already closed");
+                throw EchoProtocol::ConnectionBroken;
             }
             std::unique_lock<std::mutex> lock(m_send);
             while (pos < count && buffer_send.size() < PACKET_SIZE) {
@@ -85,7 +85,7 @@ size_t EchoProtocol::read(void *buf, size_t count, size_t timeout) {
         }
         return pos;
     }
-    throw std::runtime_error("connection broken");
+    throw EchoProtocol::ConnectionBroken;
 }
 
 void EchoProtocol::sendingThread(bool b) {
@@ -193,7 +193,7 @@ void EchoProtocol::receivingThread(bool b) {
                 }
                 status = PLEASE_ACK;
             }
-        } catch (std::runtime_error &e) {
+        } catch (EchoProtocol::ConnectionBroken &e) {
             qDebug() << e.what();
             closed = true;
             status = READY;

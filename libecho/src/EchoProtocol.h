@@ -2,15 +2,15 @@
 #define ECHOCONNECT_ECHOPROTOCOL_H
 
 #include "EchoRawConnection.h"
-#include "Packet.h"s
+#include "Packet.h"
 
-#include <mutex>
-#include <condition_variable>
-#include <thread>
 #include <atomic>
-#include <queue>
-#include <memory>
 #include <chrono>
+#include <condition_variable>
+#include <memory>
+#include <mutex>
+#include <queue>
+#include <thread>
 
 class EchoProtocol {
 public:

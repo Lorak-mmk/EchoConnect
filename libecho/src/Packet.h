@@ -121,7 +121,7 @@ public:
      * @throws OversizedData    Throws when given @p data size exceeds MAX_DATA_SIZE.
      */
     void setData(const std::vector<uint8_t> &data);
-    
+
     class PacketException : public std::exception {};
 
     /**

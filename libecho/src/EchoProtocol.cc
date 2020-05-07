@@ -178,8 +178,8 @@ void EchoProtocol::receivingThread(bool b) {
                 qDebug() << "received demand resend";
             } else {
                 qDebug() << "ACK1:" << (int)p.isSet(Flag::ACK1) << "size:" << p.getSize()
-                         << "SYN:"<<(int)p.isSet(Flag::SYN)<< "DMD:"<<(int)p.isSet(Flag::DMD)
-                         << "FIN:"<<(int)p.isSet(Flag::FIN);
+                         << "SYN:" << (int)p.isSet(Flag::SYN) << "DMD:" <<(int)p.isSet(Flag::DMD)
+                         << "FIN:" << (int)p.isSet(Flag::FIN);
                 if (b) {
                     assert(p.isSet(Flag::SYN));
                     qDebug() << "received SYN";

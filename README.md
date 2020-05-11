@@ -33,7 +33,7 @@ To build on your own (instructions below) or for the newest commit on master at:
 https://codedocs.xyz/Lorak-mmk/EchoConnect/index.html
 
 ## Build:
-```shell script
+```shell-script
 git clone --recurse-submodules https://github.com/Lorak-mmk/EchoConnect.git
 cd EchoConnect
 mkdir -p build
@@ -47,20 +47,20 @@ GTEST_COLOR=1 make test CTEST_OUTPUT_ON_FAILURE=TRUE
 
 Output files:
 
-Library: build/libecho/*.so*
+Library: `build/libecho/*.so*`
 
-Tests: build/libecho/tests/libecho_tests
+Tests: `build/libecho/tests/libecho_tests`
 
 
 **Automatic documentation build requires Release build mode, i.e. cmake -DCMAKE_BUILD_TYPE=Release**
 
 
 Manual documentation build (in build/):
-```shell script
+```shell-script
 make doc_doxygen
 ```
 
-Documentation: build/libecho/docs/doc_doxygen
+Documentation files: `build/libecho/docs/doc_doxygen`
 
 ### Required libraries:
 - QT

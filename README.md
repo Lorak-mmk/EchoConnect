@@ -1,9 +1,6 @@
 ![Linux](https://github.com/Lorak-mmk/EchoConnect/workflows/Linux/badge.svg?branch=master)
-
 ![Windows](https://github.com/Lorak-mmk/EchoConnect/workflows/Windows/badge.svg?branch=master)
-
 ![MacOS](https://github.com/Lorak-mmk/EchoConnect/workflows/MacOS/badge.svg?branch=master)
-
 ![Linting](https://github.com/Lorak-mmk/EchoConnect/workflows/Linting/badge.svg?branch=master)
 
 

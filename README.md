@@ -1,4 +1,11 @@
-![CI Linux](https://github.com/Lorak-mmk/EchoConnect/workflows/CI%20Linux/badge.svg)
+![Build and test - Linux](https://github.com/Lorak-mmk/EchoConnect/workflows/Build%20and%20test%20-%20Linux/badge.svg?branch=master)
+
+![Build - Windows](https://github.com/Lorak-mmk/EchoConnect/workflows/Build%20-%20Windows/badge.svg?branch=master)
+
+![Build and test - MacOS](https://github.com/Lorak-mmk/EchoConnect/workflows/Build%20and%20test%20-%20MacOS/badge.svg?branch=master)
+
+![Formatting and linting](https://github.com/Lorak-mmk/EchoConnect/workflows/Formatting%20and%20linting/badge.svg?branch=master)
+
 
 # EchoConnect
 

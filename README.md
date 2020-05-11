@@ -1,10 +1,10 @@
-![Build and test - Linux](https://github.com/Lorak-mmk/EchoConnect/workflows/Build%20and%20test%20-%20Linux/badge.svg?branch=master)
+![Linux](https://github.com/Lorak-mmk/EchoConnect/workflows/Linux/badge.svg?branch=master)
 
-![Build - Windows](https://github.com/Lorak-mmk/EchoConnect/workflows/Build%20-%20Windows/badge.svg?branch=master)
+![Windows](https://github.com/Lorak-mmk/EchoConnect/workflows/Windows/badge.svg?branch=master)
 
-![Build and test - MacOS](https://github.com/Lorak-mmk/EchoConnect/workflows/Build%20and%20test%20-%20MacOS/badge.svg?branch=master)
+![MacOS](https://github.com/Lorak-mmk/EchoConnect/workflows/MacOS/badge.svg?branch=master)
 
-![Formatting and linting](https://github.com/Lorak-mmk/EchoConnect/workflows/Formatting%20and%20linting/badge.svg?branch=master)
+![Linting](https://github.com/Lorak-mmk/EchoConnect/workflows/Linting/badge.svg?branch=master)
 
 
 # EchoConnect
@@ -13,7 +13,7 @@ The project will ultimately enable easy communication between computers that do 
 
 ### Use cases:
 -   People with defective/poor computer set
--   Hobbysts and curious people
+-   Hobbyists and curious people
 
 ### Functionalities:
 -   Data transmission by sound

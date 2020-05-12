@@ -16,3 +16,4 @@ set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 enable_testing()
 
 add_subdirectory(libecho)
+add_subdirectory(DemoApp)

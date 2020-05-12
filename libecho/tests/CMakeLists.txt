@@ -32,6 +32,10 @@ include_directories("../src")
 include_directories("../external/CRCpp/inc")
 
 add_executable(${EXEC_NAME} ${TEST_FILES})
+add_test(NAME ${EXEC_NAME} COMMAND ${EXEC_NAME})
+
+target_link_libraries(${EXEC_NAME} PRIVATE echo gtest gtest_main)
+
 add_executable(sendrecv sendrecv.cpp)
 add_executable(info info.cpp)
 add_executable(wave wave.cpp)
@@ -42,13 +46,10 @@ add_executable(dft dft.cpp)
 add_executable(protocol_send protocol_send.cc)
 add_executable(protocol_recv protocol_recv.cc)
 
-target_link_libraries(${EXEC_NAME} echo gtest gtest_main)
-target_link_libraries(sendrecv echo)
-
-add_test(NAME ${EXEC_NAME} COMMAND ${EXEC_NAME})
 
 
-target_link_libraries(${EXEC_NAME} echo ${GTEST_BOTH_LIBRARIES})
+
+
 target_link_libraries(sendrecv echo)
 target_link_libraries(info echo)
 target_link_libraries(wave echo)

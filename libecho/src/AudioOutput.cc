@@ -9,7 +9,7 @@ AudioOutput::AudioOutput(const QAudioFormat &format) : AudioStream(format) {
 }
 
 void AudioOutput::enqueueData(const char *data, int length) {
-    qDebug() << "Queueing" << length << "bytes to play";
+    //qDebug() << "Queueing" << length << "bytes to play";
     std::lock_guard<std::mutex> lock(mutex);
     buffer.append(data, length);
     tryWriteData();

@@ -69,7 +69,7 @@ target_include_directories(echo PRIVATE external/CRCpp/inc)
 
 target_link_libraries(echo PUBLIC Qt5::Multimedia)
 if(WIN32)
-    target_link_libraries(echo PRIVATE ws2_32)
+    target_link_libraries(echo PUBLIC ws2_32)
 endif()
 
 

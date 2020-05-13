@@ -11,7 +11,7 @@ endif ()
 
 if (CMAKE_BUILD_TYPE MATCHES "^[Rr]elease")
     if (MSVC)
-        add_compile_options(/W3 /DQT_NO_DEBUG_OUTPUT /DQT_NO_INFO_OUTPUT)
+        add_compile_options(/DQT_NO_DEBUG_OUTPUT /DQT_NO_INFO_OUTPUT)
     else()
         add_compile_options(-DQT_NO_DEBUG_OUTPUT -DQT_NO_INFO_OUTPUT)
     endif()
@@ -67,9 +67,9 @@ set_target_properties(echo PROPERTIES WINDOWS_EXPORT_ALL_SYMBOLS 1)
 target_include_directories(echo PRIVATE ${SRC_DIR})
 target_include_directories(echo PRIVATE external/CRCpp/inc)
 
-target_link_libraries(echo Qt5::Multimedia)
+target_link_libraries(echo PUBLIC Qt5::Multimedia)
 if(WIN32)
-    target_link_libraries(echo ws2_32)
+    target_link_libraries(echo PUBLIC ws2_32)
 endif()
 
 

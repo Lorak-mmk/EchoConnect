@@ -1,5 +1,8 @@
 #include "Echo.h"
 
+#include <cstdio>
+#include <cstdlib>
+
 #define N 300
 
 using namespace std::chrono_literals;
@@ -12,10 +15,10 @@ int main(int argc, char **argv) {
 
     if (argc < 4) {
         printf(
-                "usage: sendrecv <win_size> <freq> <lim> [dbg]\n"
-                "The dbg parameter is for reporting parts of the waveform\n"
-                "that were received incorrectly. If you wish to enable it,\n"
-                "just put any text there.\n");
+            "usage: sendrecv <win_size> <freq> <lim> [dbg]\n"
+            "The dbg parameter is for reporting parts of the waveform\n"
+            "that were received incorrectly. If you wish to enable it,\n"
+            "just put any text there.\n");
         return 1;
     }
     int win_size = atoi(argv[1]);

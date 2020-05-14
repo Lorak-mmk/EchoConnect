@@ -20,8 +20,8 @@ public:
 
     static QAudioFormat getFormat();
 
-    int win_size;
-    int freq;
+    int win_size = 0;
+    int freq = 0;
     std::atomic<bool> playing = false;
     std::unique_ptr<AudioInput> input;
     std::unique_ptr<AudioOutput> output;

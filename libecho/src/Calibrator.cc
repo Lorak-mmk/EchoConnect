@@ -2,9 +2,9 @@
 #include <cmath>
 #include <thread>
 
-#define SAMPLE_RATE 44100
-#define RISE 0.1
-#define FALL 0.1
+static const int SAMPLE_RATE = 44100;
+static const double RISE = 0.1;
+static const double FALL = 0.1;
 
 // TODO: move these into a seperate file
 
@@ -56,7 +56,7 @@ static void play(Calibrator *cal) {
     bool sig = false;
     int size = 4410;
 
-    int16_t *buffer = new int16_t[size];
+    auto *buffer = new int16_t[size];
 
     cal->output->startStream();
 
@@ -65,12 +65,14 @@ static void play(Calibrator *cal) {
 
         if (sig) {
             a += RISE;
-            if (a >= 1.0)
+            if (a >= 1.0) {
                 a = 1.0;
+            }
         } else {
             a -= FALL;
-            if (a <= 0.0)
+            if (a <= 0.0) {
                 a = 0.0;
+            }
         }
 
         i++;
@@ -80,6 +82,7 @@ static void play(Calibrator *cal) {
         }
 
         if (i >= size) {
+        	// NOLINTNEXTLINE
             cal->output->enqueueData((char *)buffer, size);
             cal->output->waitForTick();
             i = 0;
@@ -102,11 +105,11 @@ void Calibrator::stopPlayback() {
 }
 
 double Calibrator::getLim(int skip_ms, int record_ms) {
-    int skip_windows = ((int64_t)SAMPLE_RATE * skip_ms) / (win_size * 1000);
-    int record_windows = ((int64_t)SAMPLE_RATE * record_ms) / (win_size * 1000);
+    int skip_windows = (SAMPLE_RATE * skip_ms) / (win_size * 1000);
+    int record_windows = (SAMPLE_RATE * record_ms) / (win_size * 1000);
 
-    int16_t *samples = new int16_t[win_size * (record_windows + 1)];
-    double *mags = new double[win_size * record_windows];
+    auto *samples = new int16_t[win_size * (record_windows + 1)];
+    auto *mags = new double[win_size * record_windows];
 
     input->startStream();
 
@@ -114,6 +117,7 @@ double Calibrator::getLim(int skip_ms, int record_ms) {
         int inc = 0;
         int bytes = win_size * 2;
         while (bytes > 0) {
+        	// NOLINTNEXTLINE
             int nread = input->readBytes((char *)samples + inc, bytes);
             inc += nread;
             bytes -= nread;
@@ -123,6 +127,7 @@ double Calibrator::getLim(int skip_ms, int record_ms) {
     int inc = 0;
     int bytes = win_size * (record_windows + 1) * 2;
     while (bytes > 0) {
+    	// NOLINTNEXTLINE
         int nread = input->readBytes((char *)samples + inc, bytes);
         inc += nread;
         bytes -= nread;

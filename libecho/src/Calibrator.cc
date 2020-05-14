@@ -1,6 +1,6 @@
 #include "Calibrator.h"
-#include <thread>
 #include <cmath>
+#include <thread>
 
 #define SAMPLE_RATE 44100
 #define RISE 0.1
@@ -38,15 +38,15 @@ static void dft_slide(const int16_t *buffer, int win_size, double ratio, double 
 }
 
 Calibrator *Calibrator::getCalibrator(int win_size, int freq) {
-	auto *cal = new Calibrator;
-	auto fmt = getFormat();
+    auto *cal = new Calibrator;
+    auto fmt = getFormat();
 
-	cal->win_size = win_size;
-	cal->freq = freq;
-	cal->input = std::make_unique<AudioInput>(fmt);
-	cal->output = std::make_unique<AudioOutput>(fmt);
+    cal->win_size = win_size;
+    cal->freq = freq;
+    cal->input = std::make_unique<AudioInput>(fmt);
+    cal->output = std::make_unique<AudioOutput>(fmt);
 
-	return cal;
+    return cal;
 }
 
 static void play(Calibrator *cal) {
@@ -85,25 +85,25 @@ static void play(Calibrator *cal) {
             i = 0;
         }
     }
-    
+
     cal->output->stopStream();
 
     delete[] buffer;
 }
 
 void Calibrator::startPlayback() {
-	playing = true;
-	std::thread thr(play, this);
-	thr.detach();
+    playing = true;
+    std::thread thr(play, this);
+    thr.detach();
 }
 
 void Calibrator::stopPlayback() {
-	playing = false;
+    playing = false;
 }
 
 double Calibrator::getLim(int skip_ms, int record_ms) {
-	int skip_windows = ((int64_t) SAMPLE_RATE * skip_ms) / (win_size * 1000);
-	int record_windows = ((int64_t) SAMPLE_RATE * record_ms) / (win_size * 1000);
+    int skip_windows = ((int64_t)SAMPLE_RATE * skip_ms) / (win_size * 1000);
+    int record_windows = ((int64_t)SAMPLE_RATE * record_ms) / (win_size * 1000);
 
     int16_t *samples = new int16_t[win_size * (record_windows + 1)];
     double *mags = new double[win_size * record_windows];
@@ -127,10 +127,10 @@ double Calibrator::getLim(int skip_ms, int record_ms) {
         inc += nread;
         bytes -= nread;
     }
-    
+
     input->stopStream();
 
-    dft_slide(samples, win_size, (double) freq / SAMPLE_RATE, mags, win_size * record_windows);
+    dft_slide(samples, win_size, (double)freq / SAMPLE_RATE, mags, win_size * record_windows);
     std::sort(mags, mags + (win_size * record_windows));
     double lim = mags[win_size * record_windows / 2];
 
@@ -141,9 +141,9 @@ double Calibrator::getLim(int skip_ms, int record_ms) {
 }
 
 QAudioFormat Calibrator::getFormat() {
-	QAudioFormat fmt;
-	fmt.setByteOrder(QAudioFormat::LittleEndian);
-	fmt.setChannelCount(1);
+    QAudioFormat fmt;
+    fmt.setByteOrder(QAudioFormat::LittleEndian);
+    fmt.setChannelCount(1);
     fmt.setCodec("audio/pcm");
     fmt.setSampleRate(SAMPLE_RATE);
     fmt.setSampleSize(16);

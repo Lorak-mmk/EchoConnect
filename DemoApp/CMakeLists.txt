@@ -27,6 +27,8 @@ set(SRC_FILES
         ${SRC_DIR}/Menu.cc
         ${SRC_DIR}/Utils.h
         ${SRC_DIR}/Utils.cc
+        ${SRC_DIR}/SendText.h
+        ${SRC_DIR}/SendText.cc
         ${SRC_DIR}/main.cc)
 
 add_executable(${EXEC_NAME} "${SRC_FILES}")

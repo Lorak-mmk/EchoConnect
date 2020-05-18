@@ -1,17 +1,11 @@
 #ifndef DEMOAPP_MENU_H
 #define DEMOAPP_MENU_H
 
-#include "IView.h"
+#include "AView.h"
 
-class Menu : public IView {
+class Menu : public AView {
 public:
-    Menu(std::string name) : IView(name) {}
-
-    // 	Menu(const Menu &other) = delete;
-    // 	Menu(Menu &&other) = default;
-    // 	Menu &operator=(const Menu &other) = delete;
-    // 	Menu &operator=(Menu &&other) = default;
-    // 	virtual ~Menu() = default;
+    Menu(std::string name, std::string title) : AView(name, title) {}
 
     ViewPtr execute() override;
 };

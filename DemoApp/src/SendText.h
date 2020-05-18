@@ -1,20 +1,15 @@
 #ifndef DEMOAPP_SENDTEXT_H
 #define DEMOAPP_SENDTEXT_H
 
-#include "IAction.h"
+#include "AAction.h"
 
-class SendText : public IAction {
+class SendText : public AAction {
 public:
-    SendText(std::string name) : IAction(name) {
+    SendText(std::string name, std::string title) : AAction(name, title) {
         arguments.emplace_back(Argument("sendFreq", 13000));
         arguments.emplace_back(Argument("recvFreq", 14000));
         arguments.emplace_back(Argument("winSize", 50));
     }
-
-    // 	SendText(const SendText &other) = delete;
-    // 	SendText(SendText &&other) = default;
-    // 	SendText &operator=(const SendText &other) = delete;
-    // 	SendText &operator=(SendText &&other) = default;
 
 protected:
     void setDefaults() override;

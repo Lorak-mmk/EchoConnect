@@ -2,11 +2,6 @@
 #define DEMOAPP_CONFIG_H
 
 #include <string>
-#include <vector>
-
-#include "Argument.h"
-#include "IView.h"
-
 #include <nlohmann/json_fwd.hpp>
 
 class Config {

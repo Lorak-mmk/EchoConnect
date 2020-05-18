@@ -1,8 +1,11 @@
-#include "IAction.h"
+#include "AAction.h"
 #include "Utils.h"
 
-ViewPtr IAction::execute() {
+ViewPtr AAction::execute() {
+    Utils::clear();
+    Utils::printTitle(title);
     setDefaults();
+
     if (!Utils::readArguments(arguments)) {
         return parent;
     }

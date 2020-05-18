@@ -1,5 +1,6 @@
 #include "Menu.h"
 #include "SendText.h"
+#include "Config.h"
 
 #include <memory>
 
@@ -17,6 +18,8 @@ int main() {
     sendText->setParent(sendMenu);
 
     ViewPtr currentView = mainMenu;
+
+    Config *config = getMainConfig();
 
     for (;;) {
         currentView = currentView->execute();

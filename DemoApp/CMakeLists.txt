@@ -11,10 +11,17 @@ if (CMAKE_VERSION VERSION_LESS "3.7.0")
     set(CMAKE_INCLUDE_CURRENT_DIR ON)
 endif ()
 
+include(FetchContent)
 
-if (CMAKE_VERSION VERSION_LESS "3.7.0")
-    set(CMAKE_INCLUDE_CURRENT_DIR ON)
-endif ()
+FetchContent_Declare(json
+        GIT_REPOSITORY https://github.com/ArthurSonzogni/nlohmann_json_cmake_fetchcontent
+        GIT_TAG v3.7.3)
+
+FetchContent_GetProperties(json)
+if(NOT json_POPULATED)
+    FetchContent_Populate(json)
+    add_subdirectory(${json_SOURCE_DIR} ${json_BINARY_DIR} EXCLUDE_FROM_ALL)
+endif()
 
 set(SRC_DIR "src" CACHE PATH "Source files path")
 set(SRC_FILES
@@ -29,6 +36,9 @@ set(SRC_FILES
         ${SRC_DIR}/Utils.cc
         ${SRC_DIR}/SendText.h
         ${SRC_DIR}/SendText.cc
+        ${SRC_DIR}/Config.cc
+        ${SRC_DIR}/SendFile.cc
+        ${SRC_DIR}/SendFile.h
         ${SRC_DIR}/main.cc)
 
 add_executable(${EXEC_NAME} "${SRC_FILES}")
@@ -40,3 +50,4 @@ target_include_directories(${EXEC_NAME} PRIVATE ${SRC_DIR})
 target_include_directories(${EXEC_NAME} PRIVATE ${CMAKE_SOURCE_DIR}/libecho/include)
 
 target_link_libraries(${EXEC_NAME} PRIVATE echo)
+target_link_libraries(${EXEC_NAME} PRIVATE nlohmann_json::nlohmann_json)

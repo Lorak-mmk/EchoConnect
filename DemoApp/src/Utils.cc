@@ -1,9 +1,40 @@
 #include <iostream>
+#include <limits>
 
 #include "Utils.h"
 
 void Utils::clear() {
-    std::cout << "\033c";
+    std::cout << clearScreen();
+}
+
+void Utils::printTitle(std::string title) {
+    std::cout << "\n\t" << setFormatting({ConsoleFormat::BOLD, ConsoleFormat::T_GREEN}) << title << clearFormatting()
+              << "\n\n";
+}
+
+void Utils::invalidValue(std::string info) {
+    std::cout << setFormatting({ConsoleFormat::T_RED}) << info << clearFormatting();
+    waitForEnter();
+}
+
+void Utils::waitForEnter() {
+    std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+}
+
+// std::vector<std::string> splitString(const string &s, char delim) {
+//     std::vector<std::string> result;
+//     std::stringstream ss(s);
+//     std::string item;
+//
+//     while (getline(ss, item, delim)) {
+//         result.push_back(item);
+//     }
+//
+//     return result;
+// }
+
+void Utils::printWrapped(const std::string &s) {
+    // 	std::vector<std::string> words = splitString(s, ' ');
 }
 
 void printArgument(const Argument &a) {
@@ -40,8 +71,8 @@ void printArgument(const Argument &a) {
 }
 
 void readArgumentValue(Argument &a) {
-    int v;
-    double d;
+    int v = 0;
+    double d = 0;
     std::string s;
 
     // TODO: ogarnąć żeby się nie wywalało, jak ktoś podaje np. stringa zamiast inta.
@@ -96,10 +127,14 @@ void changeArgument(Argument &a) {
 }
 
 bool Utils::readArguments(std::vector<Argument> &arguments) {
+    if (arguments.empty()) {
+        return true;
+    }
+
     bool allSpecified = true;
 
     for (;;) {
-        Utils::clear();
+        std::cout << setCursor(4, 0) << clearLinesBelow();
         allSpecified = true;
 
         std::cout << "You need to specify following arguments:\n";
@@ -113,10 +148,12 @@ bool Utils::readArguments(std::vector<Argument> &arguments) {
 
         if (option == 0) {
             return false;
-        } else if (allSpecified && (option == arguments.size() + 1)) {
-            return true;
-        } else {
-            changeArgument(arguments[option - 1]);
         }
+
+        if (allSpecified && (option == arguments.size() + 1)) {
+            return true;
+        }
+
+        changeArgument(arguments[option - 1]);
     }
 }

@@ -32,8 +32,7 @@ public:
      */
 
     static EchoRawConnection *getBitEchoRawConnection(int win_size, int send_lo_freq, int send_hi_freq,
-                                                      int recv_lo_freq, int recv_hi_freq, int left_lim,
-                                                      int right_lim);
+                                                      int recv_lo_freq, int recv_hi_freq, int left_lim, int right_lim);
 
     static EchoRawConnection *getBitEchoRawConnectionv2(int win_size, int send_freq, int recv_freq, int lim);
 

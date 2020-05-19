@@ -49,7 +49,7 @@ static void play(Calibrator *cal) {
         }
 
         if (i >= size) {
-            // NOLINTNEXTLINE
+            // NOLINTNEXTLINE(cppcoreguidelines-pro-type-cstyle-cast)
             cal->output->enqueueData((char *)buffer, size);
             cal->output->waitForTick();
             i = 0;
@@ -84,7 +84,7 @@ double Calibrator::getLim(int skip_ms, int record_ms) {
         int inc = 0;
         int bytes = win_size * 2;
         while (bytes > 0) {
-            // NOLINTNEXTLINE
+            // NOLINTNEXTLINE(cppcoreguidelines-pro-type-cstyle-cast)
             int nread = input->readBytes((char *)samples + inc, bytes);
             inc += nread;
             bytes -= nread;
@@ -94,7 +94,7 @@ double Calibrator::getLim(int skip_ms, int record_ms) {
     int inc = 0;
     int bytes = win_size * (record_windows + 1) * 2;
     while (bytes > 0) {
-        // NOLINTNEXTLINE
+        // NOLINTNEXTLINE(cppcoreguidelines-pro-type-cstyle-cast)
         int nread = input->readBytes((char *)samples + inc, bytes);
         inc += nread;
         bytes -= nread;

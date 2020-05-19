@@ -48,6 +48,7 @@ set(SRC_FILES
         ${SRC_DIR}/BitReceiverv2.h
         ${SRC_DIR}/Packet.h
         ${SRC_DIR}/Packet.cc
+        ${SRC_DIR}/Math.cc
         ${SRC_DIR}/HammingCode.h
         ${SRC_DIR}/HammingCode.cc
         ${SRC_DIR}/Typename.h)

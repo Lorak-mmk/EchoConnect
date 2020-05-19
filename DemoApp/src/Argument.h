@@ -1,29 +1,59 @@
 #ifndef DEMOAPP_ARGUMENT_H
 #define DEMOAPP_ARGUMENT_H
 
+#include <iostream>
 #include <variant>
+
+#include "Console.h"
 
 enum ArgumentType { INTEGER, DOUBLE, STRING };
 
 typedef struct Argument {
-    ArgumentType type;
     std::string name;
+    std::string title;
+    ArgumentType type;
     bool valueSet;
     std::variant<std::string, int, double> value;
 
-    Argument(std::string n, int v) : name(n), value(v) {
-        type = ArgumentType::INTEGER;
+    Argument(std::string name, std::string title, ArgumentType type) : name(name), title(title), type(type) {
         valueSet = false;
     }
 
-    Argument(std::string n, double v) : name(n), value(v) {
-        type = ArgumentType::DOUBLE;
-        valueSet = false;
-    }
+    void print() const {
+        switch (type) {
+            case INTEGER:
+                std::cout << setFormatting({ConsoleFormat::BOLD}) << " " << title << clearFormatting() << " - integer: ";
+                if (valueSet) {
+                    std::cout << setFormatting({ConsoleFormat::T_BLUE}) << std::get<int>(value) << "\n"
+                              << clearFormatting();
+                } else {
+                    std::cout << setFormatting({ConsoleFormat::T_RED}) << "not specified\n" << clearFormatting();
+                }
+                break;
 
-    Argument(std::string n, std::string v) : name(n), value(v) {
-        type = ArgumentType::STRING;
-        valueSet = false;
+            case DOUBLE:
+                std::cout << setFormatting({ConsoleFormat::BOLD}) << " " << title << clearFormatting()
+                          << " - floating point number: ";
+                if (valueSet) {
+                    std::cout << setFormatting({ConsoleFormat::T_BLUE}) << std::get<double>(value) << "\n"
+                              << clearFormatting();
+                } else {
+                    std::cout << setFormatting({ConsoleFormat::T_RED}) << " not specified\n" << clearFormatting();
+                }
+                break;
+
+            case STRING:
+                std::cout << setFormatting({ConsoleFormat::BOLD}) << " " << title << clearFormatting() << " - string: ";
+                if (valueSet) {
+                    std::cout << setFormatting({ConsoleFormat::T_BLUE}) << std::get<std::string>(value) << "\n"
+                              << clearFormatting();
+                } else {
+                    std::cout << setFormatting({ConsoleFormat::T_RED}) << " not specified\n" << clearFormatting();
+                }
+                break;
+            default:
+                break;
+        }
     }
 
 } Argument;

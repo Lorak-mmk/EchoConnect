@@ -4,10 +4,6 @@
 #include "Menu.h"
 #include "Utils.h"
 
-void printOption(int nr, std::string name) {
-    std::cout << "\t" << nr << ". " << name << "\n";
-}
-
 ViewPtr Menu::execute() {
     Utils::clear();
 
@@ -15,16 +11,16 @@ ViewPtr Menu::execute() {
 
     size_t i = 1;
     for (const ViewPtr &childPtr : children) {
-        printOption(i, childPtr->getTitle());
+        Utils::printOption(i, childPtr->getTitle());
         i++;
     }
 
-    printOption(0, "Previous view");
+    Utils::printOption(0, "Previous view");
 
-    std::string prompt = setFormatting({ConsoleFormat::T_YELLOW}) + "\n\tGo to: " + clearFormatting();
+    std::string prompt = setFormatting({ConsoleFormat::T_YELLOW}) + " Go to: " + clearFormatting();
 
     while ((i = Utils::readValue<size_t>(prompt)) > children.size()) {
-        Utils::invalidValue("\tNot a valid option, press enter to continue...");
+        Utils::invalidValue(" Not a valid option, press enter to continue...");
         std::cout << cursorUp(3) << clearLinesBelow();
     }
 

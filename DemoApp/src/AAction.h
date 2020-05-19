@@ -17,7 +17,7 @@ public:
 
 protected:
     std::vector<Argument> arguments;
-    virtual void setDefaults() = 0;
+    virtual void setDefaults();
     virtual ViewPtr runAction() = 0;
 };
 

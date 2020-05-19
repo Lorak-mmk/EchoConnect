@@ -11,25 +11,25 @@
 class Utils {
 public:
     static void clear();
-    static void printTitle(std::string title);
-    static void printWrapped(const std::string &s);
+    static void printTitle(const std::string &title);
+    static void printOption(size_t nr, const std::string &name);
 
     template <typename T>
     static T readValue(const std::string &prompt) {
         T v;
-        std::cout << prompt;
+        std::cout << "\n" << prompt;
         std::cin >> v;
         while (std::cin.fail()) {
             std::cin.clear();
             std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
-            invalidValue("\tPlease specify a valid value, press enter to continue...");
-            std::cout << cursorUp(3) << clearLinesBelow() << prompt;
+            invalidValue(" Please specify a valid value, press enter to continue...");
+            std::cout << cursorUp(2) << clearLinesBelow() << prompt;
             std::cin >> v;
         }
         std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
         return v;
     }
-    static void invalidValue(std::string info);
+    static void invalidValue(const std::string &info);
     static void waitForEnter();
     static bool readArguments(std::vector<Argument> &arguments);
 };

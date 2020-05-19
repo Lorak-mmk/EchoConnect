@@ -12,6 +12,9 @@ using ViewPtr = std::shared_ptr<AView>;
 class AView {
 public:
     AView(std::string name, std::string title) : name(name), title(title) {}
+
+    virtual ~AView() = default;
+
     void addChild(const ViewPtr &child);
     void setParent(const ViewPtr &parent);
     ViewPtr getChild(const std::string &childName);

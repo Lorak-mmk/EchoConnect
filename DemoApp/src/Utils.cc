@@ -7,12 +7,16 @@ void Utils::clear() {
     std::cout << clearScreen();
 }
 
-void Utils::printTitle(std::string title) {
-    std::cout << "\n\t" << setFormatting({ConsoleFormat::BOLD, ConsoleFormat::T_GREEN}) << title << clearFormatting()
-              << "\n\n";
+void Utils::printTitle(const std::string &title) {
+    std::cout << setFormatting({ConsoleFormat::BOLD, ConsoleFormat::T_GREEN}) << "\n " << title << "\n\n"
+              << clearFormatting();
 }
 
-void Utils::invalidValue(std::string info) {
+void Utils::printOption(size_t nr, const std::string &name) {
+    std::cout << " " << nr << ". " << name << "\n";
+}
+
+void Utils::invalidValue(const std::string &info) {
     std::cout << setFormatting({ConsoleFormat::T_RED}) << info << clearFormatting();
     waitForEnter();
 }
@@ -21,109 +25,53 @@ void Utils::waitForEnter() {
     std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
 }
 
-// std::vector<std::string> splitString(const string &s, char delim) {
-//     std::vector<std::string> result;
-//     std::stringstream ss(s);
-//     std::string item;
-//
-//     while (getline(ss, item, delim)) {
-//         result.push_back(item);
-//     }
-//
-//     return result;
-// }
+size_t printChooseArgumentsOptions(const std::vector<Argument> &arguments, bool allSpecified) {
+    size_t biggestOption = arguments.size();
 
-void Utils::printWrapped(const std::string &s) {
-    // 	std::vector<std::string> words = splitString(s, ' ');
-}
-
-void printArgument(const Argument &a) {
-    switch (a.type) {
-        case INTEGER:
-            std::cout << "integer: " << a.name;
-            if (a.valueSet) {
-                std::cout << " = " << std::get<int>(a.value);
-            }
-
-            std::cout << "\n";
-            break;
-        case DOUBLE:
-            std::cout << "floating point number: " << a.name;
-
-            if (a.valueSet) {
-                std::cout << " = " << std::get<double>(a.value);
-            }
-
-            std::cout << "\n";
-            break;
-        case STRING:
-            std::cout << "string: " << a.name;
-
-            if (a.valueSet) {
-                std::cout << " = " << std::get<std::string>(a.value);
-            }
-
-            std::cout << "\n";
-            break;
-        default:
-            break;
+    size_t i = 1;
+    for (const Argument &a : arguments) {
+        Utils::printOption(i, "Change " + a.name);
+        i++;
     }
+
+    if (allSpecified) {
+        Utils::printOption(arguments.size() + 1, "Run");
+        biggestOption++;
+    }
+
+    Utils::printOption(0, "Go back");
+
+    std::string prompt = setFormatting({ConsoleFormat::T_YELLOW}) + " Choose: " + clearFormatting();
+
+    while ((i = Utils::readValue<size_t>(prompt)) > biggestOption) {
+        Utils::invalidValue(" Not a valid option, press enter to continue...");
+        std::cout << cursorUp(3) << clearLinesBelow();
+    }
+
+    return i;
 }
 
-void readArgumentValue(Argument &a) {
-    int v = 0;
-    double d = 0;
-    std::string s;
+void changeArgument(Argument &a) {
+    std::cout << setCursor(4, 0) << clearLinesBelow();
+    a.print();
 
-    // TODO: ogarnąć żeby się nie wywalało, jak ktoś podaje np. stringa zamiast inta.
+    std::string prompt = setFormatting({ConsoleFormat::T_YELLOW}) + " Enter new value: " + clearFormatting();
 
     switch (a.type) {
         case INTEGER:
-            std::cin >> v;
-            a.value = v;
+            a.value = Utils::readValue<int>(prompt);
             break;
         case DOUBLE:
-            std::cin >> d;
-            a.value = d;
+            a.value = Utils::readValue<double>(prompt);
             break;
         case STRING:
-            std::cin >> s;
-            a.value = s;
+            a.value = Utils::readValue<std::string>(prompt);
             break;
         default:
             break;
     }
 
     a.valueSet = true;
-}
-
-size_t printChooseArgumentsOptions(const std::vector<Argument> &arguments, bool allSpecified) {
-    std::cout << "Choose what you want to do:\n";
-    std::cout << "0. Return to the previous view\n";
-
-    size_t i = 1;
-    for (const Argument &a : arguments) {
-        std::cout << i << ". Change " << a.name << "\n";
-        i++;
-    }
-
-    if (allSpecified) {
-        std::cout << arguments.size() + 1 << ". Run\n";
-    }
-
-    std::cin >> i;
-
-    return i;
-}
-
-void changeArgument(Argument &a) {
-    Utils::clear();
-
-    std::cout << "Current value:\n";
-    printArgument(a);
-
-    std::cout << "Enter new value: \n";
-    readArgumentValue(a);
 }
 
 bool Utils::readArguments(std::vector<Argument> &arguments) {
@@ -137,20 +85,22 @@ bool Utils::readArguments(std::vector<Argument> &arguments) {
         std::cout << setCursor(4, 0) << clearLinesBelow();
         allSpecified = true;
 
-        std::cout << "You need to specify following arguments:\n";
+        std::cout << setFormatting({ConsoleFormat::T_BLUE}) << " You may specify following arguments:\n\n"
+                  << clearFormatting();
 
         for (const Argument &a : arguments) {
             allSpecified &= a.valueSet;
-            printArgument(a);
+            a.print();
         }
 
+        std::cout << "\n\n";
         size_t option = printChooseArgumentsOptions(arguments, allSpecified);
 
         if (option == 0) {
             return false;
         }
 
-        if (allSpecified && (option == arguments.size() + 1)) {
+        if (option == arguments.size() + 1) {
             return true;
         }
 

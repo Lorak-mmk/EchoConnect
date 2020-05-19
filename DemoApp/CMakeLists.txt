@@ -27,8 +27,12 @@ set(SRC_FILES
         ${SRC_DIR}/Utils.cc
         ${SRC_DIR}/Help.h
         ${SRC_DIR}/Help.cc
+        ${SRC_DIR}/Settings.h
+        ${SRC_DIR}/Settings.cc
         ${SRC_DIR}/SendText.h
         ${SRC_DIR}/SendText.cc
+        ${SRC_DIR}/ReceiveText.h
+        ${SRC_DIR}/ReceiveText.cc
         ${SRC_DIR}/Config.cc
         ${SRC_DIR}/SendFile.cc
         ${SRC_DIR}/SendFile.h

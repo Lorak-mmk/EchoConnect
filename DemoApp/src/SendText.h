@@ -6,13 +6,12 @@
 class SendText : public AAction {
 public:
     SendText(std::string name, std::string title) : AAction(name, title) {
-        arguments.emplace_back(Argument("sending sound frequency", ArgumentType::INTEGER));
-        arguments.emplace_back(Argument("receiving sound frequency", ArgumentType::INTEGER));
-        arguments.emplace_back(Argument("sound window size", ArgumentType::INTEGER));
+        arguments.emplace_back(Argument("sendFreq", "sending sound frequency", ArgumentType::INTEGER));
+        arguments.emplace_back(Argument("recvFreq", "receiving sound frequency", ArgumentType::INTEGER));
+        arguments.emplace_back(Argument("winSize", "sound window size", ArgumentType::INTEGER));
     }
 
 protected:
-    void setDefaults() override;
     ViewPtr runAction() override;
 };
 

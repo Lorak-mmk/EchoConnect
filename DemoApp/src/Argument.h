@@ -10,18 +10,19 @@ enum ArgumentType { INTEGER, DOUBLE, STRING };
 
 typedef struct Argument {
     std::string name;
+    std::string title;
     ArgumentType type;
     bool valueSet;
     std::variant<std::string, int, double> value;
 
-    Argument(std::string n, ArgumentType t) : name(n), type(t) {
+    Argument(std::string name, std::string title, ArgumentType type) : name(name), title(title), type(type) {
         valueSet = false;
     }
 
     void print() const {
         switch (type) {
             case INTEGER:
-                std::cout << setFormatting({ConsoleFormat::BOLD}) << " " << name << clearFormatting() << " - integer: ";
+                std::cout << setFormatting({ConsoleFormat::BOLD}) << " " << title << clearFormatting() << " - integer: ";
                 if (valueSet) {
                     std::cout << setFormatting({ConsoleFormat::T_BLUE}) << std::get<int>(value) << "\n"
                               << clearFormatting();
@@ -31,7 +32,7 @@ typedef struct Argument {
                 break;
 
             case DOUBLE:
-                std::cout << setFormatting({ConsoleFormat::BOLD}) << " " << name << clearFormatting()
+                std::cout << setFormatting({ConsoleFormat::BOLD}) << " " << title << clearFormatting()
                           << " - floating point number: ";
                 if (valueSet) {
                     std::cout << setFormatting({ConsoleFormat::T_BLUE}) << std::get<double>(value) << "\n"
@@ -42,7 +43,7 @@ typedef struct Argument {
                 break;
 
             case STRING:
-                std::cout << setFormatting({ConsoleFormat::BOLD}) << " " << name << clearFormatting() << " - string: ";
+                std::cout << setFormatting({ConsoleFormat::BOLD}) << " " << title << clearFormatting() << " - string: ";
                 if (valueSet) {
                     std::cout << setFormatting({ConsoleFormat::T_BLUE}) << std::get<std::string>(value) << "\n"
                               << clearFormatting();

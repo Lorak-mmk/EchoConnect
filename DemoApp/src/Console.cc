@@ -14,7 +14,7 @@ size_t getConsoleWidth() {
     GetConsoleScreenBufferInfo(GetStdHandle(STD_OUTPUT_HANDLE), &sbInfo);
     return sbInfo.dwSize.X;
 #elif defined __unix__
-    struct winsize size;
+    struct winsize size{};
     ioctl(STDOUT_FILENO, TIOCGWINSZ, &size);
     return size.ws_col;
 #endif
@@ -26,7 +26,7 @@ size_t getConsoleHeight() {
     GetConsoleScreenBufferInfo(GetStdHandle(STD_OUTPUT_HANDLE), &sbInfo);
     return sbInfo.dwSize.Y;
 #elif defined __unix__
-    struct winsize size;
+    struct winsize size{};
     ioctl(STDOUT_FILENO, TIOCGWINSZ, &size);
     return size.ws_row;
 #endif

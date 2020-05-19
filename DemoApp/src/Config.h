@@ -6,6 +6,19 @@
 
 using json = nlohmann::json;
 
+namespace nlohmann {
+    template <typename T>
+    nlohmann::json &operator/(nlohmann::json &a, T b) {
+        return a.at(b);
+    }
+
+    template <typename T>
+    nlohmann::json &operator|(nlohmann::json &a, T b) {
+        return a[b];
+    }
+}
+
+
 class Config {
 public:
     Config();
@@ -41,16 +54,6 @@ private:
     std::string filename{};
     std::shared_ptr<nlohmann::json> cfg{};
 };
-
-template <typename T>
-nlohmann::json &operator/(nlohmann::json &a, T b) {
-    return a.at(b);
-}
-
-template <typename T>
-nlohmann::json &operator|(nlohmann::json &a, T b) {
-    return a[b];
-}
 
 Config *getMainConfig();
 

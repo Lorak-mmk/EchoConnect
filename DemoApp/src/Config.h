@@ -2,7 +2,9 @@
 #define DEMOAPP_CONFIG_H
 
 #include <string>
-#include <nlohmann/json_fwd.hpp>
+#include <nlohmann/json.hpp>
+
+using json = nlohmann::json;
 
 class Config {
 public:
@@ -18,10 +20,37 @@ public:
     int getLimFor(int recvFreq, int winSize);
     void setLimFor(int recvFreq, int winSize, int lim, bool save = true);
 
+    template<class T, typename... S>
+    T getValue(T def, S ... path) {
+        try {
+            return (this->config() / ... / path).template get<T>( );
+        } catch (const nlohmann::json::type_error& e) {
+            return def;
+        } catch (const nlohmann::json::out_of_range& e) {
+            return def;
+        }
+    }
+
+    template<typename T, typename... S>
+    void setValue(T value, S ... path) {
+        (this->config() | ... | path) = value;
+        this->save();
+    }
+
 private:
     std::string filename{};
     std::shared_ptr<nlohmann::json> cfg{};
 };
+
+template<typename T>
+nlohmann::json& operator/ (nlohmann::json& a, T b) {
+    return a.at(b);
+}
+
+template<typename T>
+nlohmann::json& operator| (nlohmann::json& a, T b) {
+    return a[b];
+}
 
 Config *getMainConfig();
 

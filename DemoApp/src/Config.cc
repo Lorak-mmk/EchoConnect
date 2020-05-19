@@ -58,9 +58,9 @@ void Config::setFile(const std::string &path) {
 int Config::getLimFor(int recvFreq, int winSize) {
     try {
         return this->config().at("lim").at(recvFreq).at(winSize).get<int>();
-    }catch(const nlohmann::json::type_error& e) {
+    } catch (const nlohmann::json::type_error& e) {
         return -1;
-    }catch(const nlohmann::json::out_of_range& e) {
+    } catch (const nlohmann::json::out_of_range& e) {
         return -1;
     }
 }

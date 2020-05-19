@@ -1,5 +1,8 @@
+#include <iostream>
 #include "Config.h"
 #include "views.h"
+
+using namespace std::string_literals;
 
 int main() {
     ViewPtr mainMenu = std::make_shared<Menu>("mainMenu", "Main Menu");

@@ -50,6 +50,8 @@ set_target_properties(echo
         PROPERTIES
         VERSION ${PROJECT_VERSION})
 
+target_precompile_headers(${EXEC_NAME} PRIVATE ${SRC_DIR}/Config.h)
+
 target_include_directories(${EXEC_NAME} PRIVATE ${SRC_DIR})
 target_include_directories(${EXEC_NAME} PRIVATE ${CMAKE_SOURCE_DIR}/libecho/include)
 

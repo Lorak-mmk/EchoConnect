@@ -54,4 +54,9 @@ nlohmann::json& operator| (nlohmann::json& a, T b) {
 
 Config *getMainConfig();
 
+const std::string sendFreqKey = "sendFreq";
+const std::string recvFreqKey = "recvFreq";
+const std::string winSizeKey = "winSize";
+
+
 #endif  // DEMOAPP_CONFIG_H

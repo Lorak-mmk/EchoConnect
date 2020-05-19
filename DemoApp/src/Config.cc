@@ -10,9 +10,9 @@ namespace {
     }
 
     nlohmann::json defaultCfg = {
-            {"sendFreq", 14000},
-            {"recvFreq", 16000},
-            {"winSize", 150},
+            {sendFreqKey, 14000},
+            {recvFreqKey, 16000},
+            {winSizeKey, 150},
             {"lim", {}},
     };
 }

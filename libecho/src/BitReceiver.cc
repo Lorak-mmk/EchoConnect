@@ -1,7 +1,7 @@
 #include "BitReceiver.h"
 #include <cmath>
-#include "Math.h"
 #include "HammingCode.h"
+#include "Math.h"
 
 static const int SAMPLE_RATE = 44100;
 static const int SAMPLE_SIZE = 16;
@@ -66,7 +66,7 @@ void BitReceiver::readSamples(int16_t *buffer, int len) {
 }
 
 int BitReceiver::stepShift(const double *buffer, int size) const {
-    double diff_min = 20 * win_size; // measured empirically
+    double diff_min = 20 * win_size;  // measured empirically
     int res = -1;
 
     double sum = 0;
@@ -132,7 +132,7 @@ void BitReceiver::start(std::chrono::duration<double> timeout) {
     }
     readSamples(sync_in.data() + (2 * win_size - shift), shift);
 
-	first_two_bits = 0;
+    first_two_bits = 0;
     first_two_bits += decodeBit(sync_in.data());
     first_two_bits += decodeBit(sync_in.data() + win_size) << 1;
 }
@@ -150,15 +150,14 @@ int BitReceiver::receive(uint8_t *buffer, int size) {
     std::vector<bool> bits;
     bits.resize(HammingCode::encodedLength(size));
 
-	if (first_two_bits == -1) {
-	    receiveBits(bits, 0);
-	}
-	else {
-	    bits[0] = first_two_bits & 1;
-	    bits[1] = first_two_bits & 2;
-	    receiveBits(bits, 2);
-	    first_two_bits = -1;
-	}
+    if (first_two_bits == -1) {
+        receiveBits(bits, 0);
+    } else {
+        bits[0] = first_two_bits & 1;
+        bits[1] = first_two_bits & 2;
+        receiveBits(bits, 2);
+        first_two_bits = -1;
+    }
     hamming.fixErrors(bits);
     std::vector<uint8_t> decoded = hamming.decode(bits);
     memcpy(buffer, decoded.data(), size);

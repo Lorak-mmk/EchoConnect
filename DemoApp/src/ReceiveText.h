@@ -1,11 +1,11 @@
-#ifndef DEMOAPP_SEND_TEXT_H
-#define DEMOAPP_SEND_TEXT_H
+#ifndef DEMOAPP_RECEIVE_TEXT_H
+#define DEMOAPP_RECEIVE_TEXT_H
 
 #include "AAction.h"
 
-class SendText : public AAction {
+class ReceiveText : public AAction {
 public:
-    SendText(std::string name, std::string title) : AAction(name, title) {
+    ReceiveText(std::string name, std::string title) : AAction(name, title) {
         arguments.emplace_back(Argument("sending sound frequency", ArgumentType::INTEGER));
         arguments.emplace_back(Argument("receiving sound frequency", ArgumentType::INTEGER));
         arguments.emplace_back(Argument("sound window size", ArgumentType::INTEGER));
@@ -16,4 +16,4 @@ protected:
     ViewPtr runAction() override;
 };
 
-#endif  // DEMOAPP_SEND_TEXT_H
+#endif  // DEMOAPP_RECEIVE_TEXT_H

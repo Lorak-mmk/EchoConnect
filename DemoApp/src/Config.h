@@ -10,12 +10,12 @@ class Config {
 public:
     Config();
 
-    explicit Config(const std::string& path);
+    explicit Config(const std::string &path);
 
-    void setFile(const std::string& path);
+    void setFile(const std::string &path);
     void load();
     void save();
-    nlohmann::json& config();
+    nlohmann::json &config();
 
     int getLimFor(int recvFreq, int winSize);
     void setLimFor(int recvFreq, int winSize, int lim, bool save = true);

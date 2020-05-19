@@ -1,8 +1,7 @@
 #include "Config.h"
-#include <nlohmann/json.hpp>
 #include <fstream>
 #include <iomanip>
-
+#include <nlohmann/json.hpp>
 
 namespace {
     std::string getDefaultConfigLocation() {
@@ -15,14 +14,13 @@ namespace {
             {winSizeKey, 150},
             {"lim", {}},
     };
-}
+}  // namespace
 
 Config::Config() {
     this->cfg = std::make_shared<nlohmann::json>();
 }
 
-
-Config::Config(const std::string& path) : Config() {
+Config::Config(const std::string &path) : Config() {
     this->setFile(path);
     this->load();
 }
@@ -33,11 +31,10 @@ void Config::load() {
     input.open(this->filename);
     try {
         input >> *this->cfg;
-    } catch(const nlohmann::detail::parse_error& ex) {
+    } catch (const nlohmann::detail::parse_error &ex) {
         *this->cfg = nlohmann::json();
         this->save();
     }
-
 }
 
 void Config::save() {
@@ -47,7 +44,7 @@ void Config::save() {
     output << std::setw(4) << *this->cfg << std::endl;
 }
 
-nlohmann::json& Config::config() {
+nlohmann::json &Config::config() {
     return *this->cfg;
 }
 
@@ -67,20 +64,18 @@ int Config::getLimFor(int recvFreq, int winSize) {
 
 void Config::setLimFor(int recvFreq, int winSize, int lim, bool save) {
     this->config()["lim"][recvFreq][winSize] = lim;
-    if(save) {
+    if (save) {
         this->save();
     }
 }
 
-
 Config *getMainConfig() {
     static std::string location = getDefaultConfigLocation();
     static Config config(location);
-    if(config.config().empty()) {
+    if (config.config().empty()) {
         config.config() = defaultCfg;
         config.save();
     }
 
     return &config;
 }
-

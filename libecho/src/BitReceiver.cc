@@ -103,6 +103,7 @@ void BitReceiver::start(std::chrono::duration<double> timeout) {
     int lo_shift = -1;
     int hi_shift = -1;
     int shift = -1;
+    auto start = std::chrono::system_clock::now();
 
     readSamples(sync_in.data(), win_size * 2);
 
@@ -122,6 +123,9 @@ void BitReceiver::start(std::chrono::duration<double> timeout) {
         }
         if (hi_shift != -1) {
             shift = hi_shift;
+        }
+        if (std::chrono::system_clock::now() - start > timeout) {
+            throw IReceiver::ConnectionBroken{};
         }
     } while (shift == -1);
 

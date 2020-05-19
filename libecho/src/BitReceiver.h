@@ -38,6 +38,7 @@ private:
     double hi_ratio = 0;
     int left_lim = 0;
     int right_lim = 0;
+    int first_two_bits = -1;
 };
 
 #endif

@@ -22,8 +22,6 @@ int main() {
 
     ViewPtr currentView = mainMenu;
 
-    Config *config = getMainConfig();
-
     for (;;) {
         currentView = currentView->execute();
     }

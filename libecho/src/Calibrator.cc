@@ -1,4 +1,5 @@
 #include "Calibrator.h"
+#include "Math.h"
 #include <cmath>
 #include <thread>
 
@@ -6,43 +7,9 @@ static const int SAMPLE_RATE = 44100;
 static const double RISE = 0.1;
 static const double FALL = 0.1;
 
-// TODO: move these into a seperate file
-
-static double mag(double re, double im) {
-    return sqrt(re * re + im * im);
-}
-
-static void dft_slide(const int16_t *buffer, int win_size, double ratio, double *out, int len) {
-    double re = 0;
-    double im = 0;
-    double angle0 = 0;
-    double angle1 = 0;
-    double d_angle = 2.0 * M_PI * ratio;
-
-    for (int i = 0; i < win_size; i++) {
-        re += buffer[i] * std::cos(angle1);
-        im += buffer[i] * std::sin(angle1);
-        angle1 += d_angle;
-    }
-    out[0] = mag(re, im) / static_cast<double>(win_size);
-
-    for (int i = 0; i < len - 1; i++) {
-        re -= buffer[i] * std::cos(angle0);
-        im -= buffer[i] * std::sin(angle0);
-        re += buffer[i + win_size] * std::cos(angle1);
-        im += buffer[i + win_size] * std::sin(angle1);
-        out[i + 1] = mag(re, im) / static_cast<double>(win_size);
-        angle0 += d_angle;
-        angle1 += d_angle;
-    }
-}
-
 Calibrator *Calibrator::getCalibrator(int win_size, int freq) {
-    auto *cal = new Calibrator;
+    auto *cal = new Calibrator(win_size, freq);
     auto fmt = getFormat();
-
-    cal->win_size = win_size;
-    cal->freq = freq;
     cal->input = std::make_unique<AudioInput>(fmt);
     cal->output = std::make_unique<AudioOutput>(fmt);
 
@@ -61,7 +28,7 @@ static void play(Calibrator *cal) {
     cal->output->startStream();
 
     while (cal->playing) {
-        buffer[i] = sin(6.283185307 * t * cal->freq / 44100) * 32766 * a;
+        buffer[i] = sin(2.0 * PI * t * cal->freq / SAMPLE_RATE) * ((1 << 15) - 2) * a;
 
         if (sig) {
             a += RISE;

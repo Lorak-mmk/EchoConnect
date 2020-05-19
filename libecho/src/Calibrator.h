@@ -7,11 +7,9 @@
 #include "AudioOutput.h"
 #include "EchoCalibration.h"
 
-/**
- * @brief Public API for parameter calibration.
- */
 class Calibrator : public EchoCalibration {
 public:
+	Calibrator(int win_size, int freq): win_size(win_size), freq(freq) {}
     static Calibrator *getCalibrator(int win_size, int freq);
 
     void startPlayback() override;

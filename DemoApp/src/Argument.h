@@ -22,7 +22,8 @@ typedef struct Argument {
     void print() const {
         switch (type) {
             case INTEGER:
-                std::cout << setFormatting({ConsoleFormat::BOLD}) << " " << title << clearFormatting() << " - integer: ";
+                std::cout << setFormatting({ConsoleFormat::BOLD}) << " " << title << clearFormatting()
+                          << " - integer: ";
                 if (valueSet) {
                     std::cout << setFormatting({ConsoleFormat::T_BLUE}) << std::get<int>(value) << "\n"
                               << clearFormatting();

@@ -22,16 +22,20 @@ public:
      * @warning Caller needs to remember about calling delete on return pointer or wrapping it in some smart_ptr!
      *
      * @param winSize       How much of bitrate we want to use to play sound in which we encode bit.
-     * @param receiveLoFreq Frequency used to decode bits of value 0 when receving data.
-     * @param receiveLoFreq Frequency used to decode bits of value 1 when receiving data.
      * @param sendLoFreq    Frequency used to encode bits of value 0 when sending data.
      * @param sendHiFreq    Frequency used to encode bits of value 1 when sending data.
+     * @param receiveLoFreq Frequency used to decode bits of value 0 when receving data.
+     * @param receiveLoFreq Frequency used to decode bits of value 1 when receiving data.
      * @param leftLim       Silence magnitude
      * @param rightLim      Smaller of the 2 frequencies' magnitudes
      * @return              Pointer to desired EchoRawConnection object.
      */
 
-    static EchoRawConnection *getBitEchoRawConnection(int win_size, int send_freq, int recv_freq, int lim);
+    static EchoRawConnection *getBitEchoRawConnection(int win_size, int send_lo_freq, int send_hi_freq,
+                                                      int recv_lo_freq, int recv_hi_freq, int left_lim,
+                                                      int right_lim);
+
+    static EchoRawConnection *getBitEchoRawConnectionv2(int win_size, int send_freq, int recv_freq, int lim);
 
     virtual ~EchoRawConnection() = default;
     EchoRawConnection() = default;

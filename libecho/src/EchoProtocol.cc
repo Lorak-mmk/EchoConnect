@@ -96,7 +96,7 @@ ssize_t EchoProtocol::read(void *buf, size_t count, int timeout) {
 
 enum Status { READY, PLEASE_ACK, PLEASE_RESEND, CORRUPTED, CLOSING };
 
-const char* str[5] = {"READY", "PLEASE_ACK", "PLEASE_RESEND", "CORRUPTED", "CLOSING"};
+const char *str[5] = {"READY", "PLEASE_ACK", "PLEASE_RESEND", "CORRUPTED", "CLOSING"};
 
 void EchoProtocol::thread(bool connecting) {
     std::stack<Packet> st;

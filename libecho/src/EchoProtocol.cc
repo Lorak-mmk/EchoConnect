@@ -130,8 +130,7 @@ void EchoProtocol::thread(bool connecting) {
         try {
             connection->receiveStart(big_win_size * 2);
 
-            int bytes = connection->receive(buffer, HEADER_SIZE + PACKET_SIZE + CRC_SIZE);
-            assert(bytes >= 0);
+            connection->receive(buffer, HEADER_SIZE + PACKET_SIZE + CRC_SIZE);
             Packet p = Packet::loadHeaderFromBytes(std::vector<uint8_t>(buffer, buffer + HEADER_SIZE));
             p.loadDataFromBytes(std::vector<uint8_t>(buffer + HEADER_SIZE, buffer + HEADER_SIZE + p.getSize()));
             p.loadCRCFromBytes(std::vector<uint8_t>(buffer + HEADER_SIZE + p.getSize(),

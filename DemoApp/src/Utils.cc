@@ -29,7 +29,7 @@ size_t printChooseArgumentsOptions(const std::map<std::string, Argument> &argume
     size_t biggestOption = arguments.size();
 
     size_t i = 1;
-	for(auto & [key, arg] : arguments) {
+    for (auto &[key, arg] : arguments) {
         Utils::printOption(i, "Change " + arg.title);
         i++;
     }
@@ -88,7 +88,7 @@ bool Utils::readArguments(std::map<std::string, Argument> &arguments) {
         std::cout << setFormatting({ConsoleFormat::T_BLUE}) << " You may specify following arguments:\n\n"
                   << clearFormatting();
 
-		for(auto const& [key, arg] : arguments) {
+        for (auto const &[key, arg] : arguments) {
             allSpecified &= arg.valueSet;
             arg.print();
         }
@@ -107,7 +107,8 @@ bool Utils::readArguments(std::map<std::string, Argument> &arguments) {
         }
 
         auto it = arguments.begin();
-		for (size_t i = 1; i < option; i++, it++) {}
+        for (size_t i = 1; i < option; i++, it++) {
+        }
         changeArgument(it->second);
     }
 }

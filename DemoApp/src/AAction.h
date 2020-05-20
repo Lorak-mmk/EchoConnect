@@ -1,22 +1,23 @@
 #ifndef DEMOAPP_IACTION_H
 #define DEMOAPP_IACTION_H
 
-#include <string>
 #include <map>
+#include <string>
+#include <utility>
 
 #include "AView.h"
 #include "Argument.h"
 
 class AAction : public AView {
 public:
-    AAction(std::string name, std::string title) : AView(name, title) {}
+    AAction(std::string name, std::string title) : AView(std::move(name), std::move(title), {}) {}
 
-    virtual ~AAction() = default;
+    ~AAction() override = default;
 
     ViewPtr execute() override;
 
 protected:
-	std::map<std::string, Argument> arguments;
+    std::map<std::string, Argument> arguments;
     virtual void setDefaults();
     virtual ViewPtr runAction() = 0;
 };

@@ -3,20 +3,21 @@
 
 #include <memory>
 #include <string>
+#include <utility>
 #include <vector>
 
 class AView;
 
-using ViewPtr = std::shared_ptr<AView>;
+using ViewPtr = AView *;
 
 class AView {
 public:
-    AView(std::string name, std::string title) : name(name), title(title) {}
+    AView(std::string name, std::string title, std::vector<ViewPtr> children);
 
-    virtual ~AView() = default;
+    virtual ~AView();
 
-    void addChild(const ViewPtr &child);
-    void setParent(const ViewPtr &parent);
+    void addChild(ViewPtr child);
+    void setParent(ViewPtr newParent);
     ViewPtr getChild(const std::string &childName);
     std::string getName();
     std::string getTitle();

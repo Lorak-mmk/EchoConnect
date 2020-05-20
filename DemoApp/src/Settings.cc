@@ -6,7 +6,7 @@
 ViewPtr Settings::runAction() {
     std::cout << " Please wait, we are updating your preferences";
 
-	for (auto & [key, arg] : arguments) {
+    for (auto &[key, arg] : arguments) {
         switch (arg.type) {
             case INTEGER:
                 getMainConfig()->setValue(std::get<int>(arg.value), key);

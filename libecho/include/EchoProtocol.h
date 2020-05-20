@@ -11,7 +11,6 @@
 #include <mutex>
 #include <thread>
 
-
 class EchoProtocol {
 public:
     /**

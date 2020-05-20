@@ -1,11 +1,25 @@
 #include "AView.h"
 
-void AView::addChild(const ViewPtr &child) {
-    children.emplace_back(child);
+AView::AView(std::string name, std::string title, std::vector<ViewPtr> children)
+    : name(std::move(name)), title(std::move(title)), parent(nullptr), children(std::move(children)) {
+    for (auto child : this->children) {
+        child->setParent(this);
+    }
 }
 
-void AView::setParent(const ViewPtr &parent) {
-    this->parent = parent;
+AView::~AView() {
+    for (auto child : children) {
+        delete child;
+    }
+}
+
+void AView::addChild(ViewPtr child) {
+    children.emplace_back(child);
+    child->setParent(this);
+}
+
+void AView::setParent(ViewPtr newParent) {
+    this->parent = newParent;
 }
 
 ViewPtr AView::getChild(const std::string &childName) {

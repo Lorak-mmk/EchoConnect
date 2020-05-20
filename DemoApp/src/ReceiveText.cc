@@ -1,10 +1,9 @@
 #include "ReceiveText.h"
-#include "EchoProtocol.h"
 #include "Console.h"
+#include "EchoProtocol.h"
 #include "Utils.h"
 
 ViewPtr ReceiveText::runAction() {
-
     std::cout << setFormatting({ConsoleFormat::T_BLUE});
     std::cout << " We are analyzing if there is any ongoing transmission, please wait...\n";
 

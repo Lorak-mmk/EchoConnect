@@ -73,12 +73,7 @@ size_t EchoProtocol::read(void *buf, size_t count, size_t timeout) {
 
 enum Status { READY, PLEASE_ACK, PLEASE_RESEND, CORRUPTED };
 
-const char* str[4] = {
-    "READY",
-    "PLEASE_ACK",
-    "PLEASE_RESEND",
-    "CORRUPTED"
-};
+const char *str[4] = {"READY", "PLEASE_ACK", "PLEASE_RESEND", "CORRUPTED"};
 
 void EchoProtocol::thread(bool connecting) {
     std::stack<Packet> st;
@@ -87,17 +82,17 @@ void EchoProtocol::thread(bool connecting) {
     if (connecting) {
         // sending SYN packet if needed
         auto start = std::chrono::system_clock::now();
-        
+
         Packet p = PacketBuilder().setNumber(++number).setFlag(Flag::SYN).getPacket();
         st.push(p);
         std::vector<uint8_t> bytes = p.toBytes();
-        
+
         connection->sendStart();
         connection->send(bytes.data(), bytes.size());
         connection->sendWait();
-        
+
         qDebug() << "sending" << bytes;
-        
+
         auto end = std::chrono::system_clock::now();
         std::this_thread::sleep_for(big_win_size + start - end);
     }
@@ -105,23 +100,23 @@ void EchoProtocol::thread(bool connecting) {
     while (true) {
         // receiving a packet
         auto start = std::chrono::system_clock::now();
-        
+
         try {
             connection->receiveStart(big_win_size * 2);
-            
+
             int bytes = connection->receive(buffer, HEADER_SIZE + PACKET_SIZE + CRC_SIZE);
             Packet p = Packet::loadHeaderFromBytes(std::vector<uint8_t>(buffer, buffer + HEADER_SIZE));
-            p.loadDataFromBytes(std::vector<uint8_t>(buffer + HEADER_SIZE,
-                                                     buffer + HEADER_SIZE + p.getSize()));
+            p.loadDataFromBytes(std::vector<uint8_t>(buffer + HEADER_SIZE, buffer + HEADER_SIZE + p.getSize()));
             p.loadCRCFromBytes(std::vector<uint8_t>(buffer + HEADER_SIZE + p.getSize(),
                                                     buffer + HEADER_SIZE + p.getSize() + CRC_SIZE));
-            
+
             uint16_t num = p.getNumber();
             while (!st.empty() && st.top().isSet(Flag::DMD) && st.top().getNumber() > num) {
                 st.pop();
             }
             status = READY;
-            if (p.isSet(Flag::FIN) && p.isSet(Flag::ACK1)) return;
+            if (p.isSet(Flag::FIN) && p.isSet(Flag::ACK1))
+                return;
             if (p.isSet(Flag::SYN) || p.isSet(Flag::FIN) || p.getSize() > 0) {
                 status = PLEASE_ACK;
             }
@@ -149,25 +144,25 @@ void EchoProtocol::thread(bool connecting) {
             qDebug() << "connection broken";
             return;
         }
-        
+
         auto end = std::chrono::system_clock::now();
         std::this_thread::sleep_for(big_win_size + start - end);
-        
+
         qDebug() << str[(int)status];
-        
+
         // sending a packet
         start = std::chrono::system_clock::now();
-        
+
         if (status == CORRUPTED) {
             Packet p = PacketBuilder().setNumber(number += 2).setFlag(Flag::DMD).getPacket();
             st.push(p);
         }
-        
+
         if (status == PLEASE_ACK) {
             Packet p = PacketBuilder().setNumber(number += 2).setFlag(Flag::ACK1).getPacket();
             st.push(p);
         }
-        
+
         if (status == READY) {
             if (closed && buffer_send.empty()) {
                 Packet p = PacketBuilder().setNumber(number += 2).setFlag(Flag::FIN).getPacket();
@@ -182,17 +177,17 @@ void EchoProtocol::thread(bool connecting) {
                 cv_send.notify_one();
             }
         }
-        
+
         assert(!st.empty());
-        
+
         std::vector<uint8_t> bytes = st.top().toBytes();
-        
+
         qDebug() << "sending" << bytes;
-        
+
         connection->sendStart();
         connection->send(bytes.data(), bytes.size());
         connection->sendWait();
-        
+
         end = std::chrono::system_clock::now();
         std::this_thread::sleep_for(big_win_size + start - end);
     }

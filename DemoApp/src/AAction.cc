@@ -5,7 +5,7 @@
 using namespace std::string_literals;
 
 void AAction::setDefaults() {
-	for(auto & [key, arg] : arguments) {
+    for (auto &[key, arg] : arguments) {
         switch (arg.type) {
             case INTEGER:
                 arg.value = getMainConfig()->getValue(0, key);

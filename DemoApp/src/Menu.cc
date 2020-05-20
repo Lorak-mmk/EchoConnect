@@ -25,9 +25,6 @@ ViewPtr Menu::execute() {
     }
 
     if (i == 0) {
-        if (!parent) {
-            exit(0);
-        }
         return parent;
     }
     return children[i - 1];

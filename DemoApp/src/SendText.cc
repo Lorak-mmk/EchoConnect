@@ -1,6 +1,6 @@
 #include "SendText.h"
-#include "Utils.h"
 #include "Console.h"
+#include "Utils.h"
 
 ViewPtr SendText::runAction() {
     std::cout << setFormatting({ConsoleFormat::T_BLUE});

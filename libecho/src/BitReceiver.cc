@@ -1,6 +1,7 @@
 #include "BitReceiver.h"
 #include <cmath>
 #include "Dft.h"
+#include "Exceptions.h"
 #include "HammingCode.h"
 
 static const int SAMPLE_RATE = 44100;
@@ -125,7 +126,7 @@ void BitReceiver::start(std::chrono::duration<double> timeout) {
             shift = hi_shift;
         }
         if (std::chrono::system_clock::now() - start > timeout) {
-            throw IReceiver::ConnectionBroken{};
+            throw ConnectionBroken{};
         }
     } while (shift == -1);
 

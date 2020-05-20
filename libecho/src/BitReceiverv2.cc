@@ -1,4 +1,6 @@
 #include "BitReceiverv2.h"
+#include "Exceptions.h"
+
 #include <cmath>
 #include "Dft.h"
 
@@ -83,7 +85,7 @@ void BitReceiverv2::start(std::chrono::duration<double> timeout) {
             }
         }
         if (std::chrono::system_clock::now() - start > timeout) {
-            throw IReceiver::ConnectionBroken{};
+            throw ConnectionBroken{};
         }
     }
 

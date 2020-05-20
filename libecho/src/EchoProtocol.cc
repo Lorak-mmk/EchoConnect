@@ -1,8 +1,12 @@
 #include "EchoProtocol.h"
+#include "Exceptions.h"
 #include "IReceiver.h"
+#include "Packet.h"
 
 #include <QDebug>
 #include <cassert>
+#include <stack>
+#include <string>
 
 using namespace std::chrono_literals;
 
@@ -15,47 +19,32 @@ EchoProtocol::EchoProtocol(int winsize, int send_freq, int recv_freq, int lim)
       buffer(new uint8_t[2 * PACKET_SIZE]) {}
 
 EchoProtocol::~EchoProtocol() {
+    if (is_connected) {
+        close();
+    }
     delete[] buffer;
 }
 
 void EchoProtocol::listen() {
-    qDebug() << "listen";
-    is_connected = false;
-    thr[0] = new std::thread{&EchoProtocol::receivingThread, this, true};
-    std::mutex m;
-    std::unique_lock<std::mutex> lock(m);
-    cv_listen.wait(lock, [&] { return static_cast<bool>(is_connected); });
-    thr[1] = new std::thread{&EchoProtocol::sendingThread, this, false};
-    qDebug() << "(listen) connected successfully";
+    assert(!is_connected);
+    thr = new std::thread{&EchoProtocol::thread, this, false};
+    is_connected = true;
 }
 
 void EchoProtocol::connect() {
-    qDebug() << "connect";
-    thr[1] = new std::thread{&EchoProtocol::sendingThread, this, true};
-    std::this_thread::sleep_for(big_win_size);
-    thr[0] = new std::thread{&EchoProtocol::receivingThread, this, false};
-    qDebug() << "connected successfully";
+    assert(!is_connected);
+    thr = new std::thread{&EchoProtocol::thread, this, true};
+    is_connected = true;
 }
 
 void EchoProtocol::close() {
+    assert(is_connected);
     qDebug() << "close";
-    status = CLOSED;
     closed = true;
-    if (thr[0] != nullptr) {
-        thr[0]->join();
-    }
-    {
-        std::unique_lock<std::mutex> lock(m_thread);
-        if (thr[1] != nullptr) {
-            send_joined = true;
-        }
-    }
-    if (send_joined) {
-        thr[1]->join();
-    }
-    delete thr[0];
-    delete thr[1];
-    thr[0] = thr[1] = nullptr;
+    thr->join();
+    delete thr;
+    thr = nullptr;
+    is_connected = false;
     qDebug() << "close successfully finished";
 }
 
@@ -66,7 +55,7 @@ size_t EchoProtocol::write(const void *buf, size_t count) {
         qDebug() << "write starting at position" << pos << "/" << count;
         {
             if (closed) {
-                throw IReceiver::ConnectionBroken{};
+                throw ConnectionBroken{};
             }
             std::unique_lock<std::mutex> lock(m_send);
             size_t copied_bytes = std::min(PACKET_SIZE - buffer_send.size(), count - pos);
@@ -82,142 +71,174 @@ size_t EchoProtocol::write(const void *buf, size_t count) {
     return pos;
 }
 
-size_t EchoProtocol::read(void *buf, size_t count, size_t timeout) {
+ssize_t EchoProtocol::read(void *buf, size_t count, int timeout) {
+    if (count == 0) {
+        return 0;
+    }
     std::unique_lock<std::mutex> lock(m_recv);
-    if (cv_recv.wait_for(lock, timeout * 1s, [&] { return !buffer_recv.empty(); })) {
+    if (timeout >= 0 && cv_recv.wait_for(lock, timeout * 1s, [&] { return !buffer_recv.empty(); })) {
         size_t bytes = std::min(buffer_recv.size(), count);
-        std::copy(static_cast<uint8_t *>(buf), static_cast<uint8_t *>(buf) + bytes, buffer_recv.begin());
+        std::copy(buffer_recv.begin(), buffer_recv.begin() + bytes, static_cast<uint8_t *>(buf));
         buffer_recv.erase(buffer_recv.begin(), buffer_recv.begin() + bytes);
         return bytes;
     }
-    throw IReceiver::ConnectionBroken{};
-}
-
-void EchoProtocol::sendingThread(bool first) {
-    while (true) {
-        auto start = std::chrono::system_clock::now();
-        qDebug() << "Send start; status =" << status;
-        connection->sendStart();
-        if (status == CLOSED) {
-            std::vector<uint8_t> vec = PacketBuilder().setFlag(Flag::FIN).getBytes();
-            connection->send(vec.data(), vec.size());
-            qDebug() << "sent FIN";
-        } else if (status == CORRUPTED) {
-            std::vector<uint8_t> vec = PacketBuilder().setFlag(Flag::DMD).getBytes();
-            connection->send(vec.data(), vec.size());
-            qDebug() << "sent DMD";
-        } else {
-            if (first) {
-                lastPacket = PacketBuilder().setNumber(++number).setFlag(Flag::SYN).getPacket();
-                first = false;
-                qDebug() << "sent SYN, size" << lastPacket.getSize();
-            } else if (status == READY) {
-                if (closed && buffer_send.empty()) {
-                    std::vector<uint8_t> vec = PacketBuilder().setFlag(Flag::FIN).getBytes();
-                    qDebug() << "sent FIN" << vec;
-                    connection->send(vec.data(), vec.size());
-                    connection->sendWait();
-                    std::unique_lock<std::mutex> lock(m_thread);
-                    if (!send_joined) {
-                        thr[1]->detach();
-                        thr[1] = nullptr;
-                    }
-                    return;
-                }
-                {
-                    std::unique_lock<std::mutex> lock(m_send);
-                    lastPacket = PacketBuilder().setData(buffer_send).setNumber(++number).getPacket();
-                    buffer_send.clear();
-                    qDebug() << "sent data, size" << lastPacket.getSize();
-                }
-                cv_send.notify_one();
-            } else if (status == PLEASE_ACK) {
-                lastPacket = PacketBuilder().setNumber(number).setFlag(Flag::ACK1).getPacket();
-                qDebug() << "sent ACK, size" << lastPacket.getSize();
-            } else {
-                qDebug() << "retransmitted last packet, size" << lastPacket.getSize();
-            }
-            std::vector<uint8_t> vec = lastPacket.toBytes();
-            qDebug() << vec;
-            connection->send(vec.data(), vec.size());
+    if (timeout < 0) {
+        while (thr != nullptr && buffer_recv.empty()) {
+            cv_recv.wait(lock);
         }
-        connection->sendWait();
-        qDebug() << "Send end";
-        auto end = std::chrono::system_clock::now();
-        std::this_thread::sleep_for(2 * big_win_size + start - end);
+        size_t bytes = std::min(buffer_recv.size(), count);
+        if (bytes == 0) {
+            return -1;
+        }
+        std::copy(buffer_recv.begin(), buffer_recv.begin() + bytes, static_cast<uint8_t *>(buf));
+        buffer_recv.erase(buffer_recv.begin(), buffer_recv.begin() + bytes);
+        return bytes;
     }
+    return thr == nullptr ? -1 : 0;
 }
 
-void EchoProtocol::receivingThread(bool first) {
-    while (!closed) {
+enum Status { READY, PLEASE_ACK, PLEASE_RESEND, CORRUPTED, CLOSING };
+
+const char *str[5] = {"READY", "PLEASE_ACK", "PLEASE_RESEND", "CORRUPTED", "CLOSING"};
+
+void EchoProtocol::thread(bool connecting) {
+    std::stack<Packet> st;
+    Status status;
+
+    if (connecting) {
+        // sending SYN packet if needed
         auto start = std::chrono::system_clock::now();
-        std::vector<uint8_t> rec;
+
+        Packet p = PacketBuilder().setNumber(++number).setFlag(Flag::SYN).getPacket();
+        st.push(p);
+        std::vector<uint8_t> bytes = p.toBytes();
+
+        connection->sendStart();
+        connection->send(bytes.data(), bytes.size());
+        connection->sendWait();
+
+        qDebug() << "sending" << bytes;
+
+        auto end = std::chrono::system_clock::now();
+        std::this_thread::sleep_for(big_win_size + start - end);
+    }
+
+    while (true) {
+        // receiving a packet
+        auto start = std::chrono::system_clock::now();
+
         try {
-            qDebug() << "receive start; status =" << status;
-            connection->receiveStart(big_win_size * 4);
+            connection->receiveStart(big_win_size * 2);
 
-            // receiving packet header
-            int bytes = connection->receive(buffer, HEADER_SIZE);
-            rec.insert(rec.end(), buffer, buffer + bytes);
-            qDebug() << "Received" << bytes << "bytes, expected" << HEADER_SIZE;
-            Packet p = Packet::loadHeaderFromBytes(std::vector<uint8_t>(buffer, buffer + bytes));
+            connection->receive(buffer, HEADER_SIZE + PACKET_SIZE + CRC_SIZE);
+            Packet p = Packet::loadHeaderFromBytes(std::vector<uint8_t>(buffer, buffer + HEADER_SIZE));
+            p.loadDataFromBytes(std::vector<uint8_t>(buffer + HEADER_SIZE, buffer + HEADER_SIZE + p.getSize()));
+            p.loadCRCFromBytes(std::vector<uint8_t>(buffer + HEADER_SIZE + p.getSize(),
+                                                    buffer + HEADER_SIZE + p.getSize() + CRC_SIZE));
 
-            // receiving data
-            bytes = connection->receive(buffer, p.getSize());
-            rec.insert(rec.end(), buffer, buffer + bytes);
-            qDebug() << "Received" << bytes << "bytes, expected" << p.getSize();
-            p.loadDataFromBytes(std::vector<uint8_t>(buffer, buffer + bytes));
+            uint16_t num = p.getNumber();
+            while (!st.empty() && st.top().isSet(Flag::DMD) && st.top().getNumber() > num) {
+                st.pop();
+            }
 
-            // receiving CRC
-            bytes = connection->receive(buffer, CRC_SIZE);
-            rec.insert(rec.end(), buffer, buffer + bytes);
-            qDebug() << "Received" << bytes << "bytes, expected" << CRC_SIZE;
-            p.loadCRCFromBytes(std::vector<uint8_t>(buffer, buffer + bytes));
+            status = READY;
 
-            std::vector<uint8_t> vec = p.getData();
-            if (p.isSet(Flag::ACK1) ||
-                (p.getSize() == 0 && !p.isSet(Flag::SYN) && !p.isSet(Flag::DMD) && !p.isSet(Flag::FIN))) {
-                status = READY;
-                qDebug() << "received ACK or empty packet";
-            } else if (p.isSet(Flag::DMD)) {
-                status = PLEASE_RESEND;
-                qDebug() << "received demand resend";
-            } else {
-                qDebug() << "ACK1:" << (int)p.isSet(Flag::ACK1) << "size:" << p.getSize()
-                         << "SYN:" << (int)p.isSet(Flag::SYN) << "DMD:" << (int)p.isSet(Flag::DMD)
-                         << "FIN:" << (int)p.isSet(Flag::FIN);
-                if (first) {
-                    assert(p.isSet(Flag::SYN));
-                    qDebug() << "received SYN";
-                } else if (p.isSet(Flag::FIN)) {
-                    closed = true;
-                    qDebug() << "received FIN";
-                } else {
-                    qDebug() << "received correct packet";
-                }
-                if (lastPacketAcked < p.getNumber()) {
-                    std::unique_lock<std::mutex> lock(m_recv);
-                    buffer_recv.insert(buffer_recv.end(), vec.begin(), vec.end());
-                    lastPacketAcked = p.getNumber();
-                }
+            if (p.isSet(Flag::FIN) && p.isSet(Flag::ACK1)) {
+                return;
+            }
+
+            if (p.isSet(Flag::SYN) || p.getSize() > 0) {
                 status = PLEASE_ACK;
             }
-        } catch (IReceiver::ConnectionBroken &e) {
-            qDebug() << e.what();
-            closed = true;
-            status = READY;
+
+            if (p.isSet(Flag::FIN)) {
+                status = CLOSING;
+            }
+
+            if (p.isSet(Flag::DMD)) {
+                status = PLEASE_RESEND;
+            }
+
+            if (p.isSet(Flag::ACK1)) {
+                assert(st.top().getNumber() + 1 == num);
+                st.pop();
+            }
+
+            if (p.getSize() > 0) {
+                {
+                    std::unique_lock<std::mutex> lock(m_recv);
+                    std::vector<uint8_t> bytes = p.getData();
+                    buffer_recv.insert(buffer_recv.end(), bytes.begin(), bytes.end());
+                }
+                cv_recv.notify_one();
+            }
+
+            std::vector<uint8_t> rec(buffer, buffer + HEADER_SIZE + p.getSize() + CRC_SIZE);
+            qDebug() << "received" << rec;
         } catch (Packet::PacketException &e) {
-            qDebug() << e.what() << "-- received corrupted packet";
-            qDebug() << rec;
             status = CORRUPTED;
+            qDebug() << "corrupted" << e.what();
+        } catch (ConnectionBroken &e) {
+            qDebug() << "connection broken";
+            return;
         }
-        qDebug() << "receive end";
+
         auto end = std::chrono::system_clock::now();
-        std::this_thread::sleep_for(2 * big_win_size + start - end);
-        if (first) {
-            is_connected = true;
-            first = false;
-            cv_listen.notify_one();
+        std::this_thread::sleep_for(big_win_size + start - end);
+
+        // NOLINTNEXTLINE(cppcoreguidelines-pro-bounds-constant-array-index)
+        qDebug() << str[status];
+
+        // sending a packet
+        start = std::chrono::system_clock::now();
+
+        if (status == CORRUPTED) {
+            Packet p = PacketBuilder().setNumber(number += 2).setFlag(Flag::DMD).getPacket();
+            st.push(p);
         }
+
+        if (status == PLEASE_ACK) {
+            Packet p = PacketBuilder().setNumber(number += 2).setFlag(Flag::ACK1).getPacket();
+            st.push(p);
+        }
+
+        if (status == CLOSING) {
+            Packet p = PacketBuilder().setNumber(number += 2).setFlag(Flag::FIN).setFlag(Flag::ACK1).getPacket();
+            st.push(p);
+        }
+
+        if (status == READY) {
+            if (closed && buffer_send.empty()) {
+                Packet p = PacketBuilder().setNumber(number += 2).setFlag(Flag::FIN).getPacket();
+                st.push(p);
+            } else {
+                {
+                    std::unique_lock<std::mutex> lock(m_send);
+                    Packet p = PacketBuilder().setNumber(number += 2).setData(buffer_send).getPacket();
+                    st.push(p);
+                    buffer_send.clear();
+                }
+                cv_send.notify_one();
+            }
+        }
+
+        assert(!st.empty());
+
+        std::vector<uint8_t> bytes = st.top().toBytes();
+
+        qDebug() << "sending" << bytes;
+
+        connection->sendStart();
+        connection->send(bytes.data(), bytes.size());
+        connection->sendWait();
+
+        // NOLINTNEXTLINE(cppcoreguidelines-pro-bounds-constant-array-index)
+        qDebug() << str[status];
+        if (status == CLOSING) {
+            return;
+        }
+
+        end = std::chrono::system_clock::now();
+        std::this_thread::sleep_for(big_win_size + start - end);
     }
 }

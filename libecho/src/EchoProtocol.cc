@@ -13,7 +13,7 @@ static constexpr size_t PACKET_SIZE = 50;
 
 EchoProtocol::EchoProtocol(int winsize, int send_freq, int recv_freq, int lim)
     : connection(std::unique_ptr<EchoRawConnection>(
-          EchoRawConnection::getBitEchoRawConnection(winsize, send_freq, recv_freq, lim))),
+          EchoRawConnection::getBitEchoRawConnectionv2(winsize, send_freq, recv_freq, lim))),
       big_win_size(static_cast<double>(winsize) / 44100 * (PACKET_SIZE + 10) * 12s),
       buffer(new uint8_t[2 * PACKET_SIZE]) {}
 

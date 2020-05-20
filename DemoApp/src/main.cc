@@ -12,7 +12,8 @@ int main() {
         new Menu{"receiveMenu", "Receive", {
             new ReceiveText{"receiveText", "Receive text"}
         }},
-        new Menu{"experimentalMenu", "Experimental", {}}, new Settings{"settings", "Settings"},
+        new Menu{"experimentalMenu", "Experimental", {}},
+        new Settings{"settings", "Settings"},
         new Help{"help", "Help"}
     }};
     // clang-format on

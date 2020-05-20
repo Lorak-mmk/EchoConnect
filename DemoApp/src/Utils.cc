@@ -29,7 +29,7 @@ size_t printChooseArgumentsOptions(const std::map<std::string, Argument> &argume
     size_t biggestOption = arguments.size();
 
     size_t i = 1;
-    for (auto &[key, arg] : arguments) {
+    for (const auto &[key, arg] : arguments) {
         Utils::printOption(i, "Change " + arg.title);
         i++;
     }

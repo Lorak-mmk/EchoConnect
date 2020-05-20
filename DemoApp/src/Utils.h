@@ -8,7 +8,6 @@
 #include "Argument.h"
 #include "Console.h"
 
-
 class Utils {
 public:
     static void clear();

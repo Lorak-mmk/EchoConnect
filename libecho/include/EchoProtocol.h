@@ -11,6 +11,9 @@
 #include <mutex>
 #include <thread>
 
+#ifdef _WIN32
+using ssize_t = long;
+#endif
 
 class EchoProtocol {
 public:

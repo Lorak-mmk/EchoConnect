@@ -25,20 +25,22 @@ public:
         std::cin >> v;
         while (std::cin.fail()) {
             std::cin.clear();
-            std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+            std::cin.ignore((std::numeric_limits<std::streamsize>::max)(), '\n');
             invalidValue(" Please specify a valid value, press enter to continue...");
             std::cout << cursorUp(2) << clearLinesBelow() << prompt;
             std::cin >> v;
         }
-        std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+        std::cin.ignore((std::numeric_limits<std::streamsize>::max)(), '\n');
         return v;
     }
     static void invalidValue(const std::string &info);
     static void waitForEnter();
     static bool readArguments(std::map<std::string, Argument> &arguments);
     static size_t fileSize(std::ifstream &file);
+#ifndef __APPLE__
     static uint64_t HTONLL(uint64_t x);
     static uint64_t NTOHLL(uint64_t x);
+#endif
 };
 
 #endif  // DEMOAPP_UTILS_H

@@ -30,7 +30,7 @@ void Utils::invalidValue(const std::string &info) {
 }
 
 void Utils::waitForEnter() {
-    std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+    std::cin.ignore((std::numeric_limits<std::streamsize>::max)(), '\n');
 }
 
 size_t printChooseArgumentsOptions(const std::map<std::string, Argument> &arguments, bool allSpecified) {
@@ -122,7 +122,7 @@ bool Utils::readArguments(std::map<std::string, Argument> &arguments) {
 }
 
 size_t Utils::fileSize(std::ifstream &file) {
-    file.ignore(std::numeric_limits<std::streamsize>::max());
+    file.ignore((std::numeric_limits<std::streamsize>::max)());
     std::streamsize length = file.gcount();
     file.clear();
     file.seekg(0, std::ios_base::beg);
@@ -130,6 +130,7 @@ size_t Utils::fileSize(std::ifstream &file) {
     return length;
 }
 
+#ifndef __APPLE__
 uint64_t Utils::HTONLL(uint64_t x) {
     return ((1 == htonl(1)) ? (x) : (((uint64_t)htonl((x)&0xFFFFFFFFUL)) << 32) | htonl((uint32_t)((x) >> 32)));
 }
@@ -137,3 +138,4 @@ uint64_t Utils::HTONLL(uint64_t x) {
 uint64_t Utils::NTOHLL(uint64_t x) {
     return ((1 == ntohl(1)) ? (x) : (((uint64_t) ntohl((x) & 0xFFFFFFFFUL)) << 32) | ntohl((uint32_t) ((x) >> 32)));
 }
+#endif

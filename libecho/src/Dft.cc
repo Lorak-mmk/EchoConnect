@@ -1,5 +1,6 @@
-#include "Math.h"
+#include "Dft.h"
 #include <cmath>
+#define PI 3.14159265358979323846
 
 static double mag(double re, double im) {
     return sqrt(re * re + im * im);
@@ -10,7 +11,7 @@ double dft(const int16_t *samples, int len, double ratio) {
     double im = 0;
     double angle = 0;
     // NOLINTNEXTLINE(cppcoreguidelines-avoid-magic-numbers, readability-magic-numbers)
-    double d_angle = 2.0 * M_PI * ratio;
+    double d_angle = 2.0 * PI * ratio;
 
     for (int i = 0; i < len; i++) {
         double val = samples[i];
@@ -28,7 +29,7 @@ void dft_slide(const int16_t *samples, int win_len, double ratio, double *out, i
     double angle0 = 0;
     double angle1 = 0;
     // NOLINTNEXTLINE(cppcoreguidelines-avoid-magic-numbers, readability-magic-numbers)
-    double d_angle = 2.0 * M_PI * ratio;
+    double d_angle = 2.0 * PI * ratio;
 
     for (int i = 0; i < win_len; i++) {
         re += samples[i] * std::cos(angle1);

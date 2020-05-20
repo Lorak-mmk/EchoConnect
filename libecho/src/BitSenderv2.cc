@@ -1,9 +1,7 @@
-#include "BitSenderv2.h"
 #include <cmath>
 #include <iostream>
-#ifndef M_PI
-#define M_PI 3.14159265358979323846
-#endif
+#include "BitSenderv2.h"
+#define PI 3.14159265358979323846
 
 static const double RISE = 0.1;
 static const double FALL = 0.1;
@@ -60,7 +58,7 @@ void BitSenderv2::wait() {
 
 void BitSenderv2::write_bit(int16_t *out, uint8_t bit) {
     for (int i = 0; i < win_size; i++) {
-        out[i] = sin(2.0 * M_PI * counter * freq / SAMPLE_RATE) * 32766 * amp;
+        out[i] = sin(2.0 * PI * counter * freq / SAMPLE_RATE) * 32766 * amp;
         counter++;
 
         if (bit) {

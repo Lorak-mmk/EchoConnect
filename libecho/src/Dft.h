@@ -1,9 +1,7 @@
-#ifndef ECHOCONNECT_MATH_H
-#define ECHOCONNECT_MATH_H
+#ifndef ECHOCONNECT_DFT_H
+#define ECHOCONNECT_DFT_H
 
 #include <cstdint>
-
-static constexpr double PI = 3.1415926535;
 
 double dft(const int16_t *samples, int len, double ratio);
 void dft_slide(const int16_t *samples, int win_len, double ratio, double *out, int len);

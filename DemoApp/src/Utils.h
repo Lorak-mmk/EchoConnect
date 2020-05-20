@@ -37,13 +37,11 @@ public:
     static void waitForEnter();
     static bool readArguments(std::map<std::string, Argument> &arguments);
     static size_t fileSize(std::ifstream &file);
-
 };
 
 #ifndef __APPLE__
 uint64_t HTONLL(uint64_t x);
 uint64_t NTOHLL(uint64_t x);
 #endif
-
 
 #endif  // DEMOAPP_UTILS_H

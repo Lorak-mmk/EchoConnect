@@ -10,7 +10,6 @@
 #include <arpa/inet.h>
 #endif
 
-
 void Utils::clear() {
     std::cout << clearScreen();
 }
@@ -136,6 +135,6 @@ uint64_t HTONLL(uint64_t x) {
 }
 
 uint64_t NTOHLL(uint64_t x) {
-    return ((1 == ntohl(1)) ? (x) : (((uint64_t) ntohl((x) & 0xFFFFFFFFUL)) << 32) | ntohl((uint32_t) ((x) >> 32)));
+    return ((1 == ntohl(1)) ? (x) : (((uint64_t)ntohl((x)&0xFFFFFFFFUL)) << 32) | ntohl((uint32_t)((x) >> 32)));
 }
 #endif

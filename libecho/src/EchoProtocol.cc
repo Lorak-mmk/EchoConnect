@@ -72,8 +72,9 @@ size_t EchoProtocol::write(const void *buf, size_t count) {
 }
 
 ssize_t EchoProtocol::read(void *buf, size_t count, int timeout) {
-    if (count == 0)
+    if (count == 0) {
         return 0;
+    }
     std::unique_lock<std::mutex> lock(m_recv);
     if (timeout >= 0 && cv_recv.wait_for(lock, timeout * 1s, [&] { return !buffer_recv.empty(); })) {
         size_t bytes = std::min(buffer_recv.size(), count);
@@ -82,11 +83,13 @@ ssize_t EchoProtocol::read(void *buf, size_t count, int timeout) {
         return bytes;
     }
     if (timeout < 0) {
-        while (thr != nullptr && buffer_recv.empty())
+        while (thr != nullptr && buffer_recv.empty()) {
             cv_recv.wait(lock);
+        }
         size_t bytes = std::min(buffer_recv.size(), count);
-        if (bytes == 0)
+        if (bytes == 0) {
             return -1;
+        }
         std::copy(buffer_recv.begin(), buffer_recv.begin() + bytes, static_cast<uint8_t *>(buf));
         buffer_recv.erase(buffer_recv.begin(), buffer_recv.begin() + bytes);
         return bytes;
@@ -128,6 +131,7 @@ void EchoProtocol::thread(bool connecting) {
             connection->receiveStart(big_win_size * 2);
 
             int bytes = connection->receive(buffer, HEADER_SIZE + PACKET_SIZE + CRC_SIZE);
+            assert(bytes >= 0);
             Packet p = Packet::loadHeaderFromBytes(std::vector<uint8_t>(buffer, buffer + HEADER_SIZE));
             p.loadDataFromBytes(std::vector<uint8_t>(buffer + HEADER_SIZE, buffer + HEADER_SIZE + p.getSize()));
             p.loadCRCFromBytes(std::vector<uint8_t>(buffer + HEADER_SIZE + p.getSize(),
@@ -138,8 +142,11 @@ void EchoProtocol::thread(bool connecting) {
                 st.pop();
             }
             status = READY;
-            if (p.isSet(Flag::FIN) && p.isSet(Flag::ACK1))
+            
+            if (p.isSet(Flag::FIN) && p.isSet(Flag::ACK1)) {
                 return;
+            }
+            
             if (p.isSet(Flag::SYN) || p.getSize() > 0) {
                 status = PLEASE_ACK;
             }
@@ -174,7 +181,8 @@ void EchoProtocol::thread(bool connecting) {
         auto end = std::chrono::system_clock::now();
         std::this_thread::sleep_for(big_win_size + start - end);
 
-        qDebug() << str[(int)status];
+        // NOLINTNEXTLINE(cppcoreguidelines-pro-bounds-constant-array-index)
+        qDebug() << str[status];
 
         // sending a packet
         start = std::chrono::system_clock::now();
@@ -219,9 +227,11 @@ void EchoProtocol::thread(bool connecting) {
         connection->send(bytes.data(), bytes.size());
         connection->sendWait();
 
+        // NOLINTNEXTLINE(cppcoreguidelines-pro-bounds-constant-array-index)
         qDebug() << str[status];
-        if (status == CLOSING)
+        if (status == CLOSING) {
             return;
+        }
 
         end = std::chrono::system_clock::now();
         std::this_thread::sleep_for(big_win_size + start - end);

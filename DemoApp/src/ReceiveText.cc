@@ -12,7 +12,8 @@ ViewPtr ReceiveText::runAction() {
     std::vector<char> message;
     size_t bufforSize = 4096;
     message.resize(bufforSize);
-    size_t messageLength = 0, readLength = 0;
+    size_t messageLength = 0;
+    ssize_t readLength = 0;
 
     EchoProtocol protocol(winSize, sendFreq, recvFreq, (int)getMainConfig()->getLimFor(recvFreq, winSize, 0.0));
 
@@ -49,7 +50,9 @@ ViewPtr ReceiveText::runAction() {
     std::cout << clearFormatting() << setFormatting({ConsoleFormat::BOLD}) << "\n Received message:\n\n"
               << clearFormatting();
 
-    std::cout << message.data();
+    for (size_t i = 0; i < messageLength; i++) {
+        std::cout << message[i];
+    }
 
     std::cout << setFormatting({ConsoleFormat::T_YELLOW}) << "\n\n Press enter to return from this view..."
               << clearFormatting();

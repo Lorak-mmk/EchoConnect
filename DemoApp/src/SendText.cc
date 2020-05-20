@@ -32,7 +32,8 @@ ViewPtr SendText::runAction() {
     }
 
     std::cout << setFormatting({ConsoleFormat::T_YELLOW})
-              << "\n\n  Message sent successfuly, press enter to return to the previous view..." << clearFormatting();
+              << "\n\n Message sent successfuly, press enter to return to the previous view..." << clearFormatting();
+
     Utils::waitForEnter();
 
     return parent;

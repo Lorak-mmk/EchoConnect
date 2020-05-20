@@ -141,25 +141,30 @@ void EchoProtocol::thread(bool connecting) {
             while (!st.empty() && st.top().isSet(Flag::DMD) && st.top().getNumber() > num) {
                 st.pop();
             }
+
             status = READY;
-            
+
             if (p.isSet(Flag::FIN) && p.isSet(Flag::ACK1)) {
                 return;
             }
-            
+
             if (p.isSet(Flag::SYN) || p.getSize() > 0) {
                 status = PLEASE_ACK;
             }
+
             if (p.isSet(Flag::FIN)) {
                 status = CLOSING;
             }
+
             if (p.isSet(Flag::DMD)) {
                 status = PLEASE_RESEND;
             }
+
             if (p.isSet(Flag::ACK1)) {
                 assert(st.top().getNumber() + 1 == num);
                 st.pop();
             }
+
             if (p.getSize() > 0) {
                 {
                     std::unique_lock<std::mutex> lock(m_recv);
@@ -168,6 +173,7 @@ void EchoProtocol::thread(bool connecting) {
                 }
                 cv_recv.notify_one();
             }
+
             std::vector<uint8_t> rec(buffer, buffer + HEADER_SIZE + p.getSize() + CRC_SIZE);
             qDebug() << "received" << rec;
         } catch (Packet::PacketException &e) {

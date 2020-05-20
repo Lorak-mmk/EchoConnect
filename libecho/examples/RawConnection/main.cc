@@ -68,7 +68,7 @@ int main(int argc, char *argv[]) {
         argv++;
         argc--;
 
-        auto connection = EchoRawConnection::getBitEchoRawConnection(winsize, freq, freq, lim);
+        auto connection = EchoRawConnection::getBitEchoRawConnectionv2(winsize, freq, freq, lim);
 
         auto *buf = new uint8_t[bytes];
         connection->receiveStart(20s);
@@ -87,7 +87,7 @@ int main(int argc, char *argv[]) {
             printHelp(name);
         }
 
-        auto connection = EchoRawConnection::getBitEchoRawConnection(winsize, freq, freq, lim);
+        auto connection = EchoRawConnection::getBitEchoRawConnectionv2(winsize, freq, freq, lim);
         connection->send((uint8_t *)argv[0], strlen(argv[0]));
         connection->sendWait();
 

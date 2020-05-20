@@ -22,7 +22,7 @@ int main(int argc, char **argv) {
     int freq = atoi(argv[2]);
     int lim = atoi(argv[3]);
 
-    auto connection = EchoRawConnection::getBitEchoRawConnection(win_size, freq, freq, lim);
+    auto connection = EchoRawConnection::getBitEchoRawConnectionv2(win_size, freq, freq, lim);
 
     connection->send(out, 40);
     for (int i = 0; i < N; i++)

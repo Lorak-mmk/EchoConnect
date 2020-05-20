@@ -13,8 +13,14 @@ public:
     /**
      * @brief @see EchoRawConnection::getBitEchoRawConnection
      */
+    static EchoRawConnectionImpl *getBitEchoRawConnection(int win_size, int send_lo_freq, int send_hi_freq,
+                                                          int recv_lo_freq, int recv_hi_freq, int left_lim,
+                                                          int right_lim);
 
-    static EchoRawConnectionImpl *getBitEchoRawConnection(int win_size, int send_freq, int recv_freq, int lim);
+    /**
+     * @brief @see EchoRawConnection::getBitEchoRawConnectionv2
+     */
+    static EchoRawConnectionImpl *getBitEchoRawConnectionv2(int win_size, int send_freq, int recv_freq, int lim);
 
     /**
      * @brief @see EchoRawConnection::start

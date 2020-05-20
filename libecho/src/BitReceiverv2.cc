@@ -171,7 +171,7 @@ uint8_t BitReceiverv2::read_bit() {
 
     if (dbg) {
         if (res != ((*dbg >> seq) & 1)) {
-            printf("should be %hhu\n", !res);
+            printf("should be %d\n", !res);
             for (int i = 0; i < win_size; i++) {
                 for (int j = 0; j < mags[i]; j++) {
                     putchar(j == (int)lim ? '|' : '#');

@@ -33,6 +33,8 @@ public:
     static void waitForEnter();
     static bool readArguments(std::map<std::string, Argument> &arguments);
     static size_t fileSize(std::ifstream &file);
+    static uint64_t HTONLL(uint64_t x);
+    static uint64_t NTOHLL(uint64_t x);
 };
 
 #endif  // DEMOAPP_UTILS_H

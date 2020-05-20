@@ -10,7 +10,7 @@ void AAction::setDefaults() {
             case INTEGER:
                 arg.value = getMainConfig()->getValue(0, key);
                 break;
-            case DOUBLE:
+            case REAL:
                 arg.value = getMainConfig()->getValue(0.0, key);
                 break;
             case STRING:

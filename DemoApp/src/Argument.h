@@ -6,7 +6,7 @@
 
 #include "Console.h"
 
-enum ArgumentType { INTEGER, DOUBLE, STRING };
+enum ArgumentType { INTEGER, REAL, STRING };
 
 typedef struct Argument {
     std::string title;
@@ -31,7 +31,7 @@ typedef struct Argument {
                 }
                 break;
 
-            case DOUBLE:
+            case REAL:
                 std::cout << setFormatting({ConsoleFormat::BOLD}) << " " << title << clearFormatting()
                           << " - floating point number: ";
                 if (valueSet) {

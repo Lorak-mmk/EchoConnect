@@ -12,7 +12,7 @@ ViewPtr Settings::runAction() {
                 getMainConfig()->setValue(std::get<int>(arg.value), key);
                 break;
 
-            case DOUBLE:
+            case REAL:
                 getMainConfig()->setValue(std::get<double>(arg.value), key);
                 break;
 

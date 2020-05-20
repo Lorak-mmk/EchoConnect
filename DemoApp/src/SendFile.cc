@@ -3,20 +3,6 @@
 #include "EchoProtocol.h"
 #include "Utils.h"
 
-#ifdef _WIN32
-#include <winsock2.h>
-#elif defined __unix__
-#include <arpa/inet.h>
-#endif
-
-
-uint64_t HTONLL(uint64_t x) {
-    return ((1 == htonl(1)) ? (x) : (((uint64_t)htonl((x)&0xFFFFFFFFUL)) << 32) | htonl((uint32_t)((x) >> 32)));
-}
-
-uint64_t NTOHLL(uint64_t x) {
-    return ((1 == ntohl(1)) ? (x) : (((uint64_t) ntohl((x) & 0xFFFFFFFFUL)) << 32) | ntohl((uint32_t) ((x) >> 32)));
-}
 
 constexpr int DefaultLim = 200;
 constexpr size_t BufSize = 65535;
@@ -50,7 +36,7 @@ ViewPtr SendFile::runAction() {
     try {
         std::cout << " Connecting to other host\n";
         protocol.connect();
-        uint64_t netSize = HTONLL(size);
+        uint64_t netSize = Utils::HTONLL(size);
         std::cout << " Sending file size (" << size << " bytes)\n";
         protocol.write(&netSize, sizeof(netSize));
     } catch (const std::exception &e) {  // TODO: right type

@@ -4,6 +4,12 @@
 
 #include "Utils.h"
 
+#ifdef _WIN32
+#include <winsock2.h>
+#elif defined __unix__
+#include <arpa/inet.h>
+#endif
+
 void Utils::clear() {
     std::cout << clearScreen();
 }
@@ -62,7 +68,7 @@ void changeArgument(Argument &a) {
         case INTEGER:
             a.value = Utils::readValue<int>(prompt);
             break;
-        case DOUBLE:
+        case REAL:
             a.value = Utils::readValue<double>(prompt);
             break;
         case STRING:
@@ -121,4 +127,12 @@ size_t Utils::fileSize(std::ifstream &file) {
     file.seekg(0, std::ios_base::beg);
 
     return length;
+}
+
+uint64_t Utils::HTONLL(uint64_t x) {
+    return ((1 == htonl(1)) ? (x) : (((uint64_t)htonl((x)&0xFFFFFFFFUL)) << 32) | htonl((uint32_t)((x) >> 32)));
+}
+
+uint64_t Utils::NTOHLL(uint64_t x) {
+    return ((1 == ntohl(1)) ? (x) : (((uint64_t) ntohl((x) & 0xFFFFFFFFUL)) << 32) | ntohl((uint32_t) ((x) >> 32)));
 }

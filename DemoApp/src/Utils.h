@@ -43,4 +43,9 @@ public:
 #endif
 };
 
+#ifdef __APPLE__
+#define Utils::HTONLL HTONLL
+#define Utils::NTOHLL NTOHLL
+#endif
+
 #endif  // DEMOAPP_UTILS_H

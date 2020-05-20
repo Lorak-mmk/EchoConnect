@@ -1,4 +1,5 @@
 #include "EchoProtocol.h"
+#include "Exceptions.h"
 #include "IReceiver.h"
 #include "Packet.h"
 
@@ -45,7 +46,7 @@ size_t EchoProtocol::write(const void *buf, size_t count) {
         qDebug() << "write starting at position" << pos << "/" << count;
         {
             if (closed) {
-                throw IReceiver::ConnectionBroken{};
+                throw ConnectionBroken{};
             }
             std::unique_lock<std::mutex> lock(m_send);
             size_t copied_bytes = std::min(PACKET_SIZE - buffer_send.size(), count - pos);
@@ -98,17 +99,17 @@ void EchoProtocol::thread(bool connecting) {
     if (connecting) {
         // sending SYN packet if needed
         auto start = std::chrono::system_clock::now();
-        
+
         Packet p = PacketBuilder().setNumber(++number).setFlag(Flag::SYN).getPacket();
         st.push(p);
         std::vector<uint8_t> bytes = p.toBytes();
-        
+
         connection->sendStart();
         connection->send(bytes.data(), bytes.size());
         connection->sendWait();
-        
+
         qDebug() << "sending" << bytes;
-        
+
         auto end = std::chrono::system_clock::now();
         std::this_thread::sleep_for(big_win_size + start - end);
     }
@@ -116,17 +117,17 @@ void EchoProtocol::thread(bool connecting) {
     while (true) {
         // receiving a packet
         auto start = std::chrono::system_clock::now();
-        
+
         try {
             connection->receiveStart(big_win_size * 2);
-            
+
             int bytes = connection->receive(buffer, HEADER_SIZE + PACKET_SIZE + CRC_SIZE);
             Packet p = Packet::loadHeaderFromBytes(std::vector<uint8_t>(buffer, buffer + HEADER_SIZE));
             p.loadDataFromBytes(std::vector<uint8_t>(buffer + HEADER_SIZE,
                                                      buffer + HEADER_SIZE + p.getSize()));
             p.loadCRCFromBytes(std::vector<uint8_t>(buffer + HEADER_SIZE + p.getSize(),
                                                     buffer + HEADER_SIZE + p.getSize() + CRC_SIZE));
-            
+
             uint16_t num = p.getNumber();
             while (!st.empty() && st.top().isSet(Flag::DMD) && st.top().getNumber() > num) {
                 st.pop();
@@ -159,35 +160,35 @@ void EchoProtocol::thread(bool connecting) {
         } catch (Packet::PacketException &e) {
             status = CORRUPTED;
             qDebug() << "corrupted" << e.what();
-        } catch (IReceiver::ConnectionBroken &e) {
+        } catch (ConnectionBroken &e) {
             qDebug() << "connection broken";
             return;
         }
-        
+
         auto end = std::chrono::system_clock::now();
         std::this_thread::sleep_for(big_win_size + start - end);
-        
+
         qDebug() << str[(int)status];
-        
+
         // sending a packet
         start = std::chrono::system_clock::now();
-        
+
         if (status == CORRUPTED) {
             Packet p = PacketBuilder().setNumber(number += 2).setFlag(Flag::DMD).getPacket();
             st.push(p);
         }
-        
+
         if (status == PLEASE_ACK) {
             Packet p = PacketBuilder().setNumber(number += 2).setFlag(Flag::ACK1).getPacket();
             st.push(p);
         }
-        
+
         if (status == CLOSING) {
             Packet p = PacketBuilder().setNumber(number += 2).
                        setFlag(Flag::FIN).setFlag(Flag::ACK1).getPacket();
             st.push(p);
         }
-        
+
         if (status == READY) {
             if (closed && buffer_send.empty()) {
                 Packet p = PacketBuilder().setNumber(number += 2).setFlag(Flag::FIN).getPacket();
@@ -202,20 +203,20 @@ void EchoProtocol::thread(bool connecting) {
                 cv_send.notify_one();
             }
         }
-        
+
         assert(!st.empty());
-        
+
         std::vector<uint8_t> bytes = st.top().toBytes();
-        
+
         qDebug() << "sending" << bytes;
-        
+
         connection->sendStart();
         connection->send(bytes.data(), bytes.size());
         connection->sendWait();
-        
+
         qDebug() << str[status];
         if (status == CLOSING) return;
-        
+
         end = std::chrono::system_clock::now();
         std::this_thread::sleep_for(big_win_size + start - end);
     }

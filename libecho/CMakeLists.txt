@@ -51,7 +51,8 @@ set(SRC_FILES
 set(API_FILES
         ${API_DIR}/Echo.h
         ${API_DIR}/EchoRawConnection.h
-        ${API_DIR}/EchoProtocol.h)
+        ${API_DIR}/EchoProtocol.h
+        ${API_DIR}/Exceptions.h)
 
 include_directories(${API_DIR})
 

@@ -34,6 +34,7 @@ void EchoProtocol::close() {
     closed = true;
     thr->join();
     delete thr;
+    thr = nullptr;
     qDebug() << "close successfully finished";
 }
 
@@ -60,15 +61,24 @@ size_t EchoProtocol::write(const void *buf, size_t count) {
     return pos;
 }
 
-size_t EchoProtocol::read(void *buf, size_t count, size_t timeout) {
+ssize_t EchoProtocol::read(void *buf, size_t count, int timeout) {
+    if (count == 0) return 0;
     std::unique_lock<std::mutex> lock(m_recv);
-    if (cv_recv.wait_for(lock, timeout * 1s, [&] { return !buffer_recv.empty(); })) {
+    if (timeout >= 0 && cv_recv.wait_for(lock, timeout * 1s, [&] { return !buffer_recv.empty(); })) {
         size_t bytes = std::min(buffer_recv.size(), count);
         std::copy(buffer_recv.begin(), buffer_recv.begin() + bytes, static_cast<uint8_t *>(buf));
         buffer_recv.erase(buffer_recv.begin(), buffer_recv.begin() + bytes);
         return bytes;
     }
-    throw IReceiver::ConnectionBroken{};
+    if (timeout < 0) {
+        while (thr != nullptr && buffer_recv.empty()) cv_recv.wait(lock);
+        size_t bytes = std::min(buffer_recv.size(), count);
+        if (bytes == 0) return -1;
+        std::copy(buffer_recv.begin(), buffer_recv.begin() + bytes, static_cast<uint8_t *>(buf));
+        buffer_recv.erase(buffer_recv.begin(), buffer_recv.begin() + bytes);
+        return bytes;
+    }
+    return thr == nullptr ? -1 : 0;
 }
 
 enum Status { READY, PLEASE_ACK, PLEASE_RESEND, CORRUPTED, CLOSING };

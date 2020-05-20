@@ -47,7 +47,7 @@ public:
      * Can receive 0 bytes, but if it doesn't receive any signal for timeout seconds,
      * it throws an exception.
      */
-    size_t read(void *buf, size_t count, size_t timeout);
+    ssize_t read(void *buf, size_t count, int timeout);
 
     /**
      * Writes count bytes to audio output.

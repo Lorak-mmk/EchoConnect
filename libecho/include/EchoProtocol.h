@@ -59,8 +59,8 @@ private:
     std::atomic<bool> closed = false, is_connected = false;
     uint16_t number = 0;
 
-    std::mutex m_send, m_recv, m_thread;
-    std::condition_variable cv_send, cv_recv, cv_listen;
+    std::mutex m_send, m_recv;
+    std::condition_variable cv_send, cv_recv;
     std::thread *thr = nullptr;
 
     std::unique_ptr<EchoRawConnection> connection;

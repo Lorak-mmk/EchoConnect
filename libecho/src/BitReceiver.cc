@@ -1,7 +1,7 @@
 #include "BitReceiver.h"
-#include "HammingCode.h"
-#include "Dft.h"
 #include <cmath>
+#include "Dft.h"
+#include "HammingCode.h"
 
 static const int SAMPLE_RATE = 44100;
 static const int SAMPLE_SIZE = 16;

@@ -1,5 +1,3 @@
-#include <unistd.h>
-
 #include "Echo.h"
 #include "EchoCalibration.h"
 

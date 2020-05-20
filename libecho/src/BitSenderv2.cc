@@ -1,7 +1,7 @@
+#include "BitSenderv2.h"
 #include <cmath>
 #include <iostream>
-#include "BitSenderv2.h"
-#define PI 3.14159265358979323846
+static constexpr double PI = 3.14159265358979323846;
 
 static const double RISE = 0.1;
 static const double FALL = 0.1;

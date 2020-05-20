@@ -1,8 +1,8 @@
+#include "Calibrator.h"
 #include <cmath>
 #include <thread>
-#include "Calibrator.h"
 #include "Dft.h"
-#define PI 3.14159265358979323846
+static constexpr double PI = 3.14159265358979323846;
 
 static const int SAMPLE_RATE = 44100;
 static const double RISE = 0.1;

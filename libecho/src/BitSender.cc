@@ -1,7 +1,7 @@
 #include "BitSender.h"
-#include "HammingCode.h"
 #include <cmath>
-#define PI 3.14159265358979323846
+#include "HammingCode.h"
+static constexpr double PI = 3.14159265358979323846;
 
 static const QAudioFormat::Endian OUTPUT_BYTEORDER = QAudioFormat::LittleEndian;
 static const int OUTPUT_CHANNEL_COUNT = 1;

@@ -1,6 +1,6 @@
 #include "BitReceiverv2.h"
-#include "Dft.h"
 #include <cmath>
+#include "Dft.h"
 
 static const int SAMPLE_RATE = 44100;
 static const int SAMPLE_SIZE = 16;

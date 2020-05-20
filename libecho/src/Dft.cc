@@ -1,6 +1,6 @@
 #include "Dft.h"
 #include <cmath>
-#define PI 3.14159265358979323846
+static constexpr double PI = 3.14159265358979323846;
 
 static double mag(double re, double im) {
     return sqrt(re * re + im * im);

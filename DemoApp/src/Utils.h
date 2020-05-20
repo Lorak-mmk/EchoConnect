@@ -3,7 +3,7 @@
 
 #include <iostream>
 #include <limits>
-#include <vector>
+#include <map>
 
 #include "Argument.h"
 #include "Console.h"
@@ -31,7 +31,7 @@ public:
     }
     static void invalidValue(const std::string &info);
     static void waitForEnter();
-    static bool readArguments(std::vector<Argument> &arguments);
+    static bool readArguments(std::map<std::string, Argument> &arguments);
 };
 
 #endif  // DEMOAPP_UTILS_H

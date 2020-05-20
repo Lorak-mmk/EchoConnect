@@ -25,12 +25,12 @@ void Utils::waitForEnter() {
     std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
 }
 
-size_t printChooseArgumentsOptions(const std::vector<Argument> &arguments, bool allSpecified) {
+size_t printChooseArgumentsOptions(const std::map<std::string, Argument> &arguments, bool allSpecified) {
     size_t biggestOption = arguments.size();
 
     size_t i = 1;
-    for (const Argument &a : arguments) {
-        Utils::printOption(i, "Change " + a.name);
+	for(auto & [key, arg] : arguments) {
+        Utils::printOption(i, "Change " + arg.title);
         i++;
     }
 
@@ -74,7 +74,7 @@ void changeArgument(Argument &a) {
     a.valueSet = true;
 }
 
-bool Utils::readArguments(std::vector<Argument> &arguments) {
+bool Utils::readArguments(std::map<std::string, Argument> &arguments) {
     if (arguments.empty()) {
         return true;
     }
@@ -88,22 +88,26 @@ bool Utils::readArguments(std::vector<Argument> &arguments) {
         std::cout << setFormatting({ConsoleFormat::T_BLUE}) << " You may specify following arguments:\n\n"
                   << clearFormatting();
 
-        for (const Argument &a : arguments) {
-            allSpecified &= a.valueSet;
-            a.print();
+		for(auto const& [key, arg] : arguments) {
+            allSpecified &= arg.valueSet;
+            arg.print();
         }
 
         std::cout << "\n\n";
         size_t option = printChooseArgumentsOptions(arguments, allSpecified);
 
         if (option == 0) {
+            std::cout << setCursor(4, 0) << clearLinesBelow();
             return false;
         }
 
         if (option == arguments.size() + 1) {
+            std::cout << setCursor(4, 0) << clearLinesBelow();
             return true;
         }
 
-        changeArgument(arguments[option - 1]);
+        auto it = arguments.begin();
+		for (size_t i = 1; i < option; i++, it++) {}
+        changeArgument(it->second);
     }
 }

@@ -5,22 +5,22 @@
 using namespace std::string_literals;
 
 void AAction::setDefaults() {
-    for (Argument &a : arguments) {
-        switch (a.type) {
+	for(auto & [key, arg] : arguments) {
+        switch (arg.type) {
             case INTEGER:
-                a.value = getMainConfig()->getValue(0, a.name);
+                arg.value = getMainConfig()->getValue(0, key);
                 break;
             case DOUBLE:
-                a.value = getMainConfig()->getValue(0.0, a.name);
+                arg.value = getMainConfig()->getValue(0.0, key);
                 break;
             case STRING:
-                a.value = getMainConfig()->getValue(""s, a.name);
+                arg.value = getMainConfig()->getValue(""s, key);
                 break;
             default:
                 break;
         }
 
-        a.valueSet = true;
+        arg.valueSet = true;
     }
 }
 

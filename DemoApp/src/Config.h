@@ -7,17 +7,16 @@
 using json = nlohmann::json;
 
 namespace nlohmann {
-    template <typename T>
-    nlohmann::json &operator/(nlohmann::json &a, T b) {
-        return a.at(b);
-    }
-
-    template <typename T>
-    nlohmann::json &operator|(nlohmann::json &a, T b) {
-        return a[b];
-    }
+template <typename T>
+nlohmann::json &operator/(nlohmann::json &a, T b) {
+    return a.at(b);
 }
 
+template <typename T>
+nlohmann::json &operator|(nlohmann::json &a, T b) {
+    return a[b];
+}
+}  // namespace nlohmann
 
 class Config {
 public:

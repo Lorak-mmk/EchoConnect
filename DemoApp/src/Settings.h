@@ -6,9 +6,9 @@
 class Settings : public AAction {
 public:
     Settings(std::string name, std::string title) : AAction(name, title) {
-        arguments.emplace_back(Argument("sendFreq", "dafault sending sound frequency", ArgumentType::INTEGER));
-        arguments.emplace_back(Argument("recvFreq", "default receiving sound frequency", ArgumentType::INTEGER));
-        arguments.emplace_back(Argument("winSize", "default sound window size", ArgumentType::INTEGER));
+        arguments.insert({"sendFreq", Argument("sending sound frequency", ArgumentType::INTEGER)});
+        arguments.insert({"recvFreq", Argument("receiving sound frequency", ArgumentType::INTEGER)});
+        arguments.insert({"winSize", Argument("sound window size", ArgumentType::INTEGER)});
     }
 
 protected:

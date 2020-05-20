@@ -9,13 +9,12 @@
 enum ArgumentType { INTEGER, DOUBLE, STRING };
 
 typedef struct Argument {
-    std::string name;
     std::string title;
     ArgumentType type;
     bool valueSet;
     std::variant<std::string, int, double> value;
 
-    Argument(std::string name, std::string title, ArgumentType type) : name(name), title(title), type(type) {
+    Argument(std::string title, ArgumentType type) : title(title), type(type) {
         valueSet = false;
     }
 

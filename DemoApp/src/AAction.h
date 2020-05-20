@@ -2,7 +2,7 @@
 #define DEMOAPP_IACTION_H
 
 #include <string>
-#include <vector>
+#include <map>
 
 #include "AView.h"
 #include "Argument.h"
@@ -16,7 +16,7 @@ public:
     ViewPtr execute() override;
 
 protected:
-    std::vector<Argument> arguments;
+	std::map<std::string, Argument> arguments;
     virtual void setDefaults();
     virtual ViewPtr runAction() = 0;
 };

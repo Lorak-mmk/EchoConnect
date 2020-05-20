@@ -6,18 +6,18 @@
 ViewPtr Settings::runAction() {
     std::cout << " Please wait, we are updating your preferences";
 
-    for (const Argument &a : arguments) {
-        switch (a.type) {
+	for (auto & [key, arg] : arguments) {
+        switch (arg.type) {
             case INTEGER:
-                getMainConfig()->setValue(std::get<int>(a.value), a.name);
+                getMainConfig()->setValue(std::get<int>(arg.value), key);
                 break;
 
             case DOUBLE:
-                getMainConfig()->setValue(std::get<double>(a.value), a.name);
+                getMainConfig()->setValue(std::get<double>(arg.value), key);
                 break;
 
             case STRING:
-                getMainConfig()->setValue(std::get<std::string>(a.value), a.name);
+                getMainConfig()->setValue(std::get<std::string>(arg.value), key);
                 break;
 
             default:

@@ -131,11 +131,11 @@ size_t Utils::fileSize(std::ifstream &file) {
 }
 
 #ifndef __APPLE__
-uint64_t Utils::HTONLL(uint64_t x) {
+uint64_t HTONLL(uint64_t x) {
     return ((1 == htonl(1)) ? (x) : (((uint64_t)htonl((x)&0xFFFFFFFFUL)) << 32) | htonl((uint32_t)((x) >> 32)));
 }
 
-uint64_t Utils::NTOHLL(uint64_t x) {
+uint64_t NTOHLL(uint64_t x) {
     return ((1 == ntohl(1)) ? (x) : (((uint64_t) ntohl((x) & 0xFFFFFFFFUL)) << 32) | ntohl((uint32_t) ((x) >> 32)));
 }
 #endif

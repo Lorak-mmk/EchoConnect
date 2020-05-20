@@ -36,7 +36,7 @@ ViewPtr SendFile::runAction() {
     try {
         std::cout << " Connecting to other host\n";
         protocol.connect();
-        uint64_t netSize = Utils::HTONLL(size);
+        uint64_t netSize = HTONLL(size);
         std::cout << " Sending file size (" << size << " bytes)\n";
         protocol.write(&netSize, sizeof(netSize));
     } catch (const std::exception &e) {  // TODO: right type

@@ -48,7 +48,7 @@ ViewPtr ReceiveFile::runAction() {
     try {
         uint64_t netSize = 0;
         protocol.read(&netSize, sizeof(netSize), timeout);
-        size = Utils::NTOHLL(netSize);
+        size = NTOHLL(netSize);
     } catch (const std::exception &e) {
         output.close();
         std::cout << setFormatting({ConsoleFormat::T_RED}) << " Error while receiving length: " << e.what()

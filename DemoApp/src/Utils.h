@@ -8,9 +8,6 @@
 #include "Argument.h"
 #include "Console.h"
 
-#ifdef _WIN32
-using ssize_t = long long;
-#endif
 
 class Utils {
 public:

@@ -27,6 +27,9 @@ set(SRC_FILES
         ${SRC_DIR}/EchoRawConnectionImpl.cc
         ${SRC_DIR}/EchoProtocol.h
         ${SRC_DIR}/EchoProtocol.cc
+        ${SRC_DIR}/Calibrator.cc
+        ${SRC_DIR}/Calibrator.h
+        ${SRC_DIR}/EchoCalibration.cc
         ${SRC_DIR}/AudioOutput.cc
         ${SRC_DIR}/AudioOutput.h
         ${SRC_DIR}/AudioInput.cc
@@ -45,13 +48,16 @@ set(SRC_FILES
         ${SRC_DIR}/BitReceiverv2.h
         ${SRC_DIR}/Packet.h
         ${SRC_DIR}/Packet.cc
+        ${SRC_DIR}/Dft.h
+        ${SRC_DIR}/Dft.cc
         ${SRC_DIR}/HammingCode.h
         ${SRC_DIR}/HammingCode.cc
         ${SRC_DIR}/Typename.h)
 
 set(API_FILES
         ${API_DIR}/Echo.h
-        ${API_DIR}/EchoRawConnection.h)
+        ${API_DIR}/EchoRawConnection.h
+        ${API_DIR}/EchoCalibration.h)
 
 include_directories(${API_DIR})
 

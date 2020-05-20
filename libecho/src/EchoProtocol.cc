@@ -1,4 +1,5 @@
 #include "EchoProtocol.h"
+#include "Exceptions.h"
 #include "IReceiver.h"
 #include "Packet.h"
 
@@ -18,22 +19,32 @@ EchoProtocol::EchoProtocol(int winsize, int send_freq, int recv_freq, int lim)
       buffer(new uint8_t[2 * PACKET_SIZE]) {}
 
 EchoProtocol::~EchoProtocol() {
+    if (is_connected) {
+        close();
+    }
     delete[] buffer;
 }
 
 void EchoProtocol::listen() {
+    assert(!is_connected);
     thr = new std::thread{&EchoProtocol::thread, this, false};
+    is_connected = true;
 }
 
 void EchoProtocol::connect() {
+    assert(!is_connected);
     thr = new std::thread{&EchoProtocol::thread, this, true};
+    is_connected = true;
 }
 
 void EchoProtocol::close() {
+    assert(is_connected);
     qDebug() << "close";
     closed = true;
     thr->join();
     delete thr;
+    thr = nullptr;
+    is_connected = false;
     qDebug() << "close successfully finished";
 }
 
@@ -44,7 +55,7 @@ size_t EchoProtocol::write(const void *buf, size_t count) {
         qDebug() << "write starting at position" << pos << "/" << count;
         {
             if (closed) {
-                throw IReceiver::ConnectionBroken{};
+                throw ConnectionBroken{};
             }
             std::unique_lock<std::mutex> lock(m_send);
             size_t copied_bytes = std::min(PACKET_SIZE - buffer_send.size(), count - pos);
@@ -60,20 +71,35 @@ size_t EchoProtocol::write(const void *buf, size_t count) {
     return pos;
 }
 
-size_t EchoProtocol::read(void *buf, size_t count, size_t timeout) {
+ssize_t EchoProtocol::read(void *buf, size_t count, int timeout) {
+    if (count == 0) {
+        return 0;
+    }
     std::unique_lock<std::mutex> lock(m_recv);
-    if (cv_recv.wait_for(lock, timeout * 1s, [&] { return !buffer_recv.empty(); })) {
+    if (timeout >= 0 && cv_recv.wait_for(lock, timeout * 1s, [&] { return !buffer_recv.empty(); })) {
         size_t bytes = std::min(buffer_recv.size(), count);
-        std::copy(static_cast<uint8_t *>(buf), static_cast<uint8_t *>(buf) + bytes, buffer_recv.begin());
+        std::copy(buffer_recv.begin(), buffer_recv.begin() + bytes, static_cast<uint8_t *>(buf));
         buffer_recv.erase(buffer_recv.begin(), buffer_recv.begin() + bytes);
         return bytes;
     }
-    throw IReceiver::ConnectionBroken{};
+    if (timeout < 0) {
+        while (thr != nullptr && buffer_recv.empty()) {
+            cv_recv.wait(lock);
+        }
+        size_t bytes = std::min(buffer_recv.size(), count);
+        if (bytes == 0) {
+            return -1;
+        }
+        std::copy(buffer_recv.begin(), buffer_recv.begin() + bytes, static_cast<uint8_t *>(buf));
+        buffer_recv.erase(buffer_recv.begin(), buffer_recv.begin() + bytes);
+        return bytes;
+    }
+    return thr == nullptr ? -1 : 0;
 }
 
-enum Status { READY, PLEASE_ACK, PLEASE_RESEND, CORRUPTED };
+enum Status { READY, PLEASE_ACK, PLEASE_RESEND, CORRUPTED, CLOSING };
 
-const char *str[4] = {"READY", "PLEASE_ACK", "PLEASE_RESEND", "CORRUPTED"};
+const char *str[5] = {"READY", "PLEASE_ACK", "PLEASE_RESEND", "CORRUPTED", "CLOSING"};
 
 void EchoProtocol::thread(bool connecting) {
     std::stack<Packet> st;
@@ -104,7 +130,7 @@ void EchoProtocol::thread(bool connecting) {
         try {
             connection->receiveStart(big_win_size * 2);
 
-            int bytes = connection->receive(buffer, HEADER_SIZE + PACKET_SIZE + CRC_SIZE);
+            connection->receive(buffer, HEADER_SIZE + PACKET_SIZE + CRC_SIZE);
             Packet p = Packet::loadHeaderFromBytes(std::vector<uint8_t>(buffer, buffer + HEADER_SIZE));
             p.loadDataFromBytes(std::vector<uint8_t>(buffer + HEADER_SIZE, buffer + HEADER_SIZE + p.getSize()));
             p.loadCRCFromBytes(std::vector<uint8_t>(buffer + HEADER_SIZE + p.getSize(),
@@ -114,19 +140,30 @@ void EchoProtocol::thread(bool connecting) {
             while (!st.empty() && st.top().isSet(Flag::DMD) && st.top().getNumber() > num) {
                 st.pop();
             }
+
             status = READY;
-            if (p.isSet(Flag::FIN) && p.isSet(Flag::ACK1))
+
+            if (p.isSet(Flag::FIN) && p.isSet(Flag::ACK1)) {
                 return;
-            if (p.isSet(Flag::SYN) || p.isSet(Flag::FIN) || p.getSize() > 0) {
+            }
+
+            if (p.isSet(Flag::SYN) || p.getSize() > 0) {
                 status = PLEASE_ACK;
             }
+
+            if (p.isSet(Flag::FIN)) {
+                status = CLOSING;
+            }
+
             if (p.isSet(Flag::DMD)) {
                 status = PLEASE_RESEND;
             }
+
             if (p.isSet(Flag::ACK1)) {
                 assert(st.top().getNumber() + 1 == num);
                 st.pop();
             }
+
             if (p.getSize() > 0) {
                 {
                     std::unique_lock<std::mutex> lock(m_recv);
@@ -135,12 +172,13 @@ void EchoProtocol::thread(bool connecting) {
                 }
                 cv_recv.notify_one();
             }
+
             std::vector<uint8_t> rec(buffer, buffer + HEADER_SIZE + p.getSize() + CRC_SIZE);
             qDebug() << "received" << rec;
         } catch (Packet::PacketException &e) {
             status = CORRUPTED;
-            qDebug() << "corrupted";
-        } catch (IReceiver::ConnectionBroken &e) {
+            qDebug() << "corrupted" << e.what();
+        } catch (ConnectionBroken &e) {
             qDebug() << "connection broken";
             return;
         }
@@ -148,7 +186,8 @@ void EchoProtocol::thread(bool connecting) {
         auto end = std::chrono::system_clock::now();
         std::this_thread::sleep_for(big_win_size + start - end);
 
-        qDebug() << str[(int)status];
+        // NOLINTNEXTLINE(cppcoreguidelines-pro-bounds-constant-array-index)
+        qDebug() << str[status];
 
         // sending a packet
         start = std::chrono::system_clock::now();
@@ -160,6 +199,11 @@ void EchoProtocol::thread(bool connecting) {
 
         if (status == PLEASE_ACK) {
             Packet p = PacketBuilder().setNumber(number += 2).setFlag(Flag::ACK1).getPacket();
+            st.push(p);
+        }
+
+        if (status == CLOSING) {
+            Packet p = PacketBuilder().setNumber(number += 2).setFlag(Flag::FIN).setFlag(Flag::ACK1).getPacket();
             st.push(p);
         }
 
@@ -187,6 +231,12 @@ void EchoProtocol::thread(bool connecting) {
         connection->sendStart();
         connection->send(bytes.data(), bytes.size());
         connection->sendWait();
+
+        // NOLINTNEXTLINE(cppcoreguidelines-pro-bounds-constant-array-index)
+        qDebug() << str[status];
+        if (status == CLOSING) {
+            return;
+        }
 
         end = std::chrono::system_clock::now();
         std::this_thread::sleep_for(big_win_size + start - end);

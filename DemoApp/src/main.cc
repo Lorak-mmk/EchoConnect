@@ -1,8 +1,11 @@
 #include <iostream>
 
 #include "views.h"
+#include "Echo.h"
 
-int main() {
+int main(int argc, char **argv) {
+    Echo::initEcho(argc, argv);
+
     ViewPtr mainMenu = std::make_shared<Menu>("mainMenu", "Main Menu");
     ViewPtr experimentalMenu = std::make_shared<Menu>("experimentalMenu", "Experimental");
     ViewPtr sendMenu = std::make_shared<Menu>("sendMenu", "Send");

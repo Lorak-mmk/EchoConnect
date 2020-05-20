@@ -2,6 +2,7 @@
 #include "Echo.h"
 #include "views.h"
 
+
 int main(int argc, char *argv[]) {
     Echo::initEcho(argc, argv);
 
@@ -12,7 +13,8 @@ int main(int argc, char *argv[]) {
             new SendFile{"Send file"}
         }},
         new Menu{"Receive", {
-            new ReceiveText{"Receive text"}
+            new ReceiveText{"Receive text"},
+            new ReceiveFile{"Receive file"}
         }},
         new Menu{"Calibrate", {
             new CalibrateReceive{"Calibrate receiver"},

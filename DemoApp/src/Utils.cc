@@ -1,5 +1,6 @@
 #include <iostream>
 #include <limits>
+#include <fstream>
 
 #include "Utils.h"
 
@@ -111,4 +112,13 @@ bool Utils::readArguments(std::map<std::string, Argument> &arguments) {
         }
         changeArgument(it->second);
     }
+}
+
+size_t Utils::fileSize(std::ifstream& file) {
+    file.ignore( std::numeric_limits<std::streamsize>::max() );
+    std::streamsize length = file.gcount();
+    file.clear();
+    file.seekg( 0, std::ios_base::beg );
+
+    return length;
 }

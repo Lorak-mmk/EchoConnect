@@ -52,13 +52,13 @@ void Config::setFile(const std::string &path) {
     this->filename = path;
 }
 
-double Config::getLimFor(int recvFreq, int winSize) {
+double Config::getLimFor(int recvFreq, int winSize, double def) {
     try {
         return this->config().at("lim").at(std::to_string(recvFreq)).at(std::to_string(winSize)).get<double>();
     } catch (const nlohmann::json::type_error &e) {
-        return -1;
+        return def;
     } catch (const nlohmann::json::out_of_range &e) {
-        return -1;
+        return def;
     }
 }
 

@@ -27,6 +27,8 @@ set(SRC_FILES
         ${SRC_DIR}/CalibrateSend.cc
         ${SRC_DIR}/Menu.h
         ${SRC_DIR}/Menu.cc
+        ${SRC_DIR}/ReceiveFile.h
+        ${SRC_DIR}/ReceiveFile.cc
         ${SRC_DIR}/Utils.h
         ${SRC_DIR}/Utils.cc
         ${SRC_DIR}/Help.h

@@ -25,7 +25,6 @@ set(SRC_FILES
         ${SRC_DIR}/EchoRawConnection.cc
         ${SRC_DIR}/EchoRawConnectionImpl.h
         ${SRC_DIR}/EchoRawConnectionImpl.cc
-        ${SRC_DIR}/EchoProtocol.h
         ${SRC_DIR}/EchoProtocol.cc
         ${SRC_DIR}/AudioOutput.cc
         ${SRC_DIR}/AudioOutput.h
@@ -51,7 +50,8 @@ set(SRC_FILES
 
 set(API_FILES
         ${API_DIR}/Echo.h
-        ${API_DIR}/EchoRawConnection.h)
+        ${API_DIR}/EchoRawConnection.h
+        ${API_DIR}/EchoProtocol.h)
 
 include_directories(${API_DIR})
 

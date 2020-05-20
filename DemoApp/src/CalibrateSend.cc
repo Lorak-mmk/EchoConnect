@@ -5,13 +5,14 @@
 
 ViewPtr CalibrateSend::runAction() {
     int winSize = std::get<int>(arguments.at(winSizeKey).value);
-    int freq =  std::get<int>(arguments.at(sendFreqKey).value);
+    int freq = std::get<int>(arguments.at(sendFreqKey).value);
     std::cout << setFormatting({ConsoleFormat::T_BLUE});
     std::cout << " Initializing calibration...\n";
 
     EchoCalibration *calibration = EchoCalibration::getEchoCalibration(winSize, freq);
 
-    std::cout << " Starting calibration signal sending for window size " << winSize << " and sending frequency " << freq << " \n";
+    std::cout << " Starting calibration signal sending for window size " << winSize << " and sending frequency " << freq
+              << " \n";
 
     calibration->startPlayback();
 

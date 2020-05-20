@@ -1,7 +1,6 @@
 #include <iostream>
 #include "Echo.h"
 #include "views.h"
-#include "Echo.h"
 
 int main(int argc, char *argv[]) {
     Echo::initEcho(argc, argv);

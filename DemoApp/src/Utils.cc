@@ -10,6 +10,7 @@
 #include <arpa/inet.h>
 #endif
 
+
 void Utils::clear() {
     std::cout << clearScreen();
 }

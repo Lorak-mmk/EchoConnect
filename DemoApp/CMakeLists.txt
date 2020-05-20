@@ -21,6 +21,10 @@ set(SRC_FILES
         ${SRC_DIR}/AAction.h
         ${SRC_DIR}/AView.h
         ${SRC_DIR}/AView.cc
+        ${SRC_DIR}/CalibrateReceive.h
+        ${SRC_DIR}/CalibrateReceive.cc
+        ${SRC_DIR}/CalibrateSend.h
+        ${SRC_DIR}/CalibrateSend.cc
         ${SRC_DIR}/Menu.h
         ${SRC_DIR}/Menu.cc
         ${SRC_DIR}/Utils.h

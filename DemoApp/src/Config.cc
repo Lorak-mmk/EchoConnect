@@ -52,9 +52,9 @@ void Config::setFile(const std::string &path) {
     this->filename = path;
 }
 
-int Config::getLimFor(int recvFreq, int winSize) {
+double Config::getLimFor(int recvFreq, int winSize) {
     try {
-        return this->config().at("lim").at(recvFreq).at(winSize).get<int>();
+        return this->config().at("lim").at(std::to_string(recvFreq)).at(std::to_string(winSize)).get<double>();
     } catch (const nlohmann::json::type_error &e) {
         return -1;
     } catch (const nlohmann::json::out_of_range &e) {
@@ -62,8 +62,8 @@ int Config::getLimFor(int recvFreq, int winSize) {
     }
 }
 
-void Config::setLimFor(int recvFreq, int winSize, int lim, bool save) {
-    this->config()["lim"][recvFreq][winSize] = lim;
+void Config::setLimFor(int recvFreq, int winSize, double lim, bool save) {
+    this->config()["lim"][std::to_string(recvFreq)][std::to_string(winSize)] = lim;
     if (save) {
         this->save();
     }

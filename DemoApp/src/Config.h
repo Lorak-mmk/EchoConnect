@@ -29,8 +29,8 @@ public:
     void save();
     nlohmann::json &config();
 
-    int getLimFor(int recvFreq, int winSize);
-    void setLimFor(int recvFreq, int winSize, int lim, bool save = true);
+    double getLimFor(int recvFreq, int winSize);
+    void setLimFor(int recvFreq, int winSize, double lim, bool save = true);
 
     template <class T, typename... S>
     T getValue(T def, S... path) {

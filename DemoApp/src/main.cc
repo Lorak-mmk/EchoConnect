@@ -1,8 +1,10 @@
 #include <iostream>
-
+#include "Echo.h"
 #include "views.h"
 
-int main() {
+int main(int argc, char *argv[]) {
+    Echo::initEcho(argc, argv);
+
     // clang-format off
     Menu mainMenu{"Main Menu",{
         new Menu{"Send", {
@@ -11,6 +13,10 @@ int main() {
         }},
         new Menu{"Receive", {
             new ReceiveText{"Receive text"}
+        }},
+        new Menu{"Calibrate", {
+            new CalibrateReceive{"Calibrate receiver"},
+            new CalibrateSend{"Send callibration signal"}
         }},
         new Menu{"Experimental", {}},
         new Settings{"Settings"},

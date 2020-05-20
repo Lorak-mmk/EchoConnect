@@ -14,7 +14,7 @@ ViewPtr ReceiveText::runAction() {
     message.resize(bufforSize);
     size_t messageLength = 0, readLength = 0;
 
-    EchoProtocol protocol(winSize, sendFreq, recvFreq, getMainConfig()->getLimFor(recvFreq, winSize, 0.0));
+    EchoProtocol protocol(winSize, sendFreq, recvFreq, (int)getMainConfig()->getLimFor(recvFreq, winSize, 0.0));
 
     std::cout << setFormatting({ConsoleFormat::T_BLUE});
     std::cout << " We are analyzing if there is any ongoing transmission, please wait...\n";

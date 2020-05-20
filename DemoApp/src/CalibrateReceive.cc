@@ -29,7 +29,7 @@ ViewPtr CalibrateReceive::runAction() {
     Utils::printOption(1, "Save lim & return from this view");
 
     std::string prompt = setFormatting({ConsoleFormat::T_YELLOW}) + " Option: " + clearFormatting();
-    size_t i;
+    size_t i = 0;
     while ((i = Utils::readValue<size_t>(prompt)) > 1) {
         Utils::invalidValue(" Not a valid option, press enter to continue...");
         std::cout << cursorUp(3) << clearLinesBelow();

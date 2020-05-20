@@ -1,7 +1,7 @@
 #include "ReceiveFile.h"
+#include <fstream>
 #include "EchoProtocol.h"
 #include "Utils.h"
-#include <fstream>
 
 #ifdef _WIN32
 #include <winsock2.h>
@@ -9,8 +9,14 @@
 #include <arpa/inet.h>
 #endif
 
-#define HTONLL(x) ((1==htonl(1)) ? (x) : (((uint64_t)htonl((x) & 0xFFFFFFFFUL)) << 32) | htonl((uint32_t)((x) >> 32)))
-#define NTOHLL(x) ((1==ntohl(1)) ? (x) : (((uint64_t)ntohl((x) & 0xFFFFFFFFUL)) << 32) | ntohl((uint32_t)((x) >> 32)))
+uint64_t HTONLL(uint64_t x) {
+    return ((1 == htonl(1)) ? (x) : (((uint64_t)htonl((x)&0xFFFFFFFFUL)) << 32) | htonl((uint32_t)((x) >> 32)));
+}
+
+uint64_t NTOHLL(uint64_t x) {
+    return ((1 == ntohl(1)) ? (x) : (((uint64_t) ntohl((x) & 0xFFFFFFFFUL)) << 32) | ntohl((uint32_t) ((x) >> 32)));
+}
+
 
 constexpr int DefaultLim = 200;
 constexpr size_t BufSize = 65535;
@@ -25,15 +31,14 @@ ViewPtr ReceiveFile::runAction() {
 
     std::ofstream output;
     output.exceptions(std::ifstream::badbit);
-    size_t size;
+    size_t size = 0;
 
     std::cout << setFormatting({ConsoleFormat::T_BLUE});
     std::cout << " Opening file " << file << "\n";
     try {
-        output.open(file, std::ios::out|std::ios::binary);
-    } catch(const std::ifstream::failure& e) {
-        std::cout << setFormatting({ConsoleFormat::T_RED})
-                  << " Error while opening file: " << e.what()
+        output.open(file, std::ios::out | std::ios::binary);
+    } catch (const std::ifstream::failure &e) {
+        std::cout << setFormatting({ConsoleFormat::T_RED}) << " Error while opening file: " << e.what()
                   << "\n Press enter to return to previous menu";
         Utils::waitForEnter();
         return parent;
@@ -45,10 +50,9 @@ ViewPtr ReceiveFile::runAction() {
     std::cout << " Listening for connections\n";
     try {
         protocol.listen();
-    }catch (const std::exception& e) {// TODO: right type
+    } catch (const std::exception &e) {  // TODO: right type
         output.close();
-        std::cout << setFormatting({ConsoleFormat::T_RED})
-                  << " Error while connecting to other host: " << e.what()
+        std::cout << setFormatting({ConsoleFormat::T_RED}) << " Error while connecting to other host: " << e.what()
                   << "\n Press enter to return to previous menu";
         Utils::waitForEnter();
         return parent;
@@ -56,47 +60,43 @@ ViewPtr ReceiveFile::runAction() {
 
     std::cout << " Receiving file length\n";
     try {
-        uint64_t netSize;
+        uint64_t netSize = 0;
         protocol.read(&netSize, sizeof(netSize), timeout);
         size = NTOHLL(netSize);
-    }catch (const std::exception& e) {
+    } catch (const std::exception &e) {
         output.close();
-        std::cout << setFormatting({ConsoleFormat::T_RED})
-                  << " Error while receiving length: " << e.what()
+        std::cout << setFormatting({ConsoleFormat::T_RED}) << " Error while receiving length: " << e.what()
                   << "\n Press enter to return to previous menu";
         Utils::waitForEnter();
         return parent;
     }
     std::cout << " Received file size: " << size << " bytes\n";
 
-
     char buffer[BufSize];
 
     std::cout << " Receiving...\n";
     try {
         ssize_t r = 0;
-        while(size > 0 && r != -1) {
+        while (size > 0 && r != -1) {
             r = protocol.read(buffer, BufSize, timeout);
             output.write(buffer, r);
             size -= r;
         }
-        if(r == -1) {
+        if (r == -1) {
             output.close();
-            std::cout << setFormatting({ConsoleFormat::T_RED})
-                      << " Connection end before end of file"
+            std::cout << setFormatting({ConsoleFormat::T_RED}) << " Connection end before end of file"
                       << "\n Press enter to return to previous menu";
             Utils::waitForEnter();
 
             return parent;
         }
-    } catch(const std::ifstream::failure& e) {
+    } catch (const std::ifstream::failure &e) {
         output.close();
-        std::cout << setFormatting({ConsoleFormat::T_RED})
-                  << " Error while saving data to file: " << e.what()
+        std::cout << setFormatting({ConsoleFormat::T_RED}) << " Error while saving data to file: " << e.what()
                   << "\n Press enter to return to previous menu";
         Utils::waitForEnter();
         return parent;
-    } catch(const std::exception& e) {
+    } catch (const std::exception &e) {
         output.close();
         std::cout << setFormatting({ConsoleFormat::T_RED})
                   << " Error while receiving data from other host: " << e.what()
@@ -109,9 +109,8 @@ ViewPtr ReceiveFile::runAction() {
     try {
         protocol.close();
         output.close();
-    }catch(const std::exception& e) { // TODO
-        std::cout << setFormatting({ConsoleFormat::T_RED})
-                  << " Error while ending connection: " << e.what()
+    } catch (const std::exception &e) {  // TODO
+        std::cout << setFormatting({ConsoleFormat::T_RED}) << " Error while ending connection: " << e.what()
                   << "\n Press enter to return to previous menu";
         Utils::waitForEnter();
         return parent;

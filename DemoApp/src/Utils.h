@@ -32,7 +32,7 @@ public:
     static void invalidValue(const std::string &info);
     static void waitForEnter();
     static bool readArguments(std::map<std::string, Argument> &arguments);
-    static size_t fileSize(std::ifstream& file);
+    static size_t fileSize(std::ifstream &file);
 };
 
 #endif  // DEMOAPP_UTILS_H

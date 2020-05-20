@@ -9,7 +9,7 @@ ViewPtr SendText::runAction() {
     int sendFreq = std::get<int>(arguments.find("sendFreq")->second.value);
     int recvFreq = std::get<int>(arguments.find("recvFreq")->second.value);
 
-    EchoProtocol protocol(winSize, sendFreq, recvFreq, getMainConfig()->getLimFor(recvFreq, winSize, 0.0));
+    EchoProtocol protocol(winSize, sendFreq, recvFreq, (int)getMainConfig()->getLimFor(recvFreq, winSize, 0.0));
 
     std::cout << setFormatting({ConsoleFormat::T_BLUE});
     std::cout << " Please enter text you want to send: ";

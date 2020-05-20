@@ -5,12 +5,10 @@
 #include "CalibrateSend.h"
 #include "Help.h"
 #include "Menu.h"
+#include "ReceiveFile.h"
 #include "ReceiveText.h"
+#include "SendFile.h"
 #include "SendText.h"
 #include "Settings.h"
-#include "CalibrateReceive.h"
-#include "CalibrateSend.h"
-#include "ReceiveFile.h"
-#include "SendFile.h"
 
 #endif  // DEMOAPP_INCLUDES_H

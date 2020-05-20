@@ -5,7 +5,7 @@
 
 class ReceiveText : public AAction {
 public:
-    ReceiveText(std::string name, std::string title) : AAction(name, title) {
+    ReceiveText(std::string title) : AAction(title) {
         arguments.insert({"sendFreq", Argument("sending sound frequency", ArgumentType::INTEGER)});
         arguments.insert({"recvFreq", Argument("receiving sound frequency", ArgumentType::INTEGER)});
         arguments.insert({"winSize", Argument("sound window size", ArgumentType::INTEGER)});

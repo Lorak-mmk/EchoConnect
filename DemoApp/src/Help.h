@@ -5,7 +5,7 @@
 
 class Help : public AAction {
 public:
-    Help(std::string name, std::string title) : AAction(name, title) {}
+    Help(std::string title) : AAction(title) {}
 
 protected:
     void setDefaults() override;

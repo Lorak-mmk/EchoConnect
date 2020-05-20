@@ -1,7 +1,7 @@
 #include "AView.h"
 
-AView::AView(std::string name, std::string title, std::vector<ViewPtr> children)
-    : name(std::move(name)), title(std::move(title)), parent(nullptr), children(std::move(children)) {
+AView::AView(std::string title, std::vector<ViewPtr> children)
+    : title(std::move(title)), parent(nullptr), children(std::move(children)) {
     for (auto *child : this->children) {
         child->setParent(this);
     }

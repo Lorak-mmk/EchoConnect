@@ -12,7 +12,7 @@ using ViewPtr = AView *;
 
 class AView {
 public:
-    AView(std::string name, std::string title, std::vector<ViewPtr> children);
+    AView(std::string title, std::vector<ViewPtr> children);
 
     virtual ~AView();
 

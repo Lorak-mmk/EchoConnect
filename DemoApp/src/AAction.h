@@ -10,7 +10,7 @@
 
 class AAction : public AView {
 public:
-    AAction(std::string name, std::string title) : AView(std::move(name), std::move(title), {}) {}
+    AAction(std::string title) : AView(std::move(title), {}) {}
 
     ~AAction() override = default;
 

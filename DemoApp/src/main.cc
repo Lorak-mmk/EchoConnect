@@ -4,17 +4,17 @@
 
 int main() {
     // clang-format off
-    Menu mainMenu{"mainMenu","Main Menu",{
-        new Menu{"sendMenu", "Send", {
-            new SendText{"sendText", "Send text"},
-            new SendFile{"sendFile", "Send file"}
+    Menu mainMenu{"Main Menu",{
+        new Menu{"Send", {
+            new SendText{"Send text"},
+            new SendFile{"Send file"}
         }},
-        new Menu{"receiveMenu", "Receive", {
-            new ReceiveText{"receiveText", "Receive text"}
+        new Menu{"Receive", {
+            new ReceiveText{"Receive text"}
         }},
-        new Menu{"experimentalMenu", "Experimental", {}},
-        new Settings{"settings", "Settings"},
-        new Help{"help", "Help"}
+        new Menu{"Experimental", {}},
+        new Settings{"Settings"},
+        new Help{"Help"}
     }};
     // clang-format on
 

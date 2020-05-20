@@ -1,25 +1,39 @@
 #include "SendText.h"
+#include "Config.h"
 #include "Console.h"
+#include "EchoProtocol.h"
 #include "Utils.h"
 
 ViewPtr SendText::runAction() {
+    int winSize = std::get<int>(arguments.find("winSize")->second.value);
+    int sendFreq = std::get<int>(arguments.find("sendFreq")->second.value);
+    int recvFreq = std::get<int>(arguments.find("recvFreq")->second.value);
+
+    EchoProtocol protocol(winSize, sendFreq, recvFreq, getMainConfig()->getLimFor(recvFreq, winSize, 0.0));
+
     std::cout << setFormatting({ConsoleFormat::T_BLUE});
-    std::cout << " We are analyzing if there is any ongoing transmission, please wait...\n";
+    std::cout << " Please enter text you want to send: ";
 
-    // connect
+    try {
+        protocol.connect();
+    } catch (std::exception &e) {
+        std::cout << setFormatting({ConsoleFormat::T_RED})
+                  << " Unfortunately we couldn't connect with any host willing to receive message, press enter to "
+                     "return to the previous view...\n"
+                  << clearFormatting();
+        Utils::waitForEnter();
+    }
 
-    std::cout << " We have detected an ongoing transmission and started receiving the message, please wait...\n";
+    try {
+        protocol.write("abcdefghijkl", 12);
+        protocol.close();
+    } catch (std::exception &e) {
+        puts(e.what());
+    }
 
-    // send
-
-    std::cout << clearFormatting() << setFormatting({ConsoleFormat::BOLD}) << "\n Received message:\n\n"
-              << clearFormatting();
-
-    std::cout << "message";
-    // cout message
-
-    std::cout << setFormatting({ConsoleFormat::T_YELLOW}) << "\n\n Press enter to return from this view..."
-              << clearFormatting();
+    std::cout << setFormatting({ConsoleFormat::T_YELLOW})
+              << "\n\n  Message sent successfuly, press enter to return to the previous view..." << clearFormatting();
     Utils::waitForEnter();
+
     return parent;
 }

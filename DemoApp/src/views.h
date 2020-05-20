@@ -1,6 +1,8 @@
 #ifndef DEMOAPP_INCLUDES_H
 #define DEMOAPP_INCLUDES_H
 
+#include "CalibrateReceive.h"
+#include "CalibrateSend.h"
 #include "Help.h"
 #include "Menu.h"
 #include "ReceiveText.h"

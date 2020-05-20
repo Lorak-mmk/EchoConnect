@@ -1,8 +1,6 @@
 #include "BitReceiver.h"
 #include <cmath>
-#ifndef M_PI
-#define M_PI 3.14159265358979323846
-#endif
+#include "Dft.h"
 #include "HammingCode.h"
 
 static const int SAMPLE_RATE = 44100;
@@ -11,53 +9,6 @@ static const int CHANNEL_COUNT = 1;
 static const char *CODEC = "audio/pcm";
 static const QAudioFormat::SampleType SAMPLE_TYPE = QAudioFormat::SignedInt;
 static const QAudioFormat::Endian BYTEORDER = QAudioFormat::LittleEndian;
-
-static double mag(double re, double im) {
-    return sqrt(re * re + im * im);
-}
-
-static double dft(const int16_t *buffer, int win_size, double ratio) {
-    double re = 0;
-    double im = 0;
-    double angle = 0;
-    // NOLINTNEXTLINE(cppcoreguidelines-avoid-magic-numbers, readability-magic-numbers)
-    double d_angle = 2.0 * M_PI * ratio;
-
-    for (int i = 0; i < win_size; i++) {
-        double val = buffer[i];
-        re += val * std::cos(angle);
-        im += val * std::sin(angle);
-        angle += d_angle;
-    }
-
-    return mag(re, im) / static_cast<double>(win_size);
-}
-
-static void dftSlide(const int16_t *buffer, int win_size, double ratio, double *out, int len) {
-    double re = 0;
-    double im = 0;
-    double angle0 = 0;
-    double angle1 = 0;
-    // NOLINTNEXTLINE(cppcoreguidelines-avoid-magic-numbers, readability-magic-numbers)
-    double d_angle = 2.0 * M_PI * ratio;
-
-    for (int i = 0; i < win_size; i++) {
-        re += buffer[i] * std::cos(angle1);
-        im += buffer[i] * std::sin(angle1);
-        angle1 += d_angle;
-    }
-    out[0] = mag(re, im) / static_cast<double>(win_size);
-
-    for (int i = 0; i < len - 1; i++) {
-        re -= buffer[i] * std::cos(angle0);
-        im -= buffer[i] * std::sin(angle0);
-        re += buffer[i + win_size] * std::cos(angle1);
-        im += buffer[i + win_size] * std::sin(angle1);
-        out[i + 1] = mag(re, im) / static_cast<double>(win_size);
-        angle0 += d_angle;
-        angle1 += d_angle;
-    }
-}
 
 // usused, here just in case we need it later
 void BitReceiver::clearInput() {
@@ -115,10 +66,7 @@ void BitReceiver::readSamples(int16_t *buffer, int len) {
 }
 
 int BitReceiver::stepShift(const double *buffer, int size) const {
-    // TODO: this cutoff point is loosely dependent on the window size and the
-    // volume and noisiness of the microphone. I don't think there's a reasonable
-    // way to compute this, but who knows. For now it's just hardcoded.
-    double diff_min = 100;
+    double diff_min = 20 * win_size;  // measured empirically
     int res = -1;
 
     double sum = 0;
@@ -133,8 +81,7 @@ int BitReceiver::stepShift(const double *buffer, int size) const {
             continue;
         }
 
-        // NOLINTNEXTLINE(cppcoreguidelines-avoid-magic-numbers, readability-magic-numbers)
-        double diff = sum - 0.5 * ((size + 1) * (buffer[i + size] + buffer[i]));
+        double diff = sum - ((size + 1) * (buffer[i + size] + buffer[i])) / 2;
         diff = std::abs(diff);
         if (diff_min > diff) {
             diff_min = diff;
@@ -152,11 +99,11 @@ int BitReceiver::decodeBit(int16_t *windowBuffer) {
     return static_cast<int>(lo < hi);
 }
 
-int BitReceiver::receiveFirstTwoBits() {
-    int res = 0;
+void BitReceiver::start(std::chrono::duration<double> timeout) {
     int lo_shift = -1;
     int hi_shift = -1;
     int shift = -1;
+    auto start = std::chrono::system_clock::now();
 
     readSamples(sync_in.data(), win_size * 2);
 
@@ -164,8 +111,8 @@ int BitReceiver::receiveFirstTwoBits() {
 
     do {
         readSamples(sync_in.data() + (2 * win_size), win_size);
-        dftSlide(sync_in.data(), win_size, lo_ratio, sync_lo_out.data(), win_size * 2);
-        dftSlide(sync_in.data(), win_size, hi_ratio, sync_hi_out.data(), win_size * 2);
+        dft_slide(sync_in.data(), win_size, lo_ratio, sync_lo_out.data(), win_size * 2);
+        dft_slide(sync_in.data(), win_size, hi_ratio, sync_hi_out.data(), win_size * 2);
         for (int i = 0; i < 2 * win_size; i++) {
             sync_in[i] = sync_in[i + win_size];
         }
@@ -177,6 +124,9 @@ int BitReceiver::receiveFirstTwoBits() {
         if (hi_shift != -1) {
             shift = hi_shift;
         }
+        if (std::chrono::system_clock::now() - start > timeout) {
+            throw IReceiver::ConnectionBroken{};
+        }
     } while (shift == -1);
 
     qDebug() << "Message start detected!";
@@ -186,10 +136,9 @@ int BitReceiver::receiveFirstTwoBits() {
     }
     readSamples(sync_in.data() + (2 * win_size - shift), shift);
 
-    res += decodeBit(sync_in.data());
-    res += decodeBit(sync_in.data() + win_size) << 1;
-
-    return res;
+    first_two_bits = 0;
+    first_two_bits += decodeBit(sync_in.data());
+    first_two_bits += decodeBit(sync_in.data() + win_size) << 1;
 }
 
 void BitReceiver::receiveBits(std::vector<bool> &vec, int offset) {
@@ -199,34 +148,20 @@ void BitReceiver::receiveBits(std::vector<bool> &vec, int offset) {
     }
 }
 
-/*
-int BitReceiver::receiveFirst(uint8_t *buffer, int size) {
-    HammingCode hamming;
-
-    std::vector<bool> bits;
-    bits.resize(HammingCode::encodedLength(size));
-
-    int first_two = receiveFirstTwoBits();
-    bits[0] = first_two & 1;
-    bits[1] = first_two & 2;
-    receiveBits(bits, 2);
-    hamming.fixErrors(bits);
-    std::vector<uint8_t> decoded = hamming.decode(bits);
-    memcpy(buffer, decoded.data(), size);
-
-    return size;
-}
-*/
-
-void BitReceiver::start(std::chrono::duration<double> timeout) {}
-
 int BitReceiver::receive(uint8_t *buffer, int size) {
     HammingCode hamming;
 
     std::vector<bool> bits;
     bits.resize(HammingCode::encodedLength(size));
 
-    receiveBits(bits, 0);
+    if (first_two_bits == -1) {
+        receiveBits(bits, 0);
+    } else {
+        bits[0] = first_two_bits & 1;
+        bits[1] = first_two_bits & 2;
+        receiveBits(bits, 2);
+        first_two_bits = -1;
+    }
     hamming.fixErrors(bits);
     std::vector<uint8_t> decoded = hamming.decode(bits);
     memcpy(buffer, decoded.data(), size);

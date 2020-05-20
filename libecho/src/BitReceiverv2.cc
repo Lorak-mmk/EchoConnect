@@ -2,65 +2,14 @@
 #include "Exceptions.h"
 
 #include <cmath>
+#include "Dft.h"
 
-#ifndef M_PI
-#define M_PI 3.14159265358979323846
-#endif
 static const int SAMPLE_RATE = 44100;
 static const int SAMPLE_SIZE = 16;
 static const int CHANNEL_COUNT = 1;
 static const char *CODEC = "audio/pcm";
 static const QAudioFormat::SampleType SAMPLE_TYPE = QAudioFormat::SignedInt;
 static const QAudioFormat::Endian BYTEORDER = QAudioFormat::LittleEndian;
-
-static double mag(double re, double im) {
-    return sqrt(re * re + im * im);
-}
-
-/*
-static double dft(const int16_t *buffer, int win_size, double ratio) {
-    double re = 0;
-    double im = 0;
-    double angle = 0;
-    // NOLINTNEXTLINE(cppcoreguidelines-avoid-magic-numbers, readability-magic-numbers)
-    double d_angle = 2.0 * M_PI * ratio;
-
-    for (int i = 0; i < win_size; i++) {
-        double val = buffer[i];
-        re += val * std::cos(angle);
-        im += val * std::sin(angle);
-        angle += d_angle;
-    }
-
-    return mag(re, im) / static_cast<double>(win_size);
-}
-*/
-
-static void dft_slide(const int16_t *buffer, int win_size, double ratio, double *out, int len) {
-    double re = 0;
-    double im = 0;
-    double angle0 = 0;
-    double angle1 = 0;
-    // NOLINTNEXTLINE(cppcoreguidelines-avoid-magic-numbers, readability-magic-numbers)
-    double d_angle = 2.0 * M_PI * ratio;
-
-    for (int i = 0; i < win_size; i++) {
-        re += buffer[i] * std::cos(angle1);
-        im += buffer[i] * std::sin(angle1);
-        angle1 += d_angle;
-    }
-    out[0] = mag(re, im) / static_cast<double>(win_size);
-
-    for (int i = 0; i < len - 1; i++) {
-        re -= buffer[i] * std::cos(angle0);
-        im -= buffer[i] * std::sin(angle0);
-        re += buffer[i + win_size] * std::cos(angle1);
-        im += buffer[i + win_size] * std::sin(angle1);
-        out[i + 1] = mag(re, im) / static_cast<double>(win_size);
-        angle0 += d_angle;
-        angle1 += d_angle;
-    }
-}
 
 QAudioFormat BitReceiverv2::getInputFormat() {
     QAudioFormat format;
@@ -172,7 +121,7 @@ uint8_t BitReceiverv2::read_bit() {
 
     if (dbg) {
         if (res != ((*dbg >> seq) & 1)) {
-            printf("should be %hhu\n", !res);
+            printf("should be %d\n", !res);
             for (int i = 0; i < win_size; i++) {
                 for (int j = 0; j < mags[i]; j++) {
                     putchar(j == (int)lim ? '|' : '#');

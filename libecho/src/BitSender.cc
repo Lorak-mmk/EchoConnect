@@ -1,10 +1,7 @@
 #include "BitSender.h"
-#include "HammingCode.h"
-
 #include <cmath>
-#ifndef M_PI
-#define M_PI 3.14159265358979323846
-#endif
+#include "HammingCode.h"
+static constexpr double PI = 3.14159265358979323846;
 
 static const QAudioFormat::Endian OUTPUT_BYTEORDER = QAudioFormat::LittleEndian;
 static const int OUTPUT_CHANNEL_COUNT = 1;
@@ -75,5 +72,5 @@ std::vector<SampleType> BitSender::encodeByte(uint8_t data) {
 
 SampleType BitSender::audioWave(int frequency, int time) {
     // NOLINTNEXTLINE(cppcoreguidelines-avoid-magic-numbers, readability-magic-numbers)
-    return (std::sin(2.0 * M_PI * time * frequency / format.sampleRate()) + 1.0) * (1 << (format.sampleSize() - 2));
+    return (std::sin(2.0 * PI * time * frequency / format.sampleRate()) + 1.0) * (1 << (format.sampleSize() - 2));
 }

@@ -19,23 +19,32 @@ EchoProtocol::EchoProtocol(int winsize, int send_freq, int recv_freq, int lim)
       buffer(new uint8_t[2 * PACKET_SIZE]) {}
 
 EchoProtocol::~EchoProtocol() {
+    if (is_connected) {
+        close();
+    }
     delete[] buffer;
 }
 
 void EchoProtocol::listen() {
+    assert(!is_connected);
     thr = new std::thread{&EchoProtocol::thread, this, false};
+    is_connected = true;
 }
 
 void EchoProtocol::connect() {
+    assert(!is_connected);
     thr = new std::thread{&EchoProtocol::thread, this, true};
+    is_connected = true;
 }
 
 void EchoProtocol::close() {
+    assert(is_connected);
     qDebug() << "close";
     closed = true;
     thr->join();
     delete thr;
     thr = nullptr;
+    is_connected = false;
     qDebug() << "close successfully finished";
 }
 

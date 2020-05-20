@@ -72,7 +72,8 @@ size_t EchoProtocol::write(const void *buf, size_t count) {
 }
 
 ssize_t EchoProtocol::read(void *buf, size_t count, int timeout) {
-    if (count == 0) return 0;
+    if (count == 0)
+        return 0;
     std::unique_lock<std::mutex> lock(m_recv);
     if (timeout >= 0 && cv_recv.wait_for(lock, timeout * 1s, [&] { return !buffer_recv.empty(); })) {
         size_t bytes = std::min(buffer_recv.size(), count);
@@ -81,9 +82,11 @@ ssize_t EchoProtocol::read(void *buf, size_t count, int timeout) {
         return bytes;
     }
     if (timeout < 0) {
-        while (thr != nullptr && buffer_recv.empty()) cv_recv.wait(lock);
+        while (thr != nullptr && buffer_recv.empty())
+            cv_recv.wait(lock);
         size_t bytes = std::min(buffer_recv.size(), count);
-        if (bytes == 0) return -1;
+        if (bytes == 0)
+            return -1;
         std::copy(buffer_recv.begin(), buffer_recv.begin() + bytes, static_cast<uint8_t *>(buf));
         buffer_recv.erase(buffer_recv.begin(), buffer_recv.begin() + bytes);
         return bytes;
@@ -93,13 +96,7 @@ ssize_t EchoProtocol::read(void *buf, size_t count, int timeout) {
 
 enum Status { READY, PLEASE_ACK, PLEASE_RESEND, CORRUPTED, CLOSING };
 
-const char* str[5] = {
-    "READY",
-    "PLEASE_ACK",
-    "PLEASE_RESEND",
-    "CORRUPTED",
-    "CLOSING"
-};
+const char* str[5] = {"READY", "PLEASE_ACK", "PLEASE_RESEND", "CORRUPTED", "CLOSING"};
 
 void EchoProtocol::thread(bool connecting) {
     std::stack<Packet> st;
@@ -132,8 +129,7 @@ void EchoProtocol::thread(bool connecting) {
 
             int bytes = connection->receive(buffer, HEADER_SIZE + PACKET_SIZE + CRC_SIZE);
             Packet p = Packet::loadHeaderFromBytes(std::vector<uint8_t>(buffer, buffer + HEADER_SIZE));
-            p.loadDataFromBytes(std::vector<uint8_t>(buffer + HEADER_SIZE,
-                                                     buffer + HEADER_SIZE + p.getSize()));
+            p.loadDataFromBytes(std::vector<uint8_t>(buffer + HEADER_SIZE, buffer + HEADER_SIZE + p.getSize()));
             p.loadCRCFromBytes(std::vector<uint8_t>(buffer + HEADER_SIZE + p.getSize(),
                                                     buffer + HEADER_SIZE + p.getSize() + CRC_SIZE));
 
@@ -142,7 +138,8 @@ void EchoProtocol::thread(bool connecting) {
                 st.pop();
             }
             status = READY;
-            if (p.isSet(Flag::FIN) && p.isSet(Flag::ACK1)) return;
+            if (p.isSet(Flag::FIN) && p.isSet(Flag::ACK1))
+                return;
             if (p.isSet(Flag::SYN) || p.getSize() > 0) {
                 status = PLEASE_ACK;
             }
@@ -193,8 +190,7 @@ void EchoProtocol::thread(bool connecting) {
         }
 
         if (status == CLOSING) {
-            Packet p = PacketBuilder().setNumber(number += 2).
-                       setFlag(Flag::FIN).setFlag(Flag::ACK1).getPacket();
+            Packet p = PacketBuilder().setNumber(number += 2).setFlag(Flag::FIN).setFlag(Flag::ACK1).getPacket();
             st.push(p);
         }
 
@@ -224,7 +220,8 @@ void EchoProtocol::thread(bool connecting) {
         connection->sendWait();
 
         qDebug() << str[status];
-        if (status == CLOSING) return;
+        if (status == CLOSING)
+            return;
 
         end = std::chrono::system_clock::now();
         std::this_thread::sleep_for(big_win_size + start - end);

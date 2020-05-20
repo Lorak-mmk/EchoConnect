@@ -8,4 +8,4 @@ public:
     }
 };
 
-#endif // ECHOCONNECT_EXCEPTIONS_H
+#endif  // ECHOCONNECT_EXCEPTIONS_H

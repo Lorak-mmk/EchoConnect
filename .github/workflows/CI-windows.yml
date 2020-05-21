@@ -54,5 +54,7 @@ jobs:
     - name: Run tests
       working-directory: ${{ github.workspace }}/build
       shell: powershell
-      run: ls ./libecho/tests/Debug/ && ctest -C Debug -VV --output-on-failure
+      run: |
+        ls ./libecho/tests/Debug/
+        ctest -C Debug -VV --output-on-failure
       #run: ls ./libecho/tests/Debug/ && ./libecho/tests/Debug/libecho_test.exe

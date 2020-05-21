@@ -57,7 +57,7 @@ jobs:
       run: |
         ls ./libecho/tests/Debug/
         ls D:/a/EchoConnect/EchoConnect/build/bin/Debug/
-        $env:Path += ";D:/a/EchoConnect/EchoConnect/build/bin/Debug/"
+        $env:Path += ";D:\a\EchoConnect\EchoConnect\build\bin\Debug"
         $Env:Path
         ./libecho/tests/Debug/libecho_test.exe
       #ctest -C Debug -VV --output-on-failure

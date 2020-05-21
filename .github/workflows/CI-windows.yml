@@ -49,7 +49,7 @@ jobs:
     - name: Copy GTest DLL to tests folder (temporary workaround, hopefully)
       working-directory: ${{ github.workspace }}/build
       shell: bash
-      run: cp D:/a/EchoConnect/EchoConnect/build/bin/Debug/gtestd.dll ./libecho/tests/Debug/
+      run: cp D:/a/EchoConnect/EchoConnect/build/bin/Debug/gtestd.dll ./libecho/tests/Debug/ && env
 
     #- name: Run tests
     #  working-directory: ${{ github.workspace }}/build

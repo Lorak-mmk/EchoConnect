@@ -27,12 +27,14 @@ EchoProtocol::~EchoProtocol() {
 
 void EchoProtocol::listen() {
     assert(!is_connected);
+    closed = false;
     thr = new std::thread{&EchoProtocol::thread, this, false};
     is_connected = true;
 }
 
 void EchoProtocol::connect() {
     assert(!is_connected);
+    closed = false;
     thr = new std::thread{&EchoProtocol::thread, this, true};
     is_connected = true;
 }
@@ -77,6 +79,7 @@ ssize_t EchoProtocol::read(void *buf, size_t count, int timeout) {
     }
     std::unique_lock<std::mutex> lock(m_recv);
     if (timeout >= 0 && cv_recv.wait_for(lock, timeout * 1s, [&] { return !buffer_recv.empty(); })) {
+        qDebug() << "dupa";
         size_t bytes = std::min(buffer_recv.size(), count);
         std::copy(buffer_recv.begin(), buffer_recv.begin() + bytes, static_cast<uint8_t *>(buf));
         buffer_recv.erase(buffer_recv.begin(), buffer_recv.begin() + bytes);
@@ -94,7 +97,7 @@ ssize_t EchoProtocol::read(void *buf, size_t count, int timeout) {
         buffer_recv.erase(buffer_recv.begin(), buffer_recv.begin() + bytes);
         return bytes;
     }
-    return thr == nullptr ? -1 : 0;
+    return closed ? -1 : 0;
 }
 
 enum Status { READY, PLEASE_ACK, PLEASE_RESEND, CORRUPTED, CLOSING };
@@ -144,6 +147,7 @@ void EchoProtocol::thread(bool connecting) {
             status = READY;
 
             if (p.isSet(Flag::FIN) && p.isSet(Flag::ACK1)) {
+                closed = true;
                 return;
             }
 
@@ -180,6 +184,7 @@ void EchoProtocol::thread(bool connecting) {
             qDebug() << "corrupted" << e.what();
         } catch (ConnectionBroken &e) {
             qDebug() << "connection broken";
+            closed = true;
             return;
         }
 
@@ -235,6 +240,7 @@ void EchoProtocol::thread(bool connecting) {
         // NOLINTNEXTLINE(cppcoreguidelines-pro-bounds-constant-array-index)
         qDebug() << str[status];
         if (status == CLOSING) {
+            closed = true;
             return;
         }
 

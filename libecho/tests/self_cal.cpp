@@ -1,6 +1,9 @@
 #include "Echo.h"
 #include "EchoCalibration.h"
 
+#include <cstdio>
+#include <cstdlib>
+
 int main(int argc, char **argv) {
     Echo::initEcho(argc, argv);
 

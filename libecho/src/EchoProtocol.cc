@@ -79,7 +79,6 @@ ssize_t EchoProtocol::read(void *buf, size_t count, int timeout) {
     }
     std::unique_lock<std::mutex> lock(m_recv);
     if (timeout >= 0 && cv_recv.wait_for(lock, timeout * 1s, [&] { return !buffer_recv.empty(); })) {
-        qDebug() << "dupa";
         size_t bytes = std::min(buffer_recv.size(), count);
         std::copy(buffer_recv.begin(), buffer_recv.begin() + bytes, static_cast<uint8_t *>(buf));
         buffer_recv.erase(buffer_recv.begin(), buffer_recv.begin() + bytes);
@@ -93,9 +92,6 @@ ssize_t EchoProtocol::read(void *buf, size_t count, int timeout) {
         if (bytes == 0) {
             return -1;
         }
-        std::copy(buffer_recv.begin(), buffer_recv.begin() + bytes, static_cast<uint8_t *>(buf));
-        buffer_recv.erase(buffer_recv.begin(), buffer_recv.begin() + bytes);
-        return bytes;
     }
     return closed ? -1 : 0;
 }

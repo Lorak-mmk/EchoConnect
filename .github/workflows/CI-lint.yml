@@ -39,7 +39,7 @@ jobs:
     - name: Check code formatting with clang-format
       uses: DoozyX/clang-format-lint-action@v0.5
       with:
-        source: './libecho'
+        source: './libecho ./DemoApp'
         exclude: './libecho/external'
         extensions: 'h,cpp,cc'
         clangFormatVersion: 9

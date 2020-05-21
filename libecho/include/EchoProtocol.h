@@ -23,6 +23,11 @@ public:
      * There should exist at most one EchoProtocol object at a time.
      */
     EchoProtocol(int winsize, int send_freq, int recv_freq, int lim);
+
+    /**
+     * Destructs an EchoProtocol object and closes an underlying
+     * audio stream if needed
+     */
     ~EchoProtocol();
 
     EchoProtocol(const EchoProtocol &other) = delete;
@@ -42,19 +47,32 @@ public:
 
     /**
      * @brief Closes a connection.
+     * Connection that was once opened should be closed (even when one of read/write
+     * functions throws an exception).
      */
     void close();
 
     /**
-     * Reads at most count bytes from audio input.
-     * Can receive 0 bytes, but if it doesn't receive any signal for timeout seconds,
-     * it throws an exception.
+     * @brief           Reads at most count bytes from audio input and fills buffer with them.
+     * @param buf       pointer to buffer that should be filled
+     * @param count     number of bytes to read
+     * @param timeout   number of seconds; if no signal is detected by then, function assumes
+     *                  that connection is broken;
+     *                  timeout < 0 means that function can wait infinitely
+     *
+     * @return          Returns number of read bytes (can be any from 0 to count),
+     *                  or -1 in case of failure or end of stream.
      */
     ssize_t read(void *buf, size_t count, int timeout);
 
     /**
      * Writes count bytes to audio output.
      * Can throw an exception when sent data isn't being confirmed.
+     *
+     * @param buf     pointer to buffer with data
+     * @param count   number of bytes to send
+     *
+     * @return        Returns number of sent bytes (should be equal to count)
      */
     size_t write(const void *buf, size_t count);
 

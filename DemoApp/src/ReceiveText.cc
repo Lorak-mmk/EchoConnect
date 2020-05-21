@@ -27,6 +27,7 @@ ViewPtr ReceiveText::runAction() {
                   << " Unfortunately we could detect any transmission, press enter to return to the previous view...\n"
                   << clearFormatting();
         Utils::waitForEnter();
+        return parent;
     }
 
     std::cout << " We have detected an ongoing transmission and started receiving the message, please wait...\n";

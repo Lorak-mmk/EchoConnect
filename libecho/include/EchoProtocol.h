@@ -53,7 +53,7 @@ public:
     void close();
 
     /**
-     * @brief           Reads at most count bytes from audio input and fills buffer with them.
+     * @brief           Reads at most @p count bytes from audio input and fills buffer with them.
      * @param buf       pointer to buffer that should be filled
      * @param count     number of bytes to read
      * @param timeout   number of seconds; if no signal is detected by then, function assumes
@@ -66,8 +66,8 @@ public:
     ssize_t read(void *buf, size_t count, int timeout);
 
     /**
-     * Writes count bytes to audio output.
-     * Can throw an exception when sent data isn't being confirmed.
+     * @brief         Writes @p count bytes to audio output.
+     *                Can throw an exception when sent data isn't being confirmed.
      *
      * @param buf     pointer to buffer with data
      * @param count   number of bytes to send

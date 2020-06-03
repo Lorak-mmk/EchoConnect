@@ -39,7 +39,7 @@ size_t getConsoleHeight() {
 #if defined(__unix__) || defined(unix) || defined(__unix) || defined(__linux__) || \
     (defined(__APPLE__) && defined(__MACH__))
 void setFlag(tcflag_t flag, bool state) {
-    struct termios tios;
+    struct termios tios {};
     tcgetattr(0, &tios);
     if (state) {
         tios.c_lflag |= flag;

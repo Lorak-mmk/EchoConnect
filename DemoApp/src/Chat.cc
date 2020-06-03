@@ -3,12 +3,8 @@
 #include "Console.h"
 #include "Utils.h"
 
-#include <stdio.h>
+#include <cstdio>
 
-constexpr char KEY_UP = 72;
-constexpr char KEY_DOWN = 80;
-constexpr char KEY_LEFT = 75;
-constexpr char KEY_RIGHT = 77;
 constexpr char NEW_LINE = '\n';
 
 void Chat::drawChat() {
@@ -63,20 +59,10 @@ void Chat::sendRecv() {
     }
 }
 
-bool Chat::readInput(std::string username) {
+bool Chat::readInput(const std::string &username) {
     while (run) {
-        char c = getchar();
+        int c = getchar();
         switch (c) {
-            case KEY_UP:
-                break;
-            case KEY_DOWN:
-                break;
-            case KEY_LEFT:
-                input->moveLeft();
-                break;
-            case KEY_RIGHT:
-                input->moveRight();
-                break;
             case NEW_LINE: {
                 auto message = input->getLastNLines(0, -1);
                 input->clear();
@@ -86,12 +72,20 @@ bool Chat::readInput(std::string username) {
                     return true;
                 }
 
-                toSend->pushBack(setFormatting({ConsoleFormat::T_CYAN}) + username + ": " + clearFormatting() +
-                                 message + '\0');
-                chat->pushBack(setFormatting({ConsoleFormat::T_MAGENTA}) + "You: " + clearFormatting() + message);
+                auto messSend = setFormatting({ConsoleFormat::T_CYAN})
+                                    .append(username)
+                                    .append(": ")
+                                    .append(clearFormatting())
+                                    .append(message)
+                                    .append("\0");
+                auto messShow =
+                    setFormatting({ConsoleFormat::T_MAGENTA}).append("You: ").append(clearFormatting()).append(message);
+
+                toSend->pushBack(messSend);
+                chat->pushBack(messShow);
             } break;
             default:
-                input->add(c);
+                input->add((char)c);
                 break;
         }
 

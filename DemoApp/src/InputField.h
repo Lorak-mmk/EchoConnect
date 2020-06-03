@@ -3,6 +3,10 @@
 
 #include <string>
 
+#ifdef _WIN32
+using ssize_t = long long;
+#endif
+
 class InputField {
 public:
     InputField() {}

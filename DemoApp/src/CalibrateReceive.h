@@ -8,7 +8,7 @@
 
 class CalibrateReceive : public AAction {
 public:
-    CalibrateReceive(std::string title) : AAction(std::move(title)) {
+    CalibrateReceive(std::string name, std::string title) : AAction(std::move(name), std::move(title)) {
         arguments.insert({recvFreqKey, Argument("receiving sound frequency", ArgumentType::INTEGER)});
         arguments.insert({winSizeKey, Argument("sound window size", ArgumentType::INTEGER)});
     }

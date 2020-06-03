@@ -5,6 +5,7 @@
 #include <string>
 #include <utility>
 #include <vector>
+#include <map>
 
 class AView;
 
@@ -23,6 +24,8 @@ public:
     std::string getTitle();
 
     virtual ViewPtr execute() = 0;
+    virtual void printHelp() = 0;
+    virtual bool executeCLI(const std::string& name, const std::map<std::string, std::string>& args) = 0;
 
 protected:
     std::string name;

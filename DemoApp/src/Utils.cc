@@ -65,13 +65,13 @@ void changeArgument(Argument &a) {
     std::string prompt = setFormatting({ConsoleFormat::T_YELLOW}) + " Enter new value: " + clearFormatting();
 
     switch (a.type) {
-        case INTEGER:
+        case ArgumentType::INTEGER:
             a.value = Utils::readValue<int>(prompt);
             break;
-        case REAL:
+        case ArgumentType::REAL:
             a.value = Utils::readValue<double>(prompt);
             break;
-        case STRING:
+        case ArgumentType::STRING:
             a.value = Utils::readValue<std::string>(prompt);
             break;
         default:

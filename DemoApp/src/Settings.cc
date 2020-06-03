@@ -8,15 +8,15 @@ ViewPtr Settings::runAction() {
 
     for (auto &[key, arg] : arguments) {
         switch (arg.type) {
-            case INTEGER:
+            case ArgumentType::INTEGER:
                 getMainConfig()->setValue(std::get<int>(arg.value), key);
                 break;
 
-            case REAL:
+            case ArgumentType::REAL:
                 getMainConfig()->setValue(std::get<double>(arg.value), key);
                 break;
 
-            case STRING:
+            case ArgumentType::STRING:
                 getMainConfig()->setValue(std::get<std::string>(arg.value), key);
                 break;
 

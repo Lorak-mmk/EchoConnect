@@ -29,3 +29,18 @@ ViewPtr Menu::execute() {
     }
     return children[i - 1];
 }
+
+void Menu::printHelp() {
+    for(auto &child : this->children) {
+        child->printHelp();
+    }
+}
+
+bool Menu::executeCLI(const std::string &name, const std::map<std::string, std::string> &args) {
+    for(auto &child : children) {
+        if(child->executeCLI(name, args)) {
+            return true;
+        }
+    }
+    return false;
+}

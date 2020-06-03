@@ -56,14 +56,6 @@ void BitReceiverv2::fetch(int len) {
     }
 
     dft_slide(dwindow, win_size, freq_ratio, mags, win_size);
-
-    /*
-    for (int i = win_size - len; i < win_size; i++) {
-            for (int j = 0; j < mags[i]; j++)
-                    putchar('#');
-            putchar('\n');
-    }
-    */
 }
 
 void BitReceiverv2::start(std::chrono::duration<double> timeout) {
@@ -94,48 +86,89 @@ void BitReceiverv2::start(std::chrono::duration<double> timeout) {
         offset -= win_size;
     }
     fetch(offset);
+
+    int mid_sum = 0;
+    int mid_cnt = 0;
+
+    fetch(win_size);
+    for (int i = 0; i < win_size; i++) {
+        if (mags[i] > lim) {
+            mid_sum += i;
+            mid_cnt++;
+        }
+    }
+    high_mag = mags[win_size / 2];
+
+    fetch(win_size);
+    for (int i = 0; i < win_size; i++) {
+        if (mags[i] < lim) {
+            mid_sum += i;
+            mid_cnt++;
+        }
+    }
+    low_mag = mags[win_size / 2];
+
+    fetch(win_size);
+    for (int i = 0; i < win_size; i++) {
+        if (mags[i] > lim) {
+            mid_sum += i;
+            mid_cnt++;
+        }
+    }
+    fetch(win_size);
+
+    offset = mid_cnt > 0 ? (win_size / 2) - (mid_sum / mid_cnt) : 0;
+
+    if (offset > 0) {
+        fetch(win_size);
+        fetch(offset);
+    } else {
+        fetch(win_size + offset);
+    }
 }
 
 uint8_t BitReceiverv2::read_bit() {
-    static int seq = 0;  // for dbg
-    /*
-    for (int i = 0; i < 300; i++)
-            putchar('-');
-    putchar('\n');
-    */
-
-    /*
-    int a = 10;
-    int above = 0;
+    // static int seq = 0;  // for dbg
+    double val;
+    uint8_t res;
 
     fetch(win_size);
-    for (int i = a; i < win_size - a; i++) {
-            if (mags[i] > lim)
-                    above++;
-    }
-    return above > (win_size - 2 * a) / 2;
-    */
+    val = mags[win_size / 2];
+    res = val > lim;
 
-    fetch(win_size);
-    uint8_t res = (mags[win_size / 2] > lim);
-
-    if (dbg) {
-        if (res != ((*dbg >> seq) & 1)) {
-            printf("should be %d\n", !res);
-            for (int i = 0; i < win_size; i++) {
-                for (int j = 0; j < mags[i]; j++) {
-                    putchar(j == (int)lim ? '|' : '#');
-                }
-                putchar('\n');
-            }
-            putchar('\n');
+    if (res != prev_bit) {
+        if (res) {
+            high_mag = (high_mag + val) / 2;
+        } else {
+            low_mag = (low_mag + val) / 2;
         }
-        seq++;
-        if (seq == 8) {
-            seq = 0;
-            dbg++;
-        }
+        lim = (6 * lim + (high_mag + low_mag) / 2) / 7;
     }
+    prev_bit = res;
+
+    /*
+if (dbg) {
+    if (res != ((*dbg >> seq) & 1))
+        fprintf(stderr, "should be %d (lim = %lf)\n", !res, lim);
+
+    for (int i = 0; i < win_size; i++) {
+        for (int j = 0; j < mags[i]; j++) {
+            if (j == (int)lim)
+                fprintf(stderr, "|");
+            else
+                fprintf(stderr, res == ((*dbg >> seq) & 1) ? "#" : "*");
+        }
+        fprintf(stderr, "\n");
+    }
+    fprintf(stderr, "\n");
+
+    seq++;
+    if (seq == 8) {
+        seq = 0;
+        dbg++;
+    }
+}
+*/
 
     return res;
 }

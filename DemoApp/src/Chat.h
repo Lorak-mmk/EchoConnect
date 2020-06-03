@@ -2,8 +2,10 @@
 #define DEMOAPP_CHAT_H
 
 #include "AAction.h"
-#include "InputField.h"
 #include "ConcurrentBuffer.h"
+#include "InputField.h"
+#include "EchoProtocol.h"
+
 #include <mutex>
 #include <thread>
 
@@ -23,10 +25,16 @@ protected:
     ViewPtr runAction() override;
 
 private:
-	std::mutex mutex;
-    InputField input;
-    ConcurrentBuffer toSend, chat;
+	void sendRecv();
+	void drawChat();
+	bool readInput(std::string username);
 
+private:
+	std::mutex mutex;
+	std::unique_ptr<EchoProtocol> protocol;
+    std::unique_ptr<InputField> input;
+    std::unique_ptr<ConcurrentBuffer> toSend, chat;
+    bool run;
 };
 
 #endif  // DEMOAPP_CHAT_H

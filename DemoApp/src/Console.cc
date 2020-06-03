@@ -45,18 +45,18 @@ void setFlag(tcflag_t flag, bool state) {
     tcsetattr(0, TCSAFLUSH, &tios);
 }
 
-void setCanon() {
+void enableCanon() {
     setFlag(ICANON, true);
 }
 
-void setNoCanon() {
-    setFlag(ICANON, true);
+void disableCanon() {
+    setFlag(ICANON, false);
 }
-void setEcho() {
+void enableEcho() {
     setFlag(ECHO, true);
 }
 
-void setNoEcho() {
+void disableEcho() {
     setFlag(ECHO, false);
 }
 

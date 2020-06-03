@@ -24,10 +24,11 @@ enum ConsoleFormat : int {
 size_t getConsoleWidth();
 size_t getConsoleHeight();
 
-void setCanon();
-void setNoCanon();
-void setEcho();
-void setNoEcho();
+void enableCanon();
+void disableCanon();
+
+void enableEcho();
+void disableEcho();
 
 std::string cursorUp(size_t n);
 std::string cursorDown(size_t n);

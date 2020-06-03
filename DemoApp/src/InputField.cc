@@ -8,8 +8,7 @@ void InputField::clear() {
 }
 
 void InputField::add(char c) {
-    // text.insert(text.begin() + cursor, c);
-    text.insert(text.end(), c);
+    text.insert(text.begin() + cursor, c);
     cursor++;
 }
 

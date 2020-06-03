@@ -104,9 +104,11 @@ ViewPtr ReceiveFile::runAction() {
     std::cout << clearFormatting() << setFormatting({ConsoleFormat::BOLD}) << "\n File successfully received!\n\n"
               << clearFormatting();
 
-    std::cout << setFormatting({ConsoleFormat::T_YELLOW}) << "\n\n Press enter to return from this view..."
-              << clearFormatting();
-    Utils::waitForEnter();
+    if (!Utils::isCLIMode()) {
+        std::cout << setFormatting({ConsoleFormat::T_YELLOW}) << "\n\n Press enter to return from this view..."
+                  << clearFormatting();
+        Utils::waitForEnter();
+    }
 
     return parent;
 }

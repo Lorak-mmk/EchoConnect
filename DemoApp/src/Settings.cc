@@ -27,9 +27,11 @@ ViewPtr Settings::runAction() {
         std::cout << ".";
     }
 
-    std::cout << setFormatting({ConsoleFormat::T_YELLOW}) << "\n Done, press enter to go back to the previous view..."
-              << clearFormatting();
-    Utils::waitForEnter();
+    if (!Utils::isCLIMode()) {
+        std::cout << setFormatting({ConsoleFormat::T_YELLOW})
+                  << "\n Done, press enter to go back to the previous view..." << clearFormatting();
+        Utils::waitForEnter();
+    }
 
     return parent;
 }

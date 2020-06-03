@@ -31,10 +31,13 @@ ViewPtr SendText::runAction() {
         puts(e.what());
     }
 
-    std::cout << setFormatting({ConsoleFormat::T_YELLOW})
-              << "\n\n Message sent successfuly, press enter to return to the previous view..." << clearFormatting();
+    if (!Utils::isCLIMode()) {
+        std::cout << setFormatting({ConsoleFormat::T_YELLOW})
+                  << "\n\n Message sent successfuly, press enter to return to the previous view..."
+                  << clearFormatting();
 
-    Utils::waitForEnter();
+        Utils::waitForEnter();
+    }
 
     return parent;
 }

@@ -54,9 +54,11 @@ ViewPtr ReceiveText::runAction() {
         std::cout << message[i];
     }
 
-    std::cout << setFormatting({ConsoleFormat::T_YELLOW}) << "\n\n Press enter to return from this view..."
-              << clearFormatting();
-    Utils::waitForEnter();
+    if (!Utils::isCLIMode()) {
+        std::cout << setFormatting({ConsoleFormat::T_YELLOW}) << "\n\n Press enter to return from this view..."
+                  << clearFormatting();
+        Utils::waitForEnter();
+    }
 
     return parent;
 }

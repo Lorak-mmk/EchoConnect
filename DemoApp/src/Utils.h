@@ -35,7 +35,6 @@ public:
     static T valueFromString(const std::string &s) {
         T v;
         std::stringstream ss(s);
-        std::cin >> v;
         ss >> v;
         if(ss.fail()) {
             throw std::runtime_error("Invalid argument! Value: " + s);
@@ -47,6 +46,11 @@ public:
     static void waitForEnter();
     static bool readArguments(std::map<std::string, Argument> &arguments);
     static size_t fileSize(std::ifstream &file);
+    static void setCLI(bool cli);
+    static bool isCLIMode();
+
+private:
+    static bool isCLI;
 };
 
 #ifndef __APPLE__

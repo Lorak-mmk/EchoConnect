@@ -49,7 +49,6 @@ bool AAction::executeCLI(const std::string &name, const std::map<std::string, st
         return false;
     }
 
-    Utils::printTitle(title);
     setDefaults();
 
     for(auto &arg : args) {
@@ -71,6 +70,7 @@ bool AAction::executeCLI(const std::string &name, const std::map<std::string, st
         }
     }
 
+    std::cout << "Executing " << this->title << "\n";
     (void)runAction();
     return true;
 }

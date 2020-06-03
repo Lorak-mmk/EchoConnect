@@ -12,7 +12,7 @@ ViewPtr SendText::runAction() {
     EchoProtocol protocol(winSize, sendFreq, recvFreq, (int)getMainConfig()->getLimFor(recvFreq, winSize, 0.0));
 
     std::cout << setFormatting({ConsoleFormat::T_BLUE});
-    std::cout << " Please enter text you want to send: ";
+    std::cout << " Please enter text you want to send: \n";
 
     try {
         protocol.connect();

@@ -3,6 +3,7 @@
 
 #include "Echo.h"
 #include "views.h"
+#include "Utils.h"
 
 namespace {
     std::vector<std::string> getOptions(int argc, char *argv[]) {
@@ -53,7 +54,7 @@ std::map<std::string, std::string> optionsMap(std::vector<std::string> args) {
             throw std::runtime_error("Invalid argument: " + arg);
         }
 
-        params[val[0]] = val[1];
+        params[val[0].substr(2)] = val[1];
     }
 
     return params;
@@ -91,6 +92,8 @@ int main(int argc, char *argv[]) {
         }
         return 0;
     }
+
+    Utils::setCLI(true);
 
     if(opt[0] == "--help") {
         std::cout << "Usage: " << argv[0] << " [action] [--paramName=paramValue]...\n";

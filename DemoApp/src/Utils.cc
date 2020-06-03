@@ -11,7 +11,9 @@
 #endif
 
 void Utils::clear() {
-    std::cout << clearScreen();
+    if(!Utils::isCLIMode()) {
+        std::cout << clearScreen();
+    }
 }
 
 void Utils::printTitle(const std::string &title) {
@@ -128,6 +130,16 @@ size_t Utils::fileSize(std::ifstream &file) {
 
     return length;
 }
+
+void Utils::setCLI(bool cli) {
+    Utils::isCLI = cli;
+}
+
+bool Utils::isCLIMode() {
+    return Utils::isCLI;
+}
+
+bool Utils::isCLI = false;
 
 #ifndef __APPLE__
 uint64_t HTONLL(uint64_t x) {

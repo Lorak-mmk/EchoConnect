@@ -105,7 +105,7 @@ const char *str[5] = {"READY", "PLEASE_ACK", "PLEASE_RESEND", "CORRUPTED", "CLOS
 
 void EchoProtocol::thread(bool connecting) {
     std::stack<Packet> st;
-	// NOLINTNEXTLINE(cppcoreguidelines-init-variables)
+    // NOLINTNEXTLINE(cppcoreguidelines-init-variables)
     Status status;
 
     if (connecting) {

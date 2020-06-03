@@ -150,7 +150,7 @@ ViewPtr Chat::runAction() {
     setNoCanon();
     setNoEcho();
 
-    std::thread audioWorker(sendRecv, &vars);
+    std::thread audioWorker{sendRecv, &vars};
 
     drawChat(&vars);
 

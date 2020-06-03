@@ -38,7 +38,6 @@ std::vector<std::string> split(const std::string &s, char delimiter) {
     }
     return tokens;
 }
-}  // namespace
 
 std::map<std::string, std::string> optionsMap(const std::vector<std::string> &args) {
     std::map<std::string, std::string> params;
@@ -57,6 +56,7 @@ std::map<std::string, std::string> optionsMap(const std::vector<std::string> &ar
 
     return params;
 }
+}  // namespace
 
 int main(int argc, char *argv[]) {
     Echo::initEcho(argc, argv);

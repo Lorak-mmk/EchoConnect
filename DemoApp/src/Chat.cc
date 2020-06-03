@@ -49,7 +49,6 @@ void sendRecv(StateVariables *vars) {
         try {
             auto messageToSend = vars->toSend->popFront();
             if (messageToSend.has_value()) {
-				std::cerr << messageToSend.value() << "\n";
                 vars->protocol->write(messageToSend.value().data(), messageToSend.value().size());
             }
 
@@ -66,7 +65,6 @@ void sendRecv(StateVariables *vars) {
                     messageLength += readLength;
                 }
                 vars->chat->pushBack(std::string(receivedMessage.data(), messageLength));
-				std::cerr << std::string(receivedMessage.data(), messageLength) << "\n";
                 drawChat(vars);
             } else if (readLength < 0) {
                 vars->run = false;
@@ -150,7 +148,8 @@ ViewPtr Chat::runAction() {
     setNoCanon();
     setNoEcho();
 
-    std::thread audioWorker{sendRecv, &vars};
+	StateVariables *v = &vars;
+    std::thread audioWorker{&sendRecv, v};
 
     drawChat(&vars);
 
@@ -164,7 +163,7 @@ ViewPtr Chat::runAction() {
                   " An error occured, press enter to return to the previous view...\n" + clearFormatting();
     }
 
-    audioWorker.join();
+	audioWorker.join();
     p.close();
 
     setCanon();

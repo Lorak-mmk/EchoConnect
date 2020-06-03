@@ -2,6 +2,10 @@
 #define DEMOAPP_CHAT_H
 
 #include "AAction.h"
+#include "InputField.h"
+#include "ConcurrentBuffer.h"
+#include <mutex>
+#include <thread>
 
 class Chat : public AAction {
 public:
@@ -17,6 +21,12 @@ public:
 
 protected:
     ViewPtr runAction() override;
+
+private:
+	std::mutex mutex;
+    InputField input;
+    ConcurrentBuffer toSend, chat;
+
 };
 
 #endif  // DEMOAPP_CHAT_H

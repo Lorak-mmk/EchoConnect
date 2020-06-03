@@ -13,6 +13,8 @@ if(NOT json_POPULATED)
     FetchContent_Populate(json)
     add_subdirectory(${json_SOURCE_DIR} ${json_BINARY_DIR} EXCLUDE_FROM_ALL)
 endif()
+set(THREADS_PREFER_PTHREAD_FLAG ON)
+find_package(Threads REQUIRED)
 
 set(SRC_DIR "src" CACHE PATH "Source files path")
 set(SRC_FILES
@@ -63,4 +65,4 @@ target_include_directories(${EXEC_NAME} PRIVATE ${SRC_DIR})
 target_include_directories(${EXEC_NAME} PRIVATE ${CMAKE_SOURCE_DIR}/libecho/include)
 
 target_link_libraries(${EXEC_NAME} PRIVATE echo)
-target_link_libraries(${EXEC_NAME} PRIVATE nlohmann_json::nlohmann_json)
+target_link_libraries(${EXEC_NAME} PRIVATE nlohmann_json::nlohmann_json Threads::Threads)

@@ -1,10 +1,10 @@
-#include <termios.h>
 #include <sstream>
 #ifdef _WIN32
 #include <windows.h>
 #elif defined __unix__
 #include <sys/ioctl.h>
 #include <unistd.h>
+#include <termios.h>
 #endif
 
 #include "Console.h"
@@ -34,6 +34,8 @@ size_t getConsoleHeight() {
 }
 
 void setFlag(tcflag_t flag, bool state) {
+#ifdef _WIN32
+#elif defined __unix__
     struct termios tios;
     tcgetattr(0, &tios);
     if (state) {
@@ -43,6 +45,7 @@ void setFlag(tcflag_t flag, bool state) {
     }
 
     tcsetattr(0, TCSAFLUSH, &tios);
+#endif
 }
 
 void enableCanon() {

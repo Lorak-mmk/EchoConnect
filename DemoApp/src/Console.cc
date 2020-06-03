@@ -1,10 +1,11 @@
 #include <sstream>
 #ifdef _WIN32
 #include <windows.h>
-#elif defined __unix__
+#elif defined(__unix__) || defined(unix) || defined(__unix) || defined(__linux__) || \
+    (defined(__APPLE__) && defined(__MACH__))
 #include <sys/ioctl.h>
-#include <unistd.h>
 #include <termios.h>
+#include <unistd.h>
 #endif
 
 #include "Console.h"
@@ -14,7 +15,8 @@ size_t getConsoleWidth() {
     CONSOLE_SCREEN_BUFFER_INFO sbInfo;
     GetConsoleScreenBufferInfo(GetStdHandle(STD_OUTPUT_HANDLE), &sbInfo);
     return sbInfo.dwSize.X;
-#elif defined __unix__
+#elif defined(__unix__) || defined(unix) || defined(__unix) || defined(__linux__) || \
+    (defined(__APPLE__) && defined(__MACH__))
     struct winsize size {};
     ioctl(STDOUT_FILENO, TIOCGWINSZ, &size);
     return size.ws_col;
@@ -26,16 +28,17 @@ size_t getConsoleHeight() {
     CONSOLE_SCREEN_BUFFER_INFO sbInfo;
     GetConsoleScreenBufferInfo(GetStdHandle(STD_OUTPUT_HANDLE), &sbInfo);
     return sbInfo.dwSize.Y;
-#elif defined __unix__
+#elif defined(__unix__) || defined(unix) || defined(__unix) || defined(__linux__) || \
+    (defined(__APPLE__) && defined(__MACH__))
     struct winsize size {};
     ioctl(STDOUT_FILENO, TIOCGWINSZ, &size);
     return size.ws_row;
 #endif
 }
 
+#if defined(__unix__) || defined(unix) || defined(__unix) || defined(__linux__) || \
+    (defined(__APPLE__) && defined(__MACH__))
 void setFlag(tcflag_t flag, bool state) {
-#ifdef _WIN32
-#elif defined __unix__
     struct termios tios;
     tcgetattr(0, &tios);
     if (state) {
@@ -45,22 +48,34 @@ void setFlag(tcflag_t flag, bool state) {
     }
 
     tcsetattr(0, TCSAFLUSH, &tios);
+}
+#endif
+
+void enableCanon() {
+#if defined(__unix__) || defined(unix) || defined(__unix) || defined(__linux__) || \
+    (defined(__APPLE__) && defined(__MACH__))
+    setFlag(ICANON, true);
 #endif
 }
 
-void enableCanon() {
-    setFlag(ICANON, true);
-}
-
 void disableCanon() {
+#if defined(__unix__) || defined(unix) || defined(__unix) || defined(__linux__) || \
+    (defined(__APPLE__) && defined(__MACH__))
     setFlag(ICANON, false);
+#endif
 }
 void enableEcho() {
+#if defined(__unix__) || defined(unix) || defined(__unix) || defined(__linux__) || \
+    (defined(__APPLE__) && defined(__MACH__))
     setFlag(ECHO, true);
+#endif
 }
 
 void disableEcho() {
+#if defined(__unix__) || defined(unix) || defined(__unix) || defined(__linux__) || \
+    (defined(__APPLE__) && defined(__MACH__))
     setFlag(ECHO, false);
+#endif
 }
 
 std::string cursorUp(size_t n) {

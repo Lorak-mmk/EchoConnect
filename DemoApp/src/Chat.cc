@@ -11,7 +11,6 @@ constexpr char KEY_LEFT = 75;
 constexpr char KEY_RIGHT = 77;
 constexpr char NEW_LINE = '\n';
 
-
 void Chat::drawChat() {
     std::lock_guard<std::mutex> lock(mutex);
     size_t width = getConsoleWidth(), height = getConsoleHeight();
@@ -24,7 +23,7 @@ void Chat::drawChat() {
               << "To exit chat type \"~end\" and press enter. Type your message below, press enter to send:\n"
               << clearFormatting();
     std::cout << input->getLastNLines(width - 5, 3);
-	fflush(stdout);
+    fflush(stdout);
 }
 
 void Chat::sendRecv() {
@@ -88,7 +87,7 @@ bool Chat::readInput(std::string username) {
                 }
 
                 toSend->pushBack(setFormatting({ConsoleFormat::T_CYAN}) + username + ": " + clearFormatting() +
-                                       message + '\0');
+                                 message + '\0');
                 chat->pushBack(setFormatting({ConsoleFormat::T_MAGENTA}) + "You: " + clearFormatting() + message);
             } break;
             default:
@@ -110,9 +109,10 @@ ViewPtr Chat::runAction() {
 
     run = true;
     input = std::make_unique<InputField>();
-	toSend = std::make_unique<ConcurrentBuffer>();
-	chat = std::make_unique<ConcurrentBuffer>();
-    protocol = std::make_unique<EchoProtocol>(winSize, sendFreq, recvFreq, (int)getMainConfig()->getLimFor(recvFreq, winSize, 0.0));
+    toSend = std::make_unique<ConcurrentBuffer>();
+    chat = std::make_unique<ConcurrentBuffer>();
+    protocol = std::make_unique<EchoProtocol>(winSize, sendFreq, recvFreq,
+                                              (int)getMainConfig()->getLimFor(recvFreq, winSize, 0.0));
 
     std::cout << setFormatting({ConsoleFormat::T_BLUE})
               << " We are analyzing if there is any ongoing transmission, please wait...\n"
@@ -135,8 +135,8 @@ ViewPtr Chat::runAction() {
     disableCanon();
     disableEcho();
 
-	std::thread audioWorker{&Chat::sendRecv, this};
-	audioWorker.detach();
+    std::thread audioWorker{&Chat::sendRecv, this};
+    audioWorker.detach();
 
     drawChat();
 
@@ -157,7 +157,7 @@ ViewPtr Chat::runAction() {
 
     size_t height = getConsoleHeight();
 
-	std::cin.ignore((std::numeric_limits<std::streamsize>::max)(), '\n');
+    std::cin.ignore((std::numeric_limits<std::streamsize>::max)(), '\n');
     std::cout << setCursor(height - 3, 0) << clearLinesBelow() << "\n" << message;
     Utils::waitForEnter();
 

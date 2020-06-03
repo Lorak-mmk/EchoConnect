@@ -3,8 +3,8 @@
 
 #include "AAction.h"
 #include "ConcurrentBuffer.h"
-#include "InputField.h"
 #include "EchoProtocol.h"
+#include "InputField.h"
 
 #include <mutex>
 #include <thread>
@@ -25,13 +25,13 @@ protected:
     ViewPtr runAction() override;
 
 private:
-	void sendRecv();
-	void drawChat();
-	bool readInput(std::string username);
+    void sendRecv();
+    void drawChat();
+    bool readInput(std::string username);
 
 private:
-	std::mutex mutex;
-	std::unique_ptr<EchoProtocol> protocol;
+    std::mutex mutex;
+    std::unique_ptr<EchoProtocol> protocol;
     std::unique_ptr<InputField> input;
     std::unique_ptr<ConcurrentBuffer> toSend, chat;
     bool run;

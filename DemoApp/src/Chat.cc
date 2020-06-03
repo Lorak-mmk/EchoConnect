@@ -4,6 +4,11 @@
 #include "Utils.h"
 
 #include <cstdio>
+#ifdef _WIN32
+#include <winsock2.h>
+#else
+#include <arpa/inet.h>
+#endif
 
 constexpr char NEW_LINE = '\n';
 
@@ -31,22 +36,32 @@ void Chat::sendRecv() {
         try {
             auto messageToSend = toSend->popFront();
             if (messageToSend.has_value()) {
+				size_t len = htonl(messageToSend.value().size());
+                protocol->write(&len, sizeof(len));
                 protocol->write(messageToSend.value().data(), messageToSend.value().size());
             }
 
-            size_t messageLength = 0;
-            ssize_t readLength = protocol->read(receivedMessage.data(), 1, 1);
+			size_t len = 0, receivedLength = 0;
+            ssize_t readLength = protocol->read(&len, sizeof(len), 1);
             if (readLength > 0) {
-                messageLength += readLength;
-                while (receivedMessage[messageLength - 1] != '\0') {
-                    readLength = protocol->read(receivedMessage.data() + messageLength, 1, 1);
+				receivedLength += readLength;
+				while (receivedLength < sizeof(len)) {
+					readLength = protocol->read(&len + receivedLength, sizeof(len) - receivedLength, 1);
+					receivedLength += readLength;
+				}
+
+				len = ntohl(len);
+				receivedLength = 0;
+
+                while (receivedLength < len) {
+                    readLength = protocol->read(receivedMessage.data() + receivedLength, len - receivedLength, 1);
                     if (readLength < 0) {
                         run = false;
                         return;
                     }
-                    messageLength += readLength;
+                    receivedLength += readLength;
                 }
-                chat->pushBack(std::string(receivedMessage.data(), messageLength));
+                chat->pushBack(std::string(receivedMessage.data(), len));
                 drawChat();
             } else if (readLength < 0) {
                 run = false;
@@ -76,8 +91,7 @@ bool Chat::readInput(const std::string &username) {
                                     .append(username)
                                     .append(": ")
                                     .append(clearFormatting())
-                                    .append(message)
-                                    .append("\0");
+                                    .append(message);
                 auto messShow =
                     setFormatting({ConsoleFormat::T_MAGENTA}).append("You: ").append(clearFormatting()).append(message);
 

@@ -11,7 +11,7 @@
 
 class Chat : public AAction {
 public:
-    Chat(std::string title) : AAction(title) {
+    Chat(std::string name, std::string title) : AAction(std::move(name), std::move(title)) {
         arguments.insert({"sendFreq", Argument("sending sound frequency", ArgumentType::INTEGER)});
         arguments.insert({"recvFreq", Argument("receiving sound frequency", ArgumentType::INTEGER)});
         arguments.insert({"winSize", Argument("sound window size", ArgumentType::INTEGER)});
@@ -19,6 +19,9 @@ public:
                                              ArgumentType::INTEGER)});
         arguments.insert({"username", Argument("username", ArgumentType::STRING)});
     }
+
+    void printHelp() override;
+    bool executeCLI(const std::string &name, const std::map<std::string, std::string> &args) override;
 
 protected:
     ViewPtr runAction() override;

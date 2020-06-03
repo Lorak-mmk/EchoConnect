@@ -36,32 +36,22 @@ void Chat::sendRecv() {
         try {
             auto messageToSend = toSend->popFront();
             if (messageToSend.has_value()) {
-                size_t len = htonl(messageToSend.value().size());
-                protocol->write(&len, sizeof(len));
                 protocol->write(messageToSend.value().data(), messageToSend.value().size());
             }
 
-            size_t len = 0, receivedLength = 0;
-            ssize_t readLength = protocol->read(&len, sizeof(len), 1);
+            size_t messageLength = 0;
+            ssize_t readLength = protocol->read(receivedMessage.data(), 1, 1);
             if (readLength > 0) {
-                receivedLength += readLength;
-                while (receivedLength < sizeof(len)) {
-                    readLength = protocol->read(&len + receivedLength, sizeof(len) - receivedLength, 1);
-                    receivedLength += readLength;
-                }
-
-                len = ntohl(len);
-                receivedLength = 0;
-
-                while (receivedLength < len) {
-                    readLength = protocol->read(receivedMessage.data() + receivedLength, len - receivedLength, 1);
+                messageLength += readLength;
+                while (receivedMessage[messageLength - 1] != '\0') {
+                    readLength = protocol->read(receivedMessage.data() + messageLength, 1, 1);
                     if (readLength < 0) {
                         run = false;
                         return;
                     }
-                    receivedLength += readLength;
+                    messageLength += readLength;
                 }
-                chat->pushBack(std::string(receivedMessage.data(), len));
+                chat->pushBack(std::string(receivedMessage.data(), messageLength));
                 drawChat();
             } else if (readLength < 0) {
                 run = false;
@@ -91,7 +81,8 @@ bool Chat::readInput(const std::string &username) {
                                     .append(username)
                                     .append(": ")
                                     .append(clearFormatting())
-                                    .append(message);
+                                    .append(message)
+                                    .append(1, '\0');
                 auto messShow =
                     setFormatting({ConsoleFormat::T_MAGENTA}).append("You: ").append(clearFormatting()).append(message);
 
@@ -170,4 +161,12 @@ ViewPtr Chat::runAction() {
     Utils::waitForEnter();
 
     return parent;
+}
+
+void Chat::printHelp() {}
+
+bool Chat::executeCLI(const std::string &name, const std::map<std::string, std::string> &args) {
+    (void)name;
+    (void)args;
+    return false;
 }

@@ -19,7 +19,7 @@ public:
      * Derived classes must call it.
      *
      * @param format    Audio stream output format.
-     * @param win_size   How much of bitrate we want to use to play sound in which unit data is encoded.
+     * @param win_size  Number of samples used for a single bit.
      */
     ISender(const QAudioFormat &format, int win_size) : format(format), win_size(win_size) {
         output = std::make_unique<AudioOutput>(format);
@@ -54,15 +54,28 @@ public:
         win_size = newSize;
     }
 
+    /**
+     * @brief Starts a transmission, possibly by sending a header.
+     */
     virtual void start() = 0;
+
+    /**
+     * @brief Send data asynchronously, can be called multiple times in a row.
+     *
+     * @param buffer  Pointer to the data to be sent.
+     * @param size    Length of the data.
+     */
     virtual void send(uint8_t *buffer, int size) = 0;
+
+    /**
+     * @brief Waits for all data transfers to end.
+     */
     virtual void wait() = 0;
 
 protected:
     const QAudioFormat format;           /**< Audio stream output format. */
     std::unique_ptr<AudioOutput> output; /**< Output audio device. */
-    int win_size;                        /**< Says how much of bitrate we want to use
-                                             to play sound in which unit od data is encoded. */
+    int win_size;                        /**< Number of samples used for one bit. */
 };
 
 #endif  // ECHOCONNECT_I_SENDER_H

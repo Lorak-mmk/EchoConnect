@@ -57,6 +57,10 @@ public:
         hiFreq = newFreq;
     }
 
+    /**
+     * @brief Starts a new transmission by sending a "header".
+     * Must be called before send, after that send can be called multiple times in a row.
+     */
     void start() override;
     void send(uint8_t *buffer, int size) override;
     void wait() override;

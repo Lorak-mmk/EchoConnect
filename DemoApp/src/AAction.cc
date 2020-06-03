@@ -45,7 +45,32 @@ void AAction::printHelp() {
 }
 
 bool AAction::executeCLI(const std::string &name, const std::map<std::string, std::string> &args) {
-    std::cout << "Executing " << name << "\n";
+    if(this->name != name) {
+        return false;
+    }
 
+    Utils::printTitle(title);
+    setDefaults();
+
+    for(auto &arg : args) {
+        if(!arguments.count(arg.first)) {
+            throw std::runtime_error("Invalid argument name: " + arg.first);
+        }
+
+        Argument &a = arguments.at(arg.first);
+        switch(a.type) {
+            case ArgumentType::STRING:
+                a.value = Utils::valueFromString<std::string>(arg.second);
+                break;
+            case ArgumentType::REAL:
+                a.value = Utils::valueFromString<double>(arg.second);
+                break;
+            case ArgumentType::INTEGER:
+                a.value = Utils::valueFromString<int>(arg.second);
+                break;
+        }
+    }
+
+    (void)runAction();
     return true;
 }

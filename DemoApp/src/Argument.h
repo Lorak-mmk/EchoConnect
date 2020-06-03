@@ -2,6 +2,7 @@
 #define DEMOAPP_ARGUMENT_H
 
 #include <iostream>
+#include <utility>
 #include <variant>
 
 #include "Console.h"
@@ -14,7 +15,7 @@ typedef struct Argument {
     bool valueSet;
     std::variant<std::string, int, double> value;
 
-    Argument(std::string title, ArgumentType type) : title(title), type(type) {
+    Argument(std::string title, ArgumentType type) : title(std::move(title)), type(type) {
         valueSet = false;
     }
 

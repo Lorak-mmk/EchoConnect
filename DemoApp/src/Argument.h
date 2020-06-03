@@ -58,7 +58,7 @@ typedef struct Argument {
     }
 
     std::string typeString() {
-        switch(type) {
+        switch (type) {
             case ArgumentType::INTEGER:
                 return "Integer";
             case ArgumentType::REAL:

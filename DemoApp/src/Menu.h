@@ -11,7 +11,7 @@ public:
 
     ViewPtr execute() override;
     void printHelp() override;
-    bool executeCLI(const std::string& name, const std::map<std::string, std::string>& args) override;
+    bool executeCLI(const std::string &name, const std::map<std::string, std::string> &args) override;
 };
 
 #endif  // DEMOAPP_MENU_H

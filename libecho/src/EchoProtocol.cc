@@ -105,7 +105,7 @@ const char *str[5] = {"READY", "PLEASE_ACK", "PLEASE_RESEND", "CORRUPTED", "CLOS
 
 void EchoProtocol::thread(bool connecting) {
     std::stack<Packet> st;
-    Status status;
+    Status status{};
 
     if (connecting) {
         // sending SYN packet if needed

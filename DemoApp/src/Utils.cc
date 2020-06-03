@@ -11,7 +11,7 @@
 #endif
 
 void Utils::clear() {
-    if(!Utils::isCLIMode()) {
+    if (!Utils::isCLIMode()) {
         std::cout << clearScreen();
     }
 }

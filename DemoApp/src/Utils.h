@@ -36,7 +36,7 @@ public:
         T v;
         std::stringstream ss(s);
         ss >> v;
-        if(ss.fail()) {
+        if (ss.fail()) {
             throw std::runtime_error("Invalid argument! Value: " + s);
         }
         return v;

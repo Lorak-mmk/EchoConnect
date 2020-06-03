@@ -2,55 +2,53 @@
 #include <sstream>
 
 #include "Echo.h"
-#include "views.h"
 #include "Utils.h"
+#include "views.h"
 
 namespace {
-    std::vector<std::string> getOptions(int argc, char *argv[]) {
-        std::vector<std::string> res;
-        for(int i = 1; i < argc; i++) {
-            res.emplace_back(argv[i]);
-        }
-
-        return res;
+std::vector<std::string> getOptions(int argc, char *argv[]) {
+    std::vector<std::string> res;
+    for (int i = 1; i < argc; i++) {
+        res.emplace_back(argv[i]);
     }
 
-    bool startsWith(const std::string& s, const std::string& prefix) {
-        if(s.length() < prefix.length()) {
-            return false;
-        }
-
-        for(size_t i = 0; i < prefix.length(); i++) {
-            if(s[i] != prefix[i]) {
-                return false;
-            }
-        }
-
-        return true;
-    }
-
-    std::vector<std::string> split(const std::string& s, char delimiter) {
-        std::vector<std::string> tokens;
-        std::string token;
-        std::istringstream tokenStream(s);
-        while (std::getline(tokenStream, token, delimiter)) {
-            tokens.push_back(token);
-        }
-        return tokens;
-    }
+    return res;
 }
 
+bool startsWith(const std::string &s, const std::string &prefix) {
+    if (s.length() < prefix.length()) {
+        return false;
+    }
 
+    for (size_t i = 0; i < prefix.length(); i++) {
+        if (s[i] != prefix[i]) {
+            return false;
+        }
+    }
 
-std::map<std::string, std::string> optionsMap(std::vector<std::string> args) {
+    return true;
+}
+
+std::vector<std::string> split(const std::string &s, char delimiter) {
+    std::vector<std::string> tokens;
+    std::string token;
+    std::istringstream tokenStream(s);
+    while (std::getline(tokenStream, token, delimiter)) {
+        tokens.push_back(token);
+    }
+    return tokens;
+}
+}  // namespace
+
+std::map<std::string, std::string> optionsMap(const std::vector<std::string> &args) {
     std::map<std::string, std::string> params;
 
-    for(auto& arg : args) {
-        if(!startsWith(arg, "--")) {
+    for (const auto &arg : args) {
+        if (!startsWith(arg, "--")) {
             throw std::runtime_error("Invalid argument: " + arg);
         }
         auto val = split(arg, '=');
-        if(val.size() != 2) {
+        if (val.size() != 2) {
             throw std::runtime_error("Invalid argument: " + arg);
         }
 
@@ -84,7 +82,7 @@ int main(int argc, char *argv[]) {
     // clang-format on
 
     auto opt = getOptions(argc, argv);
-    if(opt.empty()) {
+    if (opt.empty()) {
         ViewPtr currentView = &mainMenu;
 
         while (currentView) {
@@ -95,7 +93,7 @@ int main(int argc, char *argv[]) {
 
     Utils::setCLI(true);
 
-    if(opt[0] == "--help") {
+    if (opt[0] == "--help") {
         std::cout << "Usage: " << argv[0] << " [action] [--paramName=paramValue]...\n";
         std::cout << "Available actions and parameters:\n";
         mainMenu.printHelp();
@@ -107,15 +105,13 @@ int main(int argc, char *argv[]) {
 
     try {
         auto args = optionsMap(opt);
-        if(!mainMenu.executeCLI(action, args)) {
+        if (!mainMenu.executeCLI(action, args)) {
             std::cerr << "Invalid action name!";
             return 1;
         }
         return 0;
-    } catch (const std::runtime_error& e) {
+    } catch (const std::runtime_error &e) {
         std::cerr << "Error: " << e.what();
         return 1;
     }
-
-
 }

@@ -34,7 +34,7 @@ size_t getConsoleHeight() {
 }
 
 std::string cursorUp(size_t n) {
-    if(!Utils::isCLIMode()) {
+    if (!Utils::isCLIMode()) {
         std::stringstream ss;
         ss << "\033[" << n << "F";
         return ss.str();
@@ -43,7 +43,7 @@ std::string cursorUp(size_t n) {
 }
 
 std::string cursorDown(size_t n) {
-    if(!Utils::isCLIMode()) {
+    if (!Utils::isCLIMode()) {
         std::stringstream ss;
         ss << "\033[" << n << "E";
         return ss.str();
@@ -52,7 +52,7 @@ std::string cursorDown(size_t n) {
 }
 
 std::string setCursor(size_t row, size_t column) {
-    if(!Utils::isCLIMode()) {
+    if (!Utils::isCLIMode()) {
         std::stringstream ss;
         ss << "\033[" << row << ";" << column << "f";
         return ss.str();
@@ -61,14 +61,14 @@ std::string setCursor(size_t row, size_t column) {
 }
 
 std::string clearScreen() {
-    if(!Utils::isCLIMode()) {
+    if (!Utils::isCLIMode()) {
         return "\033[2J\033[0;0H";
     }
     return "";
 }
 
 std::string clearLinesBelow() {
-    if(!Utils::isCLIMode()) {
+    if (!Utils::isCLIMode()) {
         std::stringstream ss;
         ss << "\033[" << getConsoleHeight() << "M";
         return ss.str();

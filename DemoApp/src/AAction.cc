@@ -38,26 +38,26 @@ ViewPtr AAction::execute() {
 
 void AAction::printHelp() {
     std::cout << "\t" << name << "      ";
-    for(auto& opt : this->arguments) {
-        std::cout << opt.first <<" (" << opt.second.typeString() << "), ";
+    for (auto &opt : this->arguments) {
+        std::cout << opt.first << " (" << opt.second.typeString() << "), ";
     }
     std::cout << "\n";
 }
 
 bool AAction::executeCLI(const std::string &name, const std::map<std::string, std::string> &args) {
-    if(this->name != name) {
+    if (this->name != name) {
         return false;
     }
 
     setDefaults();
 
-    for(auto &arg : args) {
-        if(!arguments.count(arg.first)) {
+    for (const auto &arg : args) {
+        if (!arguments.count(arg.first)) {
             throw std::runtime_error("Invalid argument name: " + arg.first);
         }
 
         Argument &a = arguments.at(arg.first);
-        switch(a.type) {
+        switch (a.type) {
             case ArgumentType::STRING:
                 a.value = Utils::valueFromString<std::string>(arg.second);
                 break;

@@ -8,6 +8,7 @@
 
 #include <stdio.h>
 #include <mutex>
+#include <thread>
 
 constexpr char KEY_UP = 72;
 constexpr char KEY_DOWN = 80;

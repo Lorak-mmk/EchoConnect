@@ -37,10 +37,10 @@ std::vector<std::string> ConcurrentBuffer::getLastNLines(size_t lineWidth, ssize
     std::vector<std::string> result;
 
     if (n < 0) {
-		for (const auto &entry : entries) {
-			result.emplace_back(entry);
-		}
-		return result;
+        for (const auto &entry : entries) {
+            result.emplace_back(entry);
+        }
+        return result;
     }
 
     size_t totalLines = 0, entryLines = 0;

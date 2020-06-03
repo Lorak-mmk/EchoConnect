@@ -40,15 +40,40 @@ void drawChat(StateVariables *vars) {
 }
 
 void sendRecv(StateVariables *vars) {
+    std::vector<char> receivedMessage;
+    size_t bufforSize = 4096;
+    receivedMessage.resize(bufforSize);
+
     while (vars->run) {
         try {
             auto messageToSend = vars->toSend->popFront();
             if (messageToSend.has_value()) {
+				std::cerr << messageToSend.value() << "\n";
                 vars->protocol->write(messageToSend.value().data(), messageToSend.value().size());
             }
-            //drawChat(vars);
+
+            size_t messageLength = 0;
+            ssize_t readLength = vars->protocol->read(receivedMessage.data(), 1, 1);
+            if (readLength > 0) {
+                messageLength += readLength;
+                while (receivedMessage[messageLength - 1] != '\0') {
+                    readLength = vars->protocol->read(receivedMessage.data() + messageLength, 1, 1);
+                    if (readLength < 0) {
+                        vars->run = false;
+                        return;
+                    }
+                    messageLength += readLength;
+                }
+                vars->chat->pushBack(std::string(receivedMessage.data(), messageLength));
+				std::cerr << std::string(receivedMessage.data(), messageLength) << "\n";
+                drawChat(vars);
+            } else if (readLength < 0) {
+                vars->run = false;
+                return;
+            }
         } catch (std::exception &e) {
             vars->run = false;
+            return;
         }
     }
 }

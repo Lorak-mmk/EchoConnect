@@ -4,7 +4,7 @@
 static constexpr double PI = 3.14159265358979323846;
 
 static const double RISE = 0.1;
-static const double FALL = 0.1;
+static const double FALL = 0.2;
 
 static const QAudioFormat::Endian OUTPUT_BYTEORDER = QAudioFormat::LittleEndian;
 static const int OUTPUT_CHANNEL_COUNT = 1;
@@ -27,11 +27,11 @@ QAudioFormat BitSenderv2::getOutputFormat() {
 }
 
 void BitSenderv2::start() {
-    auto *out = new int16_t[win_size * 3];
-    write_bit(out, 1);
-    write_bit(out + win_size, 0);
-    write_bit(out + win_size + win_size, 0);
-    output->enqueueData(reinterpret_cast<char *>(out), win_size * 6);
+    auto *out = new int16_t[win_size * 8];
+    for (int i = 0; i < 8; i++) {
+        write_bit(out + (i * win_size), (0x29 >> i) & 1);
+    }
+    output->enqueueData(reinterpret_cast<char *>(out), win_size * 16);
     delete[] out;
 }
 

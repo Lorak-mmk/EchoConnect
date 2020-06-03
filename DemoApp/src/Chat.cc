@@ -148,7 +148,7 @@ ViewPtr Chat::runAction() {
     setNoCanon();
     setNoEcho();
 
-	StateVariables *v = &vars;
+    StateVariables *v = &vars;
     std::thread audioWorker{&sendRecv, v};
 
     drawChat(&vars);
@@ -163,7 +163,7 @@ ViewPtr Chat::runAction() {
                   " An error occured, press enter to return to the previous view...\n" + clearFormatting();
     }
 
-	audioWorker.join();
+    audioWorker.join();
     p.close();
 
     setCanon();

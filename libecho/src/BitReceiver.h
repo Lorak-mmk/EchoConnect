@@ -9,9 +9,23 @@
 
 class BitReceiver : public IReceiver {
 public:
+    /**
+     * @brief Constructor
+     * @param win_size Number of samples per bit
+     * @param lo_freq  The frequency corresponding to bit 0
+     * @param hi_freq  The frequency corresponding to bit 1
+     * @param left_lim Silence threshold - if the signal drops below this value we assume the sender has died
+     * @param right_lim Sound threshold - We start listening once we receive something louder than this
+     */
     BitReceiver(int win_size, int lo_freq, int hi_freq, int left_lim, int right_lim);
 
+    /**
+     * @brief see IReceiver
+     */
     void start(std::chrono::duration<double> timeout) override;
+    /**
+     * @brief see IReceiver
+     */
     int receive(uint8_t *buffer, int size) override;
 
     [[nodiscard]] long getLoFrequency() const;

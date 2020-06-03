@@ -14,7 +14,6 @@ constexpr char KEY_DOWN = 80;
 constexpr char KEY_LEFT = 75;
 constexpr char KEY_RIGHT = 77;
 constexpr char NEW_LINE = '\n';
-constexpr size_t BUFFER_SIZE = 255;
 
 std::mutex mutex;
 
@@ -47,7 +46,7 @@ void sendRecv(StateVariables *vars) {
             if (messageToSend.has_value()) {
                 vars->protocol->write(messageToSend.value().data(), messageToSend.value().size());
             }
-            drawChat(vars);
+            //drawChat(vars);
         } catch (std::exception &e) {
             vars->run = false;
         }
@@ -125,7 +124,8 @@ ViewPtr Chat::runAction() {
     setNoCanon();
     setNoEcho();
 
-    // tu robimy wątek
+    std::thread audioWorker(sendRecv, &vars);
+
     drawChat(&vars);
 
     std::string message;
@@ -138,6 +138,7 @@ ViewPtr Chat::runAction() {
                   " An error occured, press enter to return to the previous view...\n" + clearFormatting();
     }
 
+    audioWorker.join();
     p.close();
 
     setCanon();

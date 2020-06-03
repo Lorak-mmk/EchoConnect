@@ -34,11 +34,15 @@ void ConcurrentBuffer::pushBackAll(std::vector<std::string> v) {
 std::vector<std::string> ConcurrentBuffer::getLastNLines(size_t lineWidth, ssize_t n) {
     std::lock_guard<std::mutex> lock(mutex);
 
+    std::vector<std::string> result;
+
     if (n < 0) {
-        return std::vector(entries.begin(), entries.end());
+		for (const auto &entry : entries) {
+			result.emplace_back(entry);
+		}
+		return result;
     }
 
-    std::vector<std::string> result;
     size_t totalLines = 0, entryLines = 0;
     for (auto it = entries.rbegin(); it != entries.rend(); it++) {
         entryLines = ((*it).size() / lineWidth) + (((*it).size() % lineWidth) > 0);

@@ -1,98 +1,95 @@
 #include "Chat.h"
+#include "ConcurrentBuffer.h"
 #include "Config.h"
 #include "Console.h"
 #include "EchoProtocol.h"
-#include "Utils.h"
-#include "ConcurrentBuffer.h"
 #include "InputField.h"
+#include "Utils.h"
 
-#include <unistd.h>
-#include <sys/select.h>
+#include <stdio.h>
+#include <mutex>
 
 constexpr char KEY_UP = 72;
 constexpr char KEY_DOWN = 80;
 constexpr char KEY_LEFT = 75;
 constexpr char KEY_RIGHT = 77;
 constexpr char NEW_LINE = '\n';
+constexpr size_t BUFFER_SIZE = 255;
+
+std::mutex mutex;
 
 struct StateVariables {
-	std::string user;
-	EchoProtocol *protocol;
-	InputField *input;
-	ConcurrentBuffer *toSend, *chat;
-	bool run;
+    std::string user;
+    EchoProtocol *protocol;
+    InputField *input;
+    ConcurrentBuffer *toSend, *chat;
+    bool run;
+};
+
+void drawChat(StateVariables *vars) {
+    std::lock_guard<std::mutex> lock(mutex);
+    size_t width = getConsoleWidth(), height = getConsoleHeight();
+    std::cout << setCursor(4, 0) << clearLinesBelow();
+    auto messages = vars->chat->getLastNLines(width - 5, height - 10);
+    for (const auto &m : messages) {
+        std::cout << " " << m << "\n";
+    }
+    std::cout << setCursor(height - 3, 0) << setFormatting({ConsoleFormat::T_BLACK, ConsoleFormat::B_WHITE})
+              << "To exit chat type \"~end\" and press enter. Type your message below, press enter to send:\n"
+              << clearFormatting();
+    std::cout << vars->input->getLastNLines(width - 5, 3);
 }
 
 void sendRecv(StateVariables *vars) {
-	while (vars->run) {
-		try {
-			if (listen) {
-				p.listen();
-			} else {
-				p.connect();
-			}
-		} catch (std::exception &e) {
-			vars->run = false;
-		}
-	}
+    while (vars->run) {
+        try {
+            auto messageToSend = vars->toSend->popFront();
+            if (messageToSend.has_value()) {
+                vars->protocol->write(messageToSend.value().data(), messageToSend.value().size());
+            }
+            drawChat(vars);
+        } catch (std::exception &e) {
+            vars->run = false;
+        }
+    }
 }
 
-void drawChat(StateVariables *vars) {
+bool readInput(StateVariables *vars) {
+    while (vars->run) {
+        char c = getchar();
+        switch (c) {
+            case KEY_UP:
+                break;
+            case KEY_DOWN:
+                break;
+            case KEY_LEFT:
+                vars->input->moveLeft();
+                break;
+            case KEY_RIGHT:
+                vars->input->moveRight();
+                break;
+            case NEW_LINE: {
+                auto message = vars->input->getLastNLines(0, -1);
+                vars->input->clear();
 
-}
+                if (message == "~end") {
+                    vars->run = false;
+                    return true;
+                }
 
-void handleChar(StateVariables *vars, char c) {
-	switch(c) {
-		case KEY_UP:
-			break;
-		case KEY_DOWN:
-			break;
-		case KEY_LEFT:
-			vars->input->moveLeft();
-			break;
-		case KEY_RIGHT:
-			vars->input->moveRight();
-		case NEW_LINE:
-			auto message = vars->input->getLastNLines(0, -1);
-			vars->input->clear();
-			vars->toSend->pushBack(setFormatting(ConsoleFormat::T_CYAN) + vars->user + ": "  + clearFormatting() + message);
-			vars->chat->pushBack(setFormatting(ConsoleFormat::T_MAGENTA) + "You: " + clearFormatting() + message);
-			break;
-		default:
-			vars->input->add(c);
-			break;
-	}
-}
+                vars->toSend->pushBack(setFormatting({ConsoleFormat::T_CYAN}) + vars->user + ": " + clearFormatting() +
+                                       message + '\0');
+                vars->chat->pushBack(setFormatting({ConsoleFormat::T_MAGENTA}) + "You: " + clearFormatting() + message +
+                                     '\0');
+            } break;
+            default:
+                vars->input->add(c);
+                break;
+        }
 
-bool manageChatView(StateVariables *vars) {
-    struct timeval timeout = {1, 0};
-    fd_set fds;
-    FD_ZERO(&fds);
-    FD_SET(STDIN_FILENO, &fds);
-
-	while (vars->run) {
-		int ret = select(1, &fds, NULL, NULL, &timeout);
-		if (ret == -1) {
-			return false;
-		} else if (ret > 0) {
-			char buffer[100];
-			ssize_t n = read(STDIN_FILENO, &buffer, input);
-			if (n < 0) {
-				return false;
-			}
-			if (strncmp(buffer, "~end", n) == 0) {
-				vars->run = false;
-				return true;
-			}
-			for (size_t i = 0; i < n; i++) {
-				handleChar(vars, buffer[i]);
-			}
-		}
-
-		drawChat(vars);
-	}
-
-	return false;
+        drawChat(vars);
+    }
+    return false;
 }
 
 ViewPtr Chat::runAction() {
@@ -102,46 +99,53 @@ ViewPtr Chat::runAction() {
     int listen = std::get<int>(arguments.find("listen")->second.value);
     std::string username = std::get<std::string>(arguments.find("username")->second.value);
 
-	InputField i;
-	ConcurrentBuffer s, c;
+    InputField i;
+    ConcurrentBuffer s, c;
     EchoProtocol p(winSize, sendFreq, recvFreq, (int)getMainConfig()->getLimFor(recvFreq, winSize, 0.0));
-	StateVariables vars = { user = username, protocol = &p, input = &i, toSend = &s, chat = &c, run = true };
+    StateVariables vars = {.user = username, .protocol = &p, .input = &i, .toSend = &s, .chat = &c, .run = true};
 
-	std::cout << setFormatting({ConsoleFormat::T_BLUE}) << " We are analyzing if there is any ongoing transmission, please wait...\n" << clearFormatting();
+    std::cout << setFormatting({ConsoleFormat::T_BLUE})
+              << " We are analyzing if there is any ongoing transmission, please wait...\n"
+              << clearFormatting();
 
-	try {
-		if (listen) {
-			p.listen();
-		} else {
-			p.connect();
-		}
-	} catch (std::exception &e) {
-		std::cout << setFormatting({ConsoleFormat::T_RED})
-					<< " Unfortunately we could detect any transmission, press enter to return to the previous
-					view...\n"
-					<< clearFormatting();
-		Utils::waitForEnter();
-		return parent;
-	}
+    try {
+        if (listen) {
+            p.listen();
+        } else {
+            p.connect();
+        }
+    } catch (std::exception &e) {
+        std::cout << setFormatting({ConsoleFormat::T_RED})
+                  << " Unfortunately we could detect any transmission, press enter to return to the previous view...\n"
+                  << clearFormatting();
+        Utils::waitForEnter();
+        return parent;
+    }
 
-	setNoCanon();
-	setNoEcho();
+    setNoCanon();
+    setNoEcho();
 
-	// tu robimy wątek
-	drawChat(vars);
+    // tu robimy wątek
+    drawChat(&vars);
 
-	p.close();
+    std::string message;
+    if (readInput(&vars)) {
+        message = setFormatting({ConsoleFormat::T_BLUE}) +
+                  " You've decided to finish chatting, press enter to return to the previous view...\n" +
+                  clearFormatting();
+    } else {
+        message = setFormatting({ConsoleFormat::T_RED}) +
+                  " An error occured, press enter to return to the previous view...\n" + clearFormatting();
+    }
 
-	setCanon();
-	setEcho();
+    p.close();
 
-	if (!manageChatView(StateVariables *vars)) {
-		std::cout << setCursor(4, 0) << clearLinesBelow();
-		std::cout << setFormatting({ConsoleFormat::T_RED})
-					<< " A system error occured, press enter to return to the previous view...\n"
-					<< clearFormatting();
-		Utils::waitForEnter();
-	}
+    setCanon();
+    setEcho();
+
+    size_t height = getConsoleHeight();
+    std::cout << setCursor(height - 3, 0) << clearLinesBelow() << "\n" << message;
+    Utils::waitForEnter();
 
     return parent;
 }

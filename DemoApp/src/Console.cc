@@ -38,11 +38,11 @@ void setFlag(tcflag_t flag, bool state) {
     tcgetattr(0, &tios);
     if (state) {
         tios.c_lflag |= flag;
-    } else
+    } else {
         tios.c_lflag &= ~flag;
-}
+    }
 
-tcsetattr(0, TCSAFLUSH, &tios);
+    tcsetattr(0, TCSAFLUSH, &tios);
 }
 
 void setCanon() {

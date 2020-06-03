@@ -16,11 +16,11 @@ int main(int argc, char *argv[]) {
             new ReceiveText{"Receive text"},
             new ReceiveFile{"Receive file"}
         }},
+		new Chat{"Chat"},
         new Menu{"Calibrate", {
             new CalibrateReceive{"Calibrate receiver"},
             new CalibrateSend{"Send callibration signal"}
         }},
-        new Menu{"Experimental", {}},
         new Settings{"Settings"},
         new Help{"Help"}
     }};

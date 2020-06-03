@@ -2,6 +2,7 @@
 
 #include <algorithm>
 #include <cmath>
+#include <iostream>
 
 std::optional<std::string> ConcurrentBuffer::popFront() {
     std::lock_guard<std::mutex> lock(mutex);
@@ -40,7 +41,7 @@ std::vector<std::string> ConcurrentBuffer::getLastNLines(size_t lineWidth, ssize
     std::vector<std::string> result;
     size_t totalLines = 0, entryLines = 0;
     for (auto it = entries.rbegin(); it != entries.rend(); it++) {
-        entryLines = std::ceil((*it).size() / lineWidth);
+        entryLines = ((*it).size() / lineWidth) + (((*it).size() % lineWidth) > 0);
         if (totalLines + entryLines <= (size_t)n) {
             totalLines += entryLines;
             result.push_back(*it);

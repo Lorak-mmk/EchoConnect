@@ -18,7 +18,7 @@ enum ConsoleFormat : int {
     B_BLUE = 44,
     B_MAGENTA = 45,
     B_CYAN = 46,
-    B_WHITE = 37
+    B_WHITE = 47
 };
 
 size_t getConsoleWidth();

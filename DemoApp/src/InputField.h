@@ -14,7 +14,6 @@ public:
 
 private:
     std::string text;
-    std::string::iterator iterator;
     size_t cursor = 0;
 };
 

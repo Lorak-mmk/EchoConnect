@@ -12,7 +12,7 @@ public:
     ConcurrentBuffer(){};
     std::optional<std::string> popFront();
     std::vector<std::string> popAll();
-    void pushBack(std::string s);
+    void pushBack(const std::string &s);
     void pushBackAll(std::vector<std::string> v);
     std::vector<std::string> getLastNLines(size_t lineWidth, ssize_t n);
 

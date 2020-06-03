@@ -18,16 +18,27 @@ enum ConsoleFormat : int {
     B_BLUE = 44,
     B_MAGENTA = 45,
     B_CYAN = 46,
-    B_WHITE = 37
+    B_WHITE = 47
 };
 
 size_t getConsoleWidth();
 size_t getConsoleHeight();
+
+void enableCanon();
+void disableCanon();
+
+void enableEcho();
+void disableEcho();
+
 std::string cursorUp(size_t n);
 std::string cursorDown(size_t n);
+std::string cursorLeft(size_t n);
+std::string cursorRight(size_t n);
 std::string setCursor(size_t row, size_t column);
+
 std::string clearScreen();
 std::string clearLinesBelow();
+
 std::string setFormatting(std::initializer_list<ConsoleFormat> formats);
 std::string clearFormatting();
 

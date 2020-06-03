@@ -1,8 +1,10 @@
 #include <sstream>
 #ifdef _WIN32
 #include <windows.h>
-#elif defined __unix__
+#elif defined(__unix__) || defined(unix) || defined(__unix) || defined(__linux__) || \
+    (defined(__APPLE__) && defined(__MACH__))
 #include <sys/ioctl.h>
+#include <termios.h>
 #include <unistd.h>
 #endif
 
@@ -14,7 +16,8 @@ size_t getConsoleWidth() {
     CONSOLE_SCREEN_BUFFER_INFO sbInfo;
     GetConsoleScreenBufferInfo(GetStdHandle(STD_OUTPUT_HANDLE), &sbInfo);
     return sbInfo.dwSize.X;
-#elif defined __unix__
+#elif defined(__unix__) || defined(unix) || defined(__unix) || defined(__linux__) || \
+    (defined(__APPLE__) && defined(__MACH__))
     struct winsize size {};
     ioctl(STDOUT_FILENO, TIOCGWINSZ, &size);
     return size.ws_col;
@@ -26,10 +29,53 @@ size_t getConsoleHeight() {
     CONSOLE_SCREEN_BUFFER_INFO sbInfo;
     GetConsoleScreenBufferInfo(GetStdHandle(STD_OUTPUT_HANDLE), &sbInfo);
     return sbInfo.dwSize.Y;
-#elif defined __unix__
+#elif defined(__unix__) || defined(unix) || defined(__unix) || defined(__linux__) || \
+    (defined(__APPLE__) && defined(__MACH__))
     struct winsize size {};
     ioctl(STDOUT_FILENO, TIOCGWINSZ, &size);
     return size.ws_row;
+#endif
+}
+
+#if defined(__unix__) || defined(unix) || defined(__unix) || defined(__linux__) || \
+    (defined(__APPLE__) && defined(__MACH__))
+void setFlag(tcflag_t flag, bool state) {
+    struct termios tios {};
+    tcgetattr(0, &tios);
+    if (state) {
+        tios.c_lflag |= flag;
+    } else {
+        tios.c_lflag &= ~flag;
+    }
+
+    tcsetattr(0, TCSAFLUSH, &tios);
+}
+#endif
+
+void enableCanon() {
+#if defined(__unix__) || defined(unix) || defined(__unix) || defined(__linux__) || \
+    (defined(__APPLE__) && defined(__MACH__))
+    setFlag(ICANON, true);
+#endif
+}
+
+void disableCanon() {
+#if defined(__unix__) || defined(unix) || defined(__unix) || defined(__linux__) || \
+    (defined(__APPLE__) && defined(__MACH__))
+    setFlag(ICANON, false);
+#endif
+}
+void enableEcho() {
+#if defined(__unix__) || defined(unix) || defined(__unix) || defined(__linux__) || \
+    (defined(__APPLE__) && defined(__MACH__))
+    setFlag(ECHO, true);
+#endif
+}
+
+void disableEcho() {
+#if defined(__unix__) || defined(unix) || defined(__unix) || defined(__linux__) || \
+    (defined(__APPLE__) && defined(__MACH__))
+    setFlag(ECHO, false);
 #endif
 }
 
@@ -49,6 +95,18 @@ std::string cursorDown(size_t n) {
         return ss.str();
     }
     return "";
+}
+
+std::string cursorLeft(size_t n) {
+    std::stringstream ss;
+    ss << "\033[" << n << "D";
+    return ss.str();
+}
+
+std::string cursorRight(size_t n) {
+    std::stringstream ss;
+    ss << "\033[" << n << "C";
+    return ss.str();
 }
 
 std::string setCursor(size_t row, size_t column) {

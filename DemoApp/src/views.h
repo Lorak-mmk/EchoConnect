@@ -3,6 +3,7 @@
 
 #include "CalibrateReceive.h"
 #include "CalibrateSend.h"
+#include "Chat.h"
 #include "Help.h"
 #include "Menu.h"
 #include "ReceiveFile.h"

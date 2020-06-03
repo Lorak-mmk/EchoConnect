@@ -12,7 +12,10 @@
 #include <thread>
 
 #ifdef _WIN32
-using ssize_t = long;
+#ifndef SSIZE_DEFINED
+#define SSIZE_DEFINED
+using ssize_t = long long;
+#endif
 #endif
 
 class EchoProtocol {

@@ -71,11 +71,11 @@ int main(int argc, char *argv[]) {
             new ReceiveText{"recvText", "Receive text"},
             new ReceiveFile{"recvFile", "Receive file"}
         }},
+		new Chat{"chat", "Chat"},
         new Menu{"Calibrate", {
             new CalibrateReceive{"caliRecv", "Calibrate receiver"},
             new CalibrateSend{"caliSend", "Send callibration signal"}
         }},
-        new Menu{"Experimental", {}},
         new Settings{"settings", "Settings"},
         new Help{"help", "Help"}
     }};

@@ -4,7 +4,10 @@
 #include <string>
 
 #ifdef _WIN32
+#ifndef SSIZE_DEFINED
+#define SSIZE_DEFINED
 using ssize_t = long long;
+#endif
 #endif
 
 class InputField {

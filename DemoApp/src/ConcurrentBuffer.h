@@ -7,6 +7,13 @@
 #include <string>
 #include <vector>
 
+#ifdef _WIN32
+#ifndef SSIZE_DEFINED
+#define SSIZE_DEFINED
+using ssize_t = long long;
+#endif
+#endif
+
 class ConcurrentBuffer {
 public:
     ConcurrentBuffer(){};

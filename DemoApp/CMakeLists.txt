@@ -44,6 +44,12 @@ set(SRC_FILES
         ${SRC_DIR}/SendFile.h
         ${SRC_DIR}/Console.h
         ${SRC_DIR}/Console.cc
+        ${SRC_DIR}/ConcurrentBuffer.h
+        ${SRC_DIR}/ConcurrentBuffer.cc
+        ${SRC_DIR}/InputField.h
+        ${SRC_DIR}/InputField.cc
+        ${SRC_DIR}/Chat.h
+        ${SRC_DIR}/Chat.cc
         ${SRC_DIR}/main.cc)
 
 add_executable(${EXEC_NAME} "${SRC_FILES}")

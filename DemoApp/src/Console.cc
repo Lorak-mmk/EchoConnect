@@ -1,3 +1,4 @@
+#include <termios.h>
 #include <sstream>
 #ifdef _WIN32
 #include <windows.h>
@@ -32,6 +33,33 @@ size_t getConsoleHeight() {
 #endif
 }
 
+void setFlag(tcflag_t flag, bool state) {
+    struct termios tios;
+    tcgetattr(0, &tios);
+    if (state) {
+        tios.c_lflag |= flag;
+    } else
+        tios.c_lflag &= ~flag;
+}
+
+tcsetattr(0, TCSAFLUSH, &tios);
+}
+
+void setCanon() {
+    setFlag(ICANON, true);
+}
+
+void setNoCanon() {
+    setFlag(ICANON, true);
+}
+void setEcho() {
+    setFlag(ECHO, true);
+}
+
+void setNoEcho() {
+    setFlag(ECHO, false);
+}
+
 std::string cursorUp(size_t n) {
     std::stringstream ss;
     ss << "\033[" << n << "F";
@@ -41,6 +69,18 @@ std::string cursorUp(size_t n) {
 std::string cursorDown(size_t n) {
     std::stringstream ss;
     ss << "\033[" << n << "E";
+    return ss.str();
+}
+
+std::string cursorLeft(size_t n) {
+    std::stringstream ss;
+    ss << "\033[" << n << "D";
+    return ss.str();
+}
+
+std::string cursorRight(size_t n) {
+    std::stringstream ss;
+    ss << "\033[" << n << "C";
     return ss.str();
 }
 

@@ -23,11 +23,21 @@ enum ConsoleFormat : int {
 
 size_t getConsoleWidth();
 size_t getConsoleHeight();
+
+void setCanon();
+void setNoCanon();
+void setEcho();
+void setNoEcho();
+
 std::string cursorUp(size_t n);
 std::string cursorDown(size_t n);
+std::string cursorLeft(size_t n);
+std::string cursorRight(size_t n);
 std::string setCursor(size_t row, size_t column);
+
 std::string clearScreen();
 std::string clearLinesBelow();
+
 std::string setFormatting(std::initializer_list<ConsoleFormat> formats);
 std::string clearFormatting();
 

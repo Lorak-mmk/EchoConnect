@@ -8,15 +8,15 @@ ViewPtr Settings::runAction() {
 
     for (auto &[key, arg] : arguments) {
         switch (arg.type) {
-            case INTEGER:
+            case ArgumentType::INTEGER:
                 getMainConfig()->setValue(std::get<int>(arg.value), key);
                 break;
 
-            case REAL:
+            case ArgumentType::REAL:
                 getMainConfig()->setValue(std::get<double>(arg.value), key);
                 break;
 
-            case STRING:
+            case ArgumentType::STRING:
                 getMainConfig()->setValue(std::get<std::string>(arg.value), key);
                 break;
 
@@ -27,9 +27,11 @@ ViewPtr Settings::runAction() {
         std::cout << ".";
     }
 
-    std::cout << setFormatting({ConsoleFormat::T_YELLOW}) << "\n Done, press enter to go back to the previous view..."
-              << clearFormatting();
-    Utils::waitForEnter();
+    if (!Utils::isCLIMode()) {
+        std::cout << setFormatting({ConsoleFormat::T_YELLOW})
+                  << "\n Done, press enter to go back to the previous view..." << clearFormatting();
+        Utils::waitForEnter();
+    }
 
     return parent;
 }

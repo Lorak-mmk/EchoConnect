@@ -11,7 +11,9 @@
 #endif
 
 void Utils::clear() {
-    std::cout << clearScreen();
+    if (!Utils::isCLIMode()) {
+        std::cout << clearScreen();
+    }
 }
 
 void Utils::printTitle(const std::string &title) {
@@ -65,13 +67,13 @@ void changeArgument(Argument &a) {
     std::string prompt = setFormatting({ConsoleFormat::T_YELLOW}) + " Enter new value: " + clearFormatting();
 
     switch (a.type) {
-        case INTEGER:
+        case ArgumentType::INTEGER:
             a.value = Utils::readValue<int>(prompt);
             break;
-        case REAL:
+        case ArgumentType::REAL:
             a.value = Utils::readValue<double>(prompt);
             break;
-        case STRING:
+        case ArgumentType::STRING:
             a.value = Utils::readValue<std::string>(prompt);
             break;
         default:
@@ -128,6 +130,16 @@ size_t Utils::fileSize(std::ifstream &file) {
 
     return length;
 }
+
+void Utils::setCLI(bool cli) {
+    Utils::isCLI = cli;
+}
+
+bool Utils::isCLIMode() {
+    return Utils::isCLI;
+}
+
+bool Utils::isCLI = false;
 
 #ifndef __APPLE__
 uint64_t HTONLL(uint64_t x) {

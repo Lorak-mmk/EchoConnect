@@ -8,7 +8,7 @@
 
 class CalibrateSend : public AAction {
 public:
-    CalibrateSend(std::string title) : AAction(std::move(title)) {
+    CalibrateSend(std::string name, std::string title) : AAction(std::move(name), std::move(title)) {
         arguments.insert({sendFreqKey, Argument("sending sound frequency", ArgumentType::INTEGER)});
         arguments.insert({winSizeKey, Argument("sound window size", ArgumentType::INTEGER)});
     }

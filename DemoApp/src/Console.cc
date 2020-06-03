@@ -7,6 +7,7 @@
 #endif
 
 #include "Console.h"
+#include "Utils.h"
 
 size_t getConsoleWidth() {
 #ifdef _WIN32
@@ -33,31 +34,46 @@ size_t getConsoleHeight() {
 }
 
 std::string cursorUp(size_t n) {
-    std::stringstream ss;
-    ss << "\033[" << n << "F";
-    return ss.str();
+    if (!Utils::isCLIMode()) {
+        std::stringstream ss;
+        ss << "\033[" << n << "F";
+        return ss.str();
+    }
+    return "";
 }
 
 std::string cursorDown(size_t n) {
-    std::stringstream ss;
-    ss << "\033[" << n << "E";
-    return ss.str();
+    if (!Utils::isCLIMode()) {
+        std::stringstream ss;
+        ss << "\033[" << n << "E";
+        return ss.str();
+    }
+    return "";
 }
 
 std::string setCursor(size_t row, size_t column) {
-    std::stringstream ss;
-    ss << "\033[" << row << ";" << column << "f";
-    return ss.str();
+    if (!Utils::isCLIMode()) {
+        std::stringstream ss;
+        ss << "\033[" << row << ";" << column << "f";
+        return ss.str();
+    }
+    return "";
 }
 
 std::string clearScreen() {
-    return "\033[2J\033[0;0H";
+    if (!Utils::isCLIMode()) {
+        return "\033[2J\033[0;0H";
+    }
+    return "";
 }
 
 std::string clearLinesBelow() {
-    std::stringstream ss;
-    ss << "\033[" << getConsoleHeight() << "M";
-    return ss.str();
+    if (!Utils::isCLIMode()) {
+        std::stringstream ss;
+        ss << "\033[" << getConsoleHeight() << "M";
+        return ss.str();
+    }
+    return "";
 }
 
 std::string setFormatting(std::initializer_list<ConsoleFormat> formats) {

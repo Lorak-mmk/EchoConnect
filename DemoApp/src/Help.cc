@@ -19,10 +19,10 @@ ViewPtr Help::runAction() {
     return parent;
 }
 
-void Help::printHelp() {
-    return;
-}
+void Help::printHelp() {}
 
 bool Help::executeCLI(const std::string &name, const std::map<std::string, std::string> &args) {
+    (void)name;
+    (void)args;
     return false;
 }

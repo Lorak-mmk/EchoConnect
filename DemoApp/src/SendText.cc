@@ -19,7 +19,6 @@ ViewPtr SendText::runAction() {
     std::cin >> message;
     std::cin.ignore((std::numeric_limits<std::streamsize>::max)(), '\n');
 
-
     try {
         protocol.connect();
     } catch (std::exception &e) {

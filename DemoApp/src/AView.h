@@ -1,6 +1,7 @@
 #ifndef DEMOAPP_IVIEW_H
 #define DEMOAPP_IVIEW_H
 
+#include <map>
 #include <memory>
 #include <string>
 #include <utility>
@@ -23,6 +24,8 @@ public:
     std::string getTitle();
 
     virtual ViewPtr execute() = 0;
+    virtual void printHelp() = 0;
+    virtual bool executeCLI(const std::string &name, const std::map<std::string, std::string> &args) = 0;
 
 protected:
     std::string name;

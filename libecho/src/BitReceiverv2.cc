@@ -128,7 +128,7 @@ void BitReceiverv2::start(std::chrono::duration<double> timeout) {
 }
 
 uint8_t BitReceiverv2::read_bit() {
-    //static int seq = 0;  // for dbg
+    // static int seq = 0;  // for dbg
     double val;
     uint8_t res;
 
@@ -139,37 +139,36 @@ uint8_t BitReceiverv2::read_bit() {
     if (res != prev_bit) {
         if (res) {
             high_mag = (high_mag + val) / 2;
-        }
-        else {
+        } else {
             low_mag = (low_mag + val) / 2;
         }
         lim = (6 * lim + (high_mag + low_mag) / 2) / 7;
     }
     prev_bit = res;
 
-	/*
-    if (dbg) {
-        if (res != ((*dbg >> seq) & 1))
-            fprintf(stderr, "should be %d (lim = %lf)\n", !res, lim);
+    /*
+if (dbg) {
+    if (res != ((*dbg >> seq) & 1))
+        fprintf(stderr, "should be %d (lim = %lf)\n", !res, lim);
 
-        for (int i = 0; i < win_size; i++) {
-            for (int j = 0; j < mags[i]; j++) {
-                if (j == (int)lim)
-                    fprintf(stderr, "|");
-                else
-                    fprintf(stderr, res == ((*dbg >> seq) & 1) ? "#" : "*");
-            }
-            fprintf(stderr, "\n");
+    for (int i = 0; i < win_size; i++) {
+        for (int j = 0; j < mags[i]; j++) {
+            if (j == (int)lim)
+                fprintf(stderr, "|");
+            else
+                fprintf(stderr, res == ((*dbg >> seq) & 1) ? "#" : "*");
         }
         fprintf(stderr, "\n");
-
-        seq++;
-        if (seq == 8) {
-            seq = 0;
-            dbg++;
-        }
     }
-    */
+    fprintf(stderr, "\n");
+
+    seq++;
+    if (seq == 8) {
+        seq = 0;
+        dbg++;
+    }
+}
+*/
 
     return res;
 }

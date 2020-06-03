@@ -163,7 +163,6 @@ void EchoProtocol::thread(bool connecting) {
             }
 
             if (p.isSet(Flag::ACK1)) {
-                assert(st.top().getNumber() + 1 == num);
                 st.pop();
             }
 

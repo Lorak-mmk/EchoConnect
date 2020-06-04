@@ -36,6 +36,9 @@ EchoRawConnection is an abstraction for low-level data transmissions using audio
 
 EchoProtocol is a way more high-level way to send data using sound than in EchoRawConnection (which it actually uses). It is lightly based on well-known network protocols. To send data user must first connect computers by using appropriate methods such as listen and connect. Then data transmission is as simple as calling send and receive. Transmission correctness is checked by our library and if any retransmission is needed it happens automatically. At the end there is only need to finish connection. Usage is analogous to ex. socket programming in C/C++, though much slower.
 
+Detailed explanation how it works is available at: [Protocol](@ref Protocol).
+
+
 
 
 

@@ -97,8 +97,7 @@ public:
      * @param buf     pointer to buffer with data
      * @param count   number of bytes to send
      *
-     * @return        Returns number of sent bytes (is equal to count when any exception
-     *                isn't being thrown).
+     * @return        Returns number of sent bytes (is equal to count).
      */
     size_t write(const void *buf, size_t count);
 

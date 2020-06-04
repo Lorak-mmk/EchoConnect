@@ -72,17 +72,21 @@ public:
      * @param buf       pointer to buffer that should be filled
      * @param count     number of bytes to read
      * @param timeout   number of seconds; if no signal is detected by then, function assumes
-     *                  that connection is broken;
+     *                  that connection is broken; some signals should be continuously sent
+     *                  by protocol to keep connection alive even when no data is being sent;
      *                  timeout < 0 means that function can wait infinitely
      *
      * @return          Returns number of read bytes (can be any from 0 to count),
      *                  or -1 in case of failure or end of stream.
+     *                  After returning -1, program should call EchoProtocol::close().
      */
     ssize_t read(void *buf, size_t count, int timeout);
 
     /**
      * @brief         Writes @p count bytes to audio output.
-     *                Can throw an exception when sent data isn't being confirmed.
+     *                Can throw an exception (ConnectionBroken)
+     *                when sent data isn't being confirmed
+     *                (this means some problems in lower layer).
      *
      * @param buf     pointer to buffer with data
      * @param count   number of bytes to send

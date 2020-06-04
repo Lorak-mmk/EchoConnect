@@ -81,7 +81,7 @@ public:
      *                  timeout < 0 means that function can wait infinitely
      *
      * @return          Returns number of read bytes (can be any from 0 to count),
-     *                  or -1 in case of failure or end of stream.
+     *                  or -1 in case of failure or end of stream (they are indistinguishable).
      *                  After returning -1, program should call EchoProtocol::close().
      *                  Getting lower byte count than expected (especially 0) is not
      *                  an error, you should just try again.

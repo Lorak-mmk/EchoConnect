@@ -64,6 +64,10 @@ public:
      * @brief Closes a connection.
      * Connection that was once opened should be closed (even when one of read/write
      * functions throws an exception).
+     * Doesn't throw exceptions.
+     *
+     * Closing an already closed connection, or calling close() by a different thread
+     * that called listen() or connect() is undefined behaviour.
      */
     void close();
 
@@ -72,13 +76,15 @@ public:
      * @param buf       pointer to buffer that should be filled
      * @param count     number of bytes to read
      * @param timeout   number of seconds; if no signal is detected by then, function assumes
-     *                  that connection is broken; some signals should be continuously sent
+     *                  that connection is broken; some signals are being continuously sent
      *                  by protocol to keep connection alive even when no data is being sent;
      *                  timeout < 0 means that function can wait infinitely
      *
      * @return          Returns number of read bytes (can be any from 0 to count),
      *                  or -1 in case of failure or end of stream.
      *                  After returning -1, program should call EchoProtocol::close().
+     *                  Getting lower byte count than expected (especially 0) is not
+     *                  an error, you should just try again.
      */
     ssize_t read(void *buf, size_t count, int timeout);
 
@@ -91,7 +97,8 @@ public:
      * @param buf     pointer to buffer with data
      * @param count   number of bytes to send
      *
-     * @return        Returns number of sent bytes (should be equal to count).
+     * @return        Returns number of sent bytes (is equal to count when any exception
+     *                isn't being thrown).
      */
     size_t write(const void *buf, size_t count);
 

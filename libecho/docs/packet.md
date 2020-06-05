@@ -72,4 +72,4 @@ Packet checksum, to be more specific **CRC32** of all other packet components. W
 
 - - -
 
-Current packet declaration and definition is available to read in [Packet.h](https://github.com/Lorak-mmk/EchoConnect/blob/master/libecho/src/Packet.h) and [Packet.cc](https://github.com/Lorak-mmk/EchoConnect/blob/master/libecho/src/Packet.cc) files in [EchoConnect](https://github.com/Lorak-mmk/EchoConnect) project repository.
+Current packet declaration and definition are available to read in [Packet.h](https://github.com/Lorak-mmk/EchoConnect/blob/master/libecho/src/Packet.h) and [Packet.cc](https://github.com/Lorak-mmk/EchoConnect/blob/master/libecho/src/Packet.cc) files in [EchoConnect](https://github.com/Lorak-mmk/EchoConnect) project repository.

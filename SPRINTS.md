@@ -31,13 +31,13 @@
 -   Uzupełnienie brakujących testów oraz dokumentacji
 -   Przygotowanie prezentacji sprintu
 
-**Sprint 4:  termin 20 V**
+**Sprint 4:  termin 20 V** &ndash; [prezentacja](https://docs.google.com/presentation/d/1dg1wWAaySBWlsM0C6T_dh4fH93O8rQSc3n0k7kVr204/edit?usp=sharing)
 
 -   Opracowanie wymagań dla obu aplikacji
 -   Implementacja i dokumentacja interfejsu tekstowego
 -   Przygotowanie prezentacji sprintu
 
-**Sprint 5:  termin 3 VI**
+**Sprint 5:  termin 3 VI** &ndash; [prezentacja](https://docs.google.com/presentation/d/1PONbjVjetKBLNgAhtQiNSCEuVeRZLTXa2seVdr9pF5U/edit?usp=sharing)
 
 -   Implementacja interfejsu graficznego
 -   Przygotowanie prezentacji końcowej

@@ -27,14 +27,14 @@ EchoConnect provides two distinct sender implementations, both of which look at 
 
 #### BitSender
 
-To use BitSender we need to specify two distinct frequencies (they should be in the decent distance) - one would be used for encoding bits with value 1, the other one for bits with value 0. With that, bits are encoded one after another and corresponding sounds are played through speakers for the same length of time.
+To use BitSender we need to specify two distinct frequencies (they should be in the decent distance) &ndash; one would be used for encoding bits with value 1, the other one for bits with value 0. With that, bits are encoded one after another and corresponding sounds are played through speakers for the same length of time.
 
 
 #### BitSenderv2
 
 BitSenderv2 is nearly the same as its precursor. The difference is that it uses the existence of one specified frequency in sound to encode data. Although, because it uses silence to encoding, it needed some additions, which are explained below.
 
-If we want to encode a message with an F-frequency and S-silence. Let's assume without loss of generality that we send 0 bit as S and 1 bit as F, message to send is 0000. In that case there is no sound, so the receiver doesn't even know that something is being transmitted. Because of that, there must be additional not silent header for every message to mark the beggining of transmission.
+If we want to encode a message with an F &ndash; frequency and S &ndash; silence. Let's assume without loss of generality that we send 0 bit as S and 1 bit as F, message to send is 0000. In that case there is no sound, so the receiver doesn't even know that something is being transmitted. Because of that, there must be additional not silent header for every message to mark the beggining of transmission.
 
 Now we know that some data is sent out and we receive and decode it, but apparently no receiver could distinguish between 100 and 10000 messages. It either needs to know the length of the message or receive a special terminating sequence marking the end of the transmission. As it is much easier to learn about message length than
 

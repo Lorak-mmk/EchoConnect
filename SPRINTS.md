@@ -12,7 +12,7 @@
 
 **Sprint 2: termin 15 IV** &ndash; [prezentacja](https://docs.google.com/presentation/d/18G3X2wtMrt-GHr3P81ekFlSrtS8_PEWGzMDFLG9734Y/edit?usp=sharing)
 
--   Opracowanie protokołu - korekcja błędów, weryfikacja poprawności
+-   Opracowanie protokołu &ndash; korekcja błędów, weryfikacja poprawności
 -   Przygotowanie CI
 -   Przygotowanie kodu do serializacji/deserializacji/budowania pakietów
 -   Testy implementacji pakietów

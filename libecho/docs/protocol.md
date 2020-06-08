@@ -27,7 +27,7 @@ In the beginning, the node needs to synchronize these windows with the other one
 
 **How does the flow of messages look like?**
 
-In each window, a node can either ask for retransmission, answer to something (confirm or retransmit) or send some data. These actions have decreasing priority - if a node receives an invalid packet, it asks for retransmission, if not,  then if it receives something it needs to answer then answers and when nothing else needs attention node can send a message from "to send" buffer. And that's how the conversation goes on.
+In each window, a node can either ask for retransmission, answer to something (confirm or retransmit) or send some data. These actions have decreasing priority &ndash; if a node receives an invalid packet, it asks for retransmission, if not,  then if it receives something it needs to answer then answers and when nothing else needs attention node can send a message from "to send" buffer. And that's how the conversation goes on.
 Also, each node keeps a stack of received packets requiring an answer, so that even if there is a temporary disruption, the conversation may rehabilitate after that by gradual answering to overdue messages.
 
 

@@ -36,29 +36,3 @@ add_executable(${EXEC_NAME} ${TEST_FILES})
 add_test(NAME ${EXEC_NAME} COMMAND ${EXEC_NAME})
 
 target_link_libraries(${EXEC_NAME} PRIVATE echo gtest gtest_main)
-
-add_executable(sendrecv sendrecv.cpp)
-add_executable(info info.cpp)
-add_executable(wave wave.cpp)
-add_executable(getlim getlim.cpp)
-add_executable(alt alt.cpp)
-add_executable(show show.cpp)
-add_executable(dft dft.cpp)
-add_executable(protocol_send protocol_send.cc)
-add_executable(protocol_recv protocol_recv.cc)
-add_executable(self_cal self_cal.cpp)
-
-
-
-
-
-target_link_libraries(sendrecv echo)
-target_link_libraries(info echo)
-target_link_libraries(wave echo)
-target_link_libraries(getlim echo)
-target_link_libraries(alt echo)
-target_link_libraries(show echo)
-target_link_libraries(dft echo)
-target_link_libraries(self_cal echo)
-target_link_libraries(protocol_send echo)
-target_link_libraries(protocol_recv echo)

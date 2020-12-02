@@ -4,6 +4,7 @@
 #include <iostream>
 #include <limits>
 #include <map>
+#include <sstream>
 
 #include "Argument.h"
 #include "Console.h"
@@ -29,10 +30,27 @@ public:
         std::cin.ignore((std::numeric_limits<std::streamsize>::max)(), '\n');
         return v;
     }
+
+    template <typename T>
+    static T valueFromString(const std::string &s) {
+        T v;
+        std::stringstream ss(s);
+        ss >> v;
+        if (ss.fail()) {
+            throw std::runtime_error("Invalid argument! Value: " + s);
+        }
+        return v;
+    }
+
     static void invalidValue(const std::string &info);
     static void waitForEnter();
     static bool readArguments(std::map<std::string, Argument> &arguments);
     static size_t fileSize(std::ifstream &file);
+    static void setCLI(bool cli);
+    static bool isCLIMode();
+
+private:
+    static bool isCLI;
 };
 
 #ifndef __APPLE__

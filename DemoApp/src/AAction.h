@@ -10,13 +10,16 @@
 
 class AAction : public AView {
 public:
-    AAction(std::string title) : AView(std::move(title), {}) {}
+    AAction(std::string name, std::string title) : AView(std::move(title), {}), name(std::move(name)) {}
 
     ~AAction() override = default;
 
     ViewPtr execute() override;
+    void printHelp() override;
+    bool executeCLI(const std::string &name, const std::map<std::string, std::string> &args) override;
 
 protected:
+    std::string name;
     std::map<std::string, Argument> arguments;
     virtual void setDefaults();
     virtual ViewPtr runAction() = 0;

@@ -49,10 +49,16 @@ jobs:
     - name: Copy GTest DLL to tests folder (temporary workaround, hopefully)
       working-directory: ${{ github.workspace }}/build
       shell: bash
-      run: cp D:/a/EchoConnect/EchoConnect/build/bin/Debug/gtestd.dll ./libecho/tests/Debug/
+      run: cp D:/a/EchoConnect/EchoConnect/build/bin/Debug/gtestd.dll ./libecho/tests/Debug/ && env
 
-    #- name: Run tests
-    #  working-directory: ${{ github.workspace }}/build
-    #  shell: bash
-    #  #run: ctest -C Debug -VV --output-on-failure
-    #  run: ls ./libecho/tests/Debug/ && ./libecho/tests/Debug/libecho_test.exe
+    - name: Run tests
+      working-directory: ${{ github.workspace }}/build
+      shell: powershell
+      run: |
+        ls ./libecho/tests/Debug/
+        ls D:/a/EchoConnect/EchoConnect/build/bin/Debug/
+        $env:Path += ";D:\a\EchoConnect\EchoConnect\build\bin\Debug"
+        $Env:Path
+        ctest -C Debug -VV --output-on-failure
+      #  & 'D:\a\EchoConnect\EchoConnect\build\libecho\tests\Debug\libecho_test.exe'
+

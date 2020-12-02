@@ -9,6 +9,7 @@ find_package(GTest)
 if(GTest_FOUND)
     include_directories(${GTEST_INCLUDE_DIRS})
 else()
+    set(gtest_force_shared_crt 1)
     include(FetchContent)
     FetchContent_Declare(googletest
             GIT_REPOSITORY https://github.com/google/googletest.git
